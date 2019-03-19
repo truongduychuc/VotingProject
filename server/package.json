@@ -1,0 +1,34 @@
+{
+    "name": "dinhle",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {
+        "bcrypt": "^3.0.3",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.18.3",
+        "cookie-parser": "^1.4.3",
+        "cors": "^2.8.5",
+        "express": "^4.16.4",
+        "express-jwt": "^5.3.1",
+        "formidable": "^1.2.1",
+        "jsonwebtoken": "^8.4.0",
+        "multer": "^1.4.1",
+        "mysql": "^2.16.0",
+        "mysql2": "^1.6.4",
+        "nodemailer": "^5.1.1",
+        "sequelize": "^4.42.0",
+        "upper-case": "^1.1.3"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "dev": "nodemon server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
