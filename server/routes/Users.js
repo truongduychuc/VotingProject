@@ -53,7 +53,7 @@ users.post('/register', (req, res) => {
                         res.json({ token: token, user: userData })
                     })
                     .catch(err => {
-                        res.send('error: ' + err)
+                        res.status(200).send({ 'err': err })
                     })
             } else {
                 res.json({ error: 'User already exists' })
@@ -67,16 +67,93 @@ users.post('/register', (req, res) => {
 //LOGIN
 users.post('/authenticate', (req, res) => {
     User.findOne({
-        where: {
-            username: req.body.username
-        }
+            where: {
+                username: req.body.username
+            }
+        })
         .then(user => {
-
+            if (bcrypt.compareSync(req.body.password, user.password)) {
+                if (user.is_active == 1) {
+                    let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
+                        expiresIn: 86400
+                    })
+                    let body = {
+                        id: user.id,
+                        username: user.username,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        token: token
+                    }
+                    res.json(body)
+                } else {
+                    res.status(403).send('Your account has been temporarily locked')
+                }
+            } else {
+                res.send({ auth: false, token: null })
+            }
         })
         .catch(err => {
             res.send('err: ' + err)
         })
-    })
 })
 
+//STORAGE
+users.use((req, res, next) => {
+    // it go here
+    var token = req.headers['authorization']
+    if (token) {
+        //console.log(token);
+        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+            if (err) {
+                //next();
+                return res.send({ auth: false, message: err });
+            } else {
+                req.decoded = decoded;
+                next();
+            }
+        });
+    } else {
+        res.status(401).send({ auth: false, message: 'No token provided.' });
+    }
+})
+
+//LIST
+users.get('/list', (req, res) => {
+    //var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)
+
+    User.findOne({
+            where: {
+                id: req.decoded.id
+            }
+        })
+        .then(user => {
+            if (user) {
+                res.json(user)
+            } else {
+                res.send('User does not exist')
+            }
+        })
+        .catch(err => {
+            res.send('err:' + err)
+        })
+        // User.findAll()
+        //     .then(users => {
+        //         res.json(users)
+        //     })
+        //     .catch(err => {
+        //         res.send('err' + err)
+        //     })
+})
+
+// function verifyToken(req, res, next) {
+//     const bearerHeader = req.headers['authorization'];
+//     if (typeof bearerHeader !== 'undefined') {
+//         const bearer = bearerHeader.split(' ');
+//         const bearerToken = bearer[1];
+//         req.token = bearerToken;
+//         next();
+//     } else {
+//         res.sendStatus(403);
+//     }
+// }
 module.exports = users
