@@ -1,19 +1,19 @@
-const express = require('express')
-const users = express.Router()
-const cors = require('cors')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-    //const multer = require('multer')
+const express = require('express');
+const router = express.Router();
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+//const multer = require('multer')
 
-const User = require('../models/User')
+const User = require('../models/user');
 
-users.use(cors())
+router.use(cors());
 
-process.env.SECRET_KEY = 'secret'
+process.env.SECRET_KEY = 'secret';
 
 //REGISTER
-users.post('/register', (req, res) => {
-    const today = new Date()
+router.post('/register', (req, res) => {
+    const today = new Date();
 
     const userData = {
         id_role: null,
@@ -27,7 +27,7 @@ users.post('/register', (req, res) => {
         email: req.body.email,
         created_at: today,
         updated_at: null
-    }
+    };
 
     User.findOne({
             where: {
@@ -43,29 +43,29 @@ users.post('/register', (req, res) => {
                 if (req.body.position == "Engineer") {
                     userData.id_role = 3;
                 }
-                const hash = bcrypt.hashSync(userData.password, 10)
-                userData.password = hash
+                const hash = bcrypt.hashSync(userData.password, 10);
+                userData.password = hash;
                 User.create(userData)
                     .then(user => {
                         let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
                             expiresIn: 86400
-                        })
-                        res.json({ token: token, user: userData })
+                        });
+                        res.json({ token: token, user: userData });
                     })
                     .catch(err => {
-                        res.status(200).send({ 'err': err })
+                        res.status(200).send({ 'err': err });
                     })
             } else {
-                res.json({ error: 'User already exists' })
+                res.json({ error: 'User already exists' });
             }
         })
         .catch(err => {
-            res.send('error: ' + err)
+            res.send('error: ' + err);
         })
 })
 
 //LOGIN
-users.post('/authenticate', (req, res) => {
+router.post('/authenticate', (req, res) => {
     User.findOne({
             where: {
                 username: req.body.username
@@ -76,31 +76,33 @@ users.post('/authenticate', (req, res) => {
                 if (user.is_active == 1) {
                     let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
                         expiresIn: 86400
-                    })
+                    });
                     let body = {
                         id: user.id,
                         username: user.username,
                         first_name: user.first_name,
                         last_name: user.last_name,
+                        english_name: user.english_name,
+                        position: user.position,
                         token: token
-                    }
-                    res.json(body)
+                    };
+                    res.json(body);
                 } else {
-                    res.status(403).send('Your account has been temporarily locked')
+                    res.status(403).send('Your account has been temporarily locked');
                 }
             } else {
-                res.send({ auth: false, token: null })
+                res.send({ auth: false, token: null });
             }
         })
         .catch(err => {
-            res.send('err: ' + err)
+            res.send('err: ' + err);
         })
-})
+});
 
 //STORAGE
-users.use((req, res, next) => {
+router.use((req, res, next) => {
     // it go here
-    var token = req.headers['authorization']
+    var token = req.headers['authorization'];
     if (token) {
         //console.log(token);
         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
@@ -115,11 +117,11 @@ users.use((req, res, next) => {
     } else {
         res.status(401).send({ auth: false, message: 'No token provided.' });
     }
-})
+});
 
-//LIST
-users.get('/list', (req, res) => {
-    //var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)
+//PROFILE
+router.get('/profile', (req, res) => {
+    //var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
 
     User.findOne({
             where: {
@@ -128,22 +130,57 @@ users.get('/list', (req, res) => {
         })
         .then(user => {
             if (user) {
-                res.json(user)
+                res.json(user.toJSON());
             } else {
-                res.send('User does not exist')
+                res.send('User does not exist');
             }
         })
         .catch(err => {
-            res.send('err:' + err)
+            res.send('err:' + err);
+        });
+
+});
+
+//LIST
+router.get('/list', (req, res) => {
+    User.findAll()
+        .then(users => {
+            res.json(users);
         })
-        // User.findAll()
-        //     .then(users => {
-        //         res.json(users)
-        //     })
-        //     .catch(err => {
-        //         res.send('err' + err)
-        //     })
-})
+        .catch(err => {
+            res.send('err' + err);
+        });
+});
+
+//CHANGE_PASSWORD
+router.put('/change_password', (req, res) => {
+    const today = new Date()
+    User.findOne({
+        where: {
+            id: req.decoded.id
+        }
+    }).then(user => {
+        if (bcrypt.compareSync(req.body.old_password, user.password)) {
+            const hash = bcrypt.hashSync(req.body.new_password, 10);
+            User.update({
+                password: hash,
+                updated_at: today
+            }, {
+                where: {
+                    id: req.decoded.id
+                }
+            }).then(() => {
+                res.send("Updated successfully");
+            }).catch(err => {
+                res.send('err' + err);
+            });
+        } else {
+            res.send("Incorrect old password");
+        }
+    }).catch(err => {
+        res.send('err' + err)
+    })
+});
 
 // function verifyToken(req, res, next) {
 //     const bearerHeader = req.headers['authorization'];
@@ -156,4 +193,4 @@ users.get('/list', (req, res) => {
 //         res.sendStatus(403);
 //     }
 // }
-module.exports = users
+module.exports = router;

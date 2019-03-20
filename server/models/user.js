@@ -48,8 +48,17 @@ module.exports = db.sequelize.define(
         updated_at: {
             type: Sequelize.DATE,
             defaultValue: Sequelize.NOW
-        }
+        },
     }, {
-        timestamps: false
+        timestamps: false,
+        instanceMethods: {
+            toJSON: function() {
+                const userObj = Object.assign({}, this.dataValues);
+
+                delete userObj.password;
+
+                return userObj
+            }
+        }
     }
-)
+);

@@ -1,21 +1,8 @@
-const express = require('express')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const app = express()
-const port = process.env.PORT || 4000
+const http = require('http');
+const app = require('./app');
 
-app.use(bodyParser.json())
-app.use(cors())
-app.use(
-    bodyParser.urlencoded({
-        extended: false
-    })
-)
+const port = process.env.PORT || 4000;
 
-const Users = require('./routes/Users')
+const server = http.createServer(app);
 
-app.use('/users', Users)
-
-app.listen(port, function() {
-    console.log('Server is running on port: ' + port)
-})
+server.listen(port);
