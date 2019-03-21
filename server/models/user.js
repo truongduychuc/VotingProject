@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
+const crypto = require('crypto')
 
-module.exports = db.sequelize.define(
+const User = db.sequelize.define(
     'users', {
         id: {
             type: Sequelize.INTEGER,
@@ -21,7 +22,10 @@ module.exports = db.sequelize.define(
             type: Sequelize.STRING
         },
         password: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            get() {
+                return () => this.getDataValue('password')
+            }
         },
         first_name: {
             type: Sequelize.STRING
@@ -36,7 +40,10 @@ module.exports = db.sequelize.define(
             type: Sequelize.STRING
         },
         phone: {
-            type: Sequelize.INTEGER
+            type: Sequelize.STRING
+        },
+        address: {
+            type: Sequelize.STRING
         },
         other: {
             type: Sequelize.STRING
@@ -50,15 +57,41 @@ module.exports = db.sequelize.define(
             defaultValue: Sequelize.NOW
         },
     }, {
+        // instanceMethods: {
+        //     toJson: function() {
+        //         delete this.dataValues.password;
+        //         return JSON.stringify(this.dataValues);
+        //     }
+        // },
         timestamps: false,
-        instanceMethods: {
-            toJSON: function() {
-                const userObj = Object.assign({}, this.dataValues);
-
-                delete userObj.password;
-
-                return userObj
-            }
-        }
     }
 );
+
+module.exports = User
+
+
+
+User.prototype.correctPassword = function(candidatePwd) {
+    return User.encryptPassword(candidatePwd) === this.password()
+}
+User.encryptPassword = function(plainText) {
+    return crypto
+        .createHash('RSA-SHA256')
+        .update(plainText)
+        // .update(salt)
+        //.digest('hex')
+}
+
+const setSaltAndPassword = user => {
+    if (user.changed('password')) {
+        //user.salt = User.generateSalt()
+        user.password = User.encryptPassword(user.password())
+
+    }
+}
+
+User.beforeCreate(setSaltAndPassword)
+User.beforeUpdate(setSaltAndPassword)
+User.beforeBulkCreate(users => {
+    users.forEach(setSaltAndPassword)
+})

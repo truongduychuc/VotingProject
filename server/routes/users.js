@@ -3,7 +3,9 @@ const router = express.Router();
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-//const multer = require('multer')
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+const multer = require('multer')
 
 const User = require('../models/user');
 
@@ -26,7 +28,7 @@ router.post('/register', (req, res) => {
         english_name: req.body.english_name,
         email: req.body.email,
         created_at: today,
-        updated_at: null
+        updated_at: today
     };
 
     User.findOne({
@@ -43,20 +45,24 @@ router.post('/register', (req, res) => {
                 if (req.body.position == "Engineer") {
                     userData.id_role = 3;
                 }
-                const hash = bcrypt.hashSync(userData.password, 10);
-                userData.password = hash;
+                bcrypt.hash(userData.password, 10, (err, hash) => {
+                        if (!hash) {
+                            res.status(400).send({ 'err': err });
+                        } else {
+                            userData.password = hash;
+                        }
+                    })
+                    // const hash = bcrypt.hashSync(userData.password, 10);
+                    // userData.password = hash;
                 User.create(userData)
-                    .then(user => {
-                        let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
-                            expiresIn: 86400
-                        });
-                        res.json({ token: token, user: userData });
+                    .then(() => {
+                        res.status(200).send({ message: "Created user successfully" });
                     })
                     .catch(err => {
                         res.status(200).send({ 'err': err });
                     })
             } else {
-                res.json({ error: 'User already exists' });
+                res.status(400).send({ message: 'User already exists' });
             }
         })
         .catch(err => {
@@ -72,27 +78,39 @@ router.post('/authenticate', (req, res) => {
             }
         })
         .then(user => {
-            if (bcrypt.compareSync(req.body.password, user.password)) {
-                if (user.is_active == 1) {
-                    let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
-                        expiresIn: 86400
-                    });
-                    let body = {
-                        id: user.id,
-                        username: user.username,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        english_name: user.english_name,
-                        position: user.position,
-                        token: token
-                    };
-                    res.json(body);
-                } else {
-                    res.status(403).send('Your account has been temporarily locked');
-                }
+            if (!user) {
+                res.status(404).send({ message: 'Username or password is not correct!' })
             } else {
-                res.send({ auth: false, token: null });
+                if (bcrypt.compare(req.body.password, user.password())) {
+                    if (user.is_active == 1) {
+                        //console.log(user.dataValues)
+                        //console.log(user)
+                        const payload = {
+                            id: user.id,
+                            username: user.username,
+                            email: user.email
+                        }
+                        let token = jwt.sign(payload, process.env.SECRET_KEY, {
+                            expiresIn: 86400
+                        });
+                        const body = {
+                            id: user.id,
+                            username: user.username,
+                            first_name: user.first_name,
+                            last_name: user.last_name,
+                            english_name: user.english_name,
+                            position: user.position,
+                            token: token
+                        };
+                        res.json(body);
+                    } else {
+                        res.status(403).send('Your account has been temporarily locked');
+                    }
+                } else {
+                    res.status(404).send({ message: 'Username or password is not correct!', token: null });
+                }
             }
+
         })
         .catch(err => {
             res.send('err: ' + err);
@@ -122,7 +140,6 @@ router.use((req, res, next) => {
 //PROFILE
 router.get('/profile', (req, res) => {
     //var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
-
     User.findOne({
             where: {
                 id: req.decoded.id
@@ -130,7 +147,7 @@ router.get('/profile', (req, res) => {
         })
         .then(user => {
             if (user) {
-                res.json(user.toJSON());
+                res.json(user);
             } else {
                 res.send('User does not exist');
             }
@@ -143,7 +160,14 @@ router.get('/profile', (req, res) => {
 
 //LIST
 router.get('/list', (req, res) => {
-    User.findAll()
+    User.findAll({
+            where: {
+                id_role: {
+                    [Op.gte]: [2]
+                }
+            },
+            attributes: ['id', 'id_team', 'first_name', 'last_name', 'english_name']
+        })
         .then(users => {
             res.json(users);
         })
@@ -160,8 +184,12 @@ router.put('/change_password', (req, res) => {
             id: req.decoded.id
         }
     }).then(user => {
-        if (bcrypt.compareSync(req.body.old_password, user.password)) {
-            const hash = bcrypt.hashSync(req.body.new_password, 10);
+        //con = user.correctPassword(req.body.old_password);
+        //console.log(con)
+        // console.log(user.password())
+        // console.log(user.password)
+        if (bcrypt.compare(req.body.old_password, user.password())) {
+            const hash = bcrypt.hash(req.body.new_password, 10);
             User.update({
                 password: hash,
                 updated_at: today
@@ -170,17 +198,62 @@ router.put('/change_password', (req, res) => {
                     id: req.decoded.id
                 }
             }).then(() => {
-                res.send("Updated successfully");
+                res.status(200).send("Updated successfully");
             }).catch(err => {
-                res.send('err' + err);
+                res.status(400).send('err' + err);
             });
         } else {
-            res.send("Incorrect old password");
+            res.status(400).send("Incorrect old password");
         }
     }).catch(err => {
-        res.send('err' + err)
+        res.status(400).send('err' + err)
     })
 });
+
+//UPDATE INFORMATION
+router.put('/update', (req, res) => {
+    const today = new Date()
+
+    User.update({
+            phone: req.body.phone,
+            address: req.body.address,
+            other: req.body.other,
+            updated_at: today
+        }, {
+            where: {
+                id: req.decoded.id
+            }
+        }).then(() => {
+            res.status(200).send("Updated successfully");
+        }).catch(err => {
+            res.status(400).send('err' + err);
+        })
+        // }).catch(err => {
+        //     res.status(400).send('err' + err);
+})
+
+//UPLOAD AVATAR
+const storage = multer.diskStorage({
+    destination: (res, file, cb) => {
+        cb(null, './upload/')
+    },
+    filename: (req, file, cb) => {
+        cb(null, req.decoded.username + '_avatar' + new Date().toISOString())
+    }
+})
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    }
+})
+
+router.post('/upload_avatar', upload.single('avatar'), (req, res) => {
+    console.log(req.file);
+})
+
+
+
 
 // function verifyToken(req, res, next) {
 //     const bearerHeader = req.headers['authorization'];
