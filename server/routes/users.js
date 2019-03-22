@@ -42,7 +42,7 @@ router.post('/register', (req, res) => {
                 if (req.body.position == "Manager") {
                     userData.id_role = 2;
                 }
-                if (req.body.position == "Engineer") {
+                if (req.body.position == "Developer") {
                     userData.id_role = 3;
                 }
                 bcrypt.hash(userData.password, 10, (err, hash) => {
@@ -235,21 +235,36 @@ router.put('/update', (req, res) => {
 //UPLOAD AVATAR
 const storage = multer.diskStorage({
     destination: (res, file, cb) => {
-        cb(null, './upload/')
+        cb(null, './uploads/')
     },
     filename: (req, file, cb) => {
-        cb(null, req.decoded.username + '_avatar' + new Date().toISOString())
+        cb(null, req.decoded.username + '_' + new Date().toISOString() + file.originalname)
     }
 })
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true)
+    } else {
+        cb(null, false)
+
+    }
+}
 const upload = multer({
     storage: storage,
     limits: {
         fileSize: 1024 * 1024 * 5
-    }
+    },
+    fileFilter: fileFilter
 })
 
-router.post('/upload_avatar', upload.single('avatar'), (req, res) => {
+router.post('/upload_avatar', upload.single('avatar'), (req, res, next) => {
     console.log(req.file);
+    if (req.file === undefined) {
+        res.status(404).send({ message: 'Wrong type input' })
+    } else {
+        res.status(200).send({ message: 'Uploaded avatar successfully' })
+    }
+
 })
 
 
