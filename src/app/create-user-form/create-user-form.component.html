@@ -3,13 +3,17 @@
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Create new user</h4>
-        <form class="form-sample">
+        <form class="form-sample" (ngSubmit)="onSubmit()" [formGroup]="createUser">
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">Username</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" />
+                  <input type="text" class="form-control" formControlName="username" />
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['username'].touched &&  createUser.controls['username'].errors?.required">
+                    Username is required
+                  </p>
                 </div>
               </div>
             </div>
@@ -17,7 +21,11 @@
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">First name</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" />
+                  <input type="text" class="form-control" formControlName="firstName" />
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['firstName'].touched &&  createUser.controls['firstName'].errors?.required">
+                    First name is required
+                  </p>
                 </div>
               </div>
             </div>
@@ -27,7 +35,15 @@
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">Password</label>
                 <div class="col-sm-9">
-                  <input type="password" class="form-control" />
+                  <input type="password" class="form-control" formControlName="password" />
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['password'].touched && createUser.controls['password'].errors?.required">
+                    Password is required
+                  </p>
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['password'].errors?.minlength != null">
+                    Password's minimum length is 8
+                  </p>
                 </div>
               </div>
             </div>
@@ -35,7 +51,11 @@
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">Last name</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" />
+                  <input type="text" class="form-control" formControlName="lastName"/>
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['lastName'].touched &&  createUser.controls['lastName'].errors?.required">
+                    Last name is required
+                  </p>
                 </div>
               </div>
             </div>
@@ -45,7 +65,14 @@
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">Confirm password</label>
                 <div class="col-sm-9">
-                  <input type="password" class="form-control">
+                  <input type="password" class="form-control" formControlName="passwordConfirmationInput">
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['passwordConfirmationInput'].touched &&  createUser.controls['passwordConfirmationInput'].errors?.required">
+                    You need to confirm password
+                  </p>
+                  <p class="text-small text-left text-danger" *ngIf="createUser.controls['passwordConfirmationInput'].errors?.mustMatch">
+                    Your password is not match
+                  </p>
                 </div>
               </div>
             </div>
@@ -53,7 +80,11 @@
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">English name</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control">
+                  <input type="text" class="form-control" formControlName="englishName">
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['englishName'].touched &&  createUser.controls['englishName'].errors?.required">
+                    English name is required
+                  </p>
                 </div>
               </div>
             </div>
@@ -63,7 +94,15 @@
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">Email</label>
                 <div class="col-sm-9">
-                  <input type="email" class="form-control">
+                  <input type="email" class="form-control" formControlName="email">
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['email'].touched &&  createUser.controls['email'].errors?.required">
+                    Email is required
+                  </p>
+                  <p class="text-small text-danger text-left"
+                     *ngIf="createUser.controls['email'].errors?.email">
+                    Email's format is not true
+                  </p>
                 </div>
               </div>
             </div>
@@ -71,12 +110,12 @@
               <div class="form-group">
                 <label class="col-sm-3 col-form-label">Other</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control">
+                  <input type="text" class="form-control" formControlName="other">
                 </div>
               </div>
             </div>
           </div>
-          <button type="submit" class="btn btn-success shadow mr-2">Create</button>
+          <button [disabled]="createUser.invalid" type="submit" class="btn btn-success shadow mr-2">Create</button>
           <button class="btn btn-light shadow">Cancel</button>
         </form>
       </div>
