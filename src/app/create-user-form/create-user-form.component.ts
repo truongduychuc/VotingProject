@@ -26,13 +26,25 @@ export class CreateUserFormComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       other: ['']
     }, {
-      //password match
+      //password matching checking
         validator:this.MustMatch('password','passwordConfirmationInput')
     });
   }
   onSubmit () {
-      console.log(this.createUser);
+      if(this.createUser.invalid) {
+        return;
+      }
+      let newAccount = {
+        username: this.createUser.controls['username'].value,
+        password: this.createUser.controls['password'].value,
+        first_name: this.createUser.controls['firstName'].value,
+        last_name: this.createUser.controls['lastName'].value,
+        english_name: this.createUser.controls['englishName'].value,
+        email: this.createUser.controls['email'].value,
+      }
   }
+
+  //this function helps us to compare password
   MustMatch(controlName: string, matchingControlName: string) {
       return (formGroup: FormGroup) => {
         //get main control and the control which you want to compare to

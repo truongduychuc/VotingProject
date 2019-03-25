@@ -66,10 +66,12 @@
                 <label class="col-sm-3 col-form-label">Confirm password</label>
                 <div class="col-sm-9">
                   <input type="password" class="form-control" formControlName="passwordConfirmationInput">
+                  <!-- If user didn't type anything -->
                   <p class="text-small text-danger text-left"
                      *ngIf="createUser.controls['passwordConfirmationInput'].touched &&  createUser.controls['passwordConfirmationInput'].errors?.required">
                     You need to confirm password
                   </p>
+                  <!-- Your password is not match with the password confirmation input -->
                   <p class="text-small text-left text-danger" *ngIf="createUser.controls['passwordConfirmationInput'].errors?.mustMatch">
                     Your password is not match
                   </p>
