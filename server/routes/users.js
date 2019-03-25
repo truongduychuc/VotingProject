@@ -21,6 +21,7 @@ router.post('/register', (req, res) => {
         id_role: null,
         id_team: null,
         is_active: 1,
+        vote_ability: null,
         username: req.body.username,
         password: req.body.password,
         first_name: req.body.first_name,
@@ -39,11 +40,17 @@ router.post('/register', (req, res) => {
         //TODO bcrypt
         .then(user => {
             if (!user) {
+                if (req.body.position == "Admin") {
+                    userData.id_role = 1;
+                    userData.vote_ability = 0;
+                }
                 if (req.body.position == "Manager") {
                     userData.id_role = 2;
+                    userData.vote_ability = 1;
                 }
                 if (req.body.position == "Developer") {
                     userData.id_role = 3;
+                    userData.vote_ability = 1;
                 }
                 bcrypt.hash(userData.password, 10, (err, hash) => {
                         if (!hash) {
@@ -126,7 +133,7 @@ router.use((req, res, next) => {
         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
             if (err) {
                 //next();
-                return res.send({ auth: false, message: err });
+                return res.status(401).send({ auth: false, message: err });
             } else {
                 req.decoded = decoded;
                 next();
@@ -161,12 +168,12 @@ router.get('/profile', (req, res) => {
 //LIST
 router.get('/list', (req, res) => {
     User.findAll({
-            where: {
-                id_role: {
-                    [Op.gte]: [2]
-                }
-            },
-            attributes: ['id', 'id_team', 'first_name', 'last_name', 'english_name']
+            // where: {
+            //     id_role: {
+            //         [Op.gte]: [2]
+            //     }
+            // },
+            attributes: ['id', 'id_team', 'position', 'first_name', 'last_name', 'english_name']
         })
         .then(users => {
             res.json(users);
@@ -238,7 +245,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/')
     },
     filename: (req, file, cb) => {
-        cb(null, req.decoded.username + '_' + new Date().toISOString() + file.originalname)
+        cb(null, req.decoded.username + '_' + new Date().toISOString() + '_' + file.originalname)
     }
 })
 const fileFilter = (req, file, cb) => {
@@ -246,7 +253,6 @@ const fileFilter = (req, file, cb) => {
         cb(null, true)
     } else {
         cb(null, false)
-
     }
 }
 const upload = multer({
@@ -262,12 +268,26 @@ router.post('/upload_avatar', upload.single('avatar'), (req, res, next) => {
     if (req.file === undefined) {
         res.status(404).send({ message: 'Wrong type input' })
     } else {
-        res.status(200).send({ message: 'Uploaded avatar successfully' })
+        res.status(200).send({ message: 'Uploaded avatar successfully', path: req.file.path })
     }
 
 })
 
+//DELETE
 
+router.post('/delete_user', (req, res) => {
+    User.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then(user => {
+        if (!user) {
+            res.status(400).send({ message: 'User does not exist' })
+        } else {
+            res.status(200).send({ message: 'Delete successfully' })
+        }
+    })
+})
 
 
 // function verifyToken(req, res, next) {

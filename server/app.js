@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/users');
 
 app.use(bodyParser.json());
+app.use('/users/uploads', express.static('uploads'))
 app.use(cors());
 app.use(
     bodyParser.urlencoded({

@@ -18,6 +18,9 @@ const User = db.sequelize.define(
         is_active: {
             type: Sequelize.TINYINT
         },
+        vote_ability: {
+            type: Sequelize.TINYINT
+        },
         username: {
             type: Sequelize.STRING
         },
@@ -71,27 +74,27 @@ module.exports = User
 
 
 
-User.prototype.correctPassword = function(candidatePwd) {
-    return User.encryptPassword(candidatePwd) === this.password()
-}
-User.encryptPassword = function(plainText) {
-    return crypto
-        .createHash('RSA-SHA256')
-        .update(plainText)
-        // .update(salt)
-        //.digest('hex')
-}
+// User.prototype.correctPassword = function(candidatePwd) {
+//     return User.encryptPassword(candidatePwd, this.salt()) === this.password()
+// }
+// User.encryptPassword = function(plainText) {
+//     return crypto
+//         .createHash('RSA-SHA256')
+//         .update(plainText)
+//         .update(salt)
+//         .digest('hex')
+// }
 
-const setSaltAndPassword = user => {
-    if (user.changed('password')) {
-        //user.salt = User.generateSalt()
-        user.password = User.encryptPassword(user.password())
+// const setSaltAndPassword = user => {
+//     if (user.changed('password')) {
+//         user.salt = User.generateSalt()
+//         user.password = User.encryptPassword(user.password(), user.salt())
 
-    }
-}
+//     }
+// }
 
-User.beforeCreate(setSaltAndPassword)
-User.beforeUpdate(setSaltAndPassword)
-User.beforeBulkCreate(users => {
-    users.forEach(setSaltAndPassword)
-})
+// User.beforeCreate(setSaltAndPassword)
+// User.beforeUpdate(setSaltAndPassword)
+// User.beforeBulkCreate(users => {
+//     users.forEach(setSaltAndPassword)
+// })
