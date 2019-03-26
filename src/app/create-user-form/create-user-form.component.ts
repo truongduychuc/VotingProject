@@ -51,7 +51,7 @@ export class CreateUserFormComponent implements OnInit {
       position: this.createUser.controls['position'].value
     };
   // using service send post method, and retrieve message and error
-    this.accountService.registerNewUser(newAccount).subscribe(data => console.log(data), error1 => console.log(error1));
+    this.accountService.registerNewUser(newAccount).subscribe(data => alert(data.message), error1 => alert(error1));
   }
 
   // this function helps us to compare password
