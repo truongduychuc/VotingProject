@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
-const crypto = require('crypto')
+    //const crypto = require('crypto')
 
 const User = db.sequelize.define(
     'users', {
@@ -70,7 +70,8 @@ const User = db.sequelize.define(
     }
 );
 
-module.exports = User
+
+module.exports = User;
 
 
 

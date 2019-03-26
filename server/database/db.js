@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const db = {}
+const db = {};
 const sequelize = new Sequelize('voting_project', 'root', '', {
     host: 'localhost',
     dialect: 'mysql',
@@ -13,7 +13,12 @@ const sequelize = new Sequelize('voting_project', 'root', '', {
     }
 })
 
-db.sequelize = sequelize
-db.Sequelize = Sequelize
+Object.keys(db).forEach((modelName) => {
+    if ('associate' in db[modelName]) {
+        db[modelName].associate(db);
+    }
+})
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-module.exports = db
+module.exports = db;

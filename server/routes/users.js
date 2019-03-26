@@ -8,6 +8,7 @@ const Op = Sequelize.Op;
 const multer = require('multer')
 
 const User = require('../models/user');
+const Role = require('../models/user');
 
 router.use(cors());
 
@@ -52,15 +53,10 @@ router.post('/register', (req, res) => {
                     userData.id_role = 3;
                     userData.vote_ability = 1;
                 }
-                bcrypt.hash(userData.password, 10, (err, hash) => {
-                        if (!hash) {
-                            res.status(400).send({ 'err': err });
-                        } else {
-                            userData.password = hash;
-                        }
-                    })
-                    // const hash = bcrypt.hashSync(userData.password, 10);
-                    // userData.password = hash;
+
+                const hash = bcrypt.hashSync(userData.password, 10)
+                userData.password = hash;
+
                 User.create(userData)
                     .then(() => {
                         res.status(200).send({ message: "Created user successfully" });
@@ -88,7 +84,7 @@ router.post('/authenticate', (req, res) => {
             if (!user) {
                 res.status(404).send({ message: 'Username or password is not correct!' })
             } else {
-                if (bcrypt.compare(req.body.password, user.password())) {
+                if (bcrypt.compareSync(req.body.password, user.password())) {
                     if (user.is_active == 1) {
                         //console.log(user.dataValues)
                         //console.log(user)
@@ -125,24 +121,24 @@ router.post('/authenticate', (req, res) => {
 });
 
 //STORAGE
-router.use((req, res, next) => {
-    // it go here
-    var token = req.headers['authorization'];
-    if (token) {
-        //console.log(token);
-        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-            if (err) {
-                //next();
-                return res.status(401).send({ auth: false, message: err });
-            } else {
-                req.decoded = decoded;
-                next();
-            }
-        });
-    } else {
-        res.status(401).send({ auth: false, message: 'No token provided.' });
-    }
-});
+// router.use((req, res, next) => {
+//     // it go here
+//     var token = req.headers['authorization'];
+//     if (token) {
+//         //console.log(token);
+//         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+//             if (err) {
+//                 //next();
+//                 return res.status(401).send({ auth: false, message: err });
+//             } else {
+//                 req.decoded = decoded;
+//                 next();
+//             }
+//         });
+//     } else {
+//         res.status(401).send({ auth: false, message: 'No token provided.' });
+//     }
+// });
 
 //PROFILE
 router.get('/profile', (req, res) => {
@@ -173,9 +169,11 @@ router.get('/list', (req, res) => {
             //         [Op.gte]: [2]
             //     }
             // },
-            attributes: ['id', 'id_team', 'position', 'first_name', 'last_name', 'english_name']
+            //attributes: ['id', 'id_team', 'id_role', 'first_name', 'last_name', 'english_name']
+            include: [Role]
         })
         .then(users => {
+            //console.log(users)
             res.json(users);
         })
         .catch(err => {
@@ -195,7 +193,7 @@ router.put('/change_password', (req, res) => {
         //console.log(con)
         // console.log(user.password())
         // console.log(user.password)
-        if (bcrypt.compare(req.body.old_password, user.password())) {
+        if (bcrypt.compareSync(req.body.old_password, user.password())) {
             const hash = bcrypt.hash(req.body.new_password, 10);
             User.update({
                 password: hash,
