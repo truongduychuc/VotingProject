@@ -29,6 +29,7 @@ CREATE TABLE `awardDetail` (
   `date_start` datetime NOT NULL,
   `date_end` datetime NOT NULL,
   `price` float NOT NULL,
+  `item` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
@@ -45,29 +46,62 @@ LOCK TABLES `awardDetail` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `awardRole`
+-- Table structure for table `awardNominee`
 --
 
-DROP TABLE IF EXISTS `awardRole`;
+DROP TABLE IF EXISTS `awardNominee`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `awardRole` (
+CREATE TABLE `awardNominee` (
+  `id_award` int(11) NOT NULL,
+  `id_nominee` int(11) NOT NULL,
+  `id_team` int(11) NOT NULL,
+  PRIMARY KEY (`id_award`),
+  KEY `fk_awardNominee_2_idx` (`id_nominee`),
+  KEY `fk_awardNominee_3_idx` (`id_team`),
+  CONSTRAINT `fk_awardNominee_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetail` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardNominee_2` FOREIGN KEY (`id_nominee`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardNominee_3` FOREIGN KEY (`id_team`) REFERENCES `team` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `awardNominee`
+--
+
+LOCK TABLES `awardNominee` WRITE;
+/*!40000 ALTER TABLE `awardNominee` DISABLE KEYS */;
+/*!40000 ALTER TABLE `awardNominee` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `awardVote`
+--
+
+DROP TABLE IF EXISTS `awardVote`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `awardVote` (
   `id_award` int(11) NOT NULL,
   `id_role` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `vote_ability` tinyint(1) NOT NULL,
   PRIMARY KEY (`id_award`),
   KEY `fk_awardRole_2_idx` (`id_role`),
+  KEY `fk_awardVote_1_idx` (`id_user`),
   CONSTRAINT `fk_awardRole_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetail` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_awardRole_2` FOREIGN KEY (`id_role`) REFERENCES `role` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_awardRole_2` FOREIGN KEY (`id_role`) REFERENCES `role` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardVote_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `awardRole`
+-- Dumping data for table `awardVote`
 --
 
-LOCK TABLES `awardRole` WRITE;
-/*!40000 ALTER TABLE `awardRole` DISABLE KEYS */;
-/*!40000 ALTER TABLE `awardRole` ENABLE KEYS */;
+LOCK TABLES `awardVote` WRITE;
+/*!40000 ALTER TABLE `awardVote` DISABLE KEYS */;
+/*!40000 ALTER TABLE `awardVote` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -109,7 +143,6 @@ DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
   `id` int(11) NOT NULL,
   `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `vote_ability` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -120,7 +153,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'admin',0),(2,'manager',1),(3,'enginner',1);
+INSERT INTO `role` VALUES (1,'admin'),(2,'manager'),(3,'developer');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -166,7 +199,8 @@ CREATE TABLE `users` (
   `last_name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   `english_name` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `phone` int(15) DEFAULT NULL,
+  `phone` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `address` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
   `other` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -175,7 +209,7 @@ CREATE TABLE `users` (
   KEY `fk_user_2_idx` (`id_role`),
   CONSTRAINT `fk_user_1` FOREIGN KEY (`id_team`) REFERENCES `team` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_user_2` FOREIGN KEY (`id_role`) REFERENCES `role` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,7 +218,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,1,1,'admin','admin','admin','admin',NULL,'admin@enclave.vn',NULL,NULL,NULL,NULL),(2,3,NULL,1,'dinh.le','$2b$10$rrKZUobPulu8eT.P35lzXuogdhcGL3EojD.6NXr.ZIq6B9/iESlji','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,'2019-03-19 04:04:21',NULL),(3,2,NULL,1,'dinh.le1','$2b$10$ibJnsOSnyJLiAoofsE2t6OID2B/KidivKO/uoeqba0IW.XAVwZUqy','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,'2019-03-19 04:11:11',NULL),(4,3,NULL,1,'dinh.le2','$2b$10$Z13gdClwf3oK.Cqd1AU0.eVLK.MlJZ0dV.ZTasnw.8HJ8zjaBWpcO','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,'2019-03-19 04:12:54',NULL);
+INSERT INTO `users` VALUES (1,1,1,1,'admin','admin','admin','admin',NULL,'admin@enclave.vn',NULL,NULL,NULL,NULL,NULL),(2,3,NULL,0,'dinh.le','$2b$10$rrKZUobPulu8eT.P35lzXuogdhcGL3EojD.6NXr.ZIq6B9/iESlji','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,NULL,'2019-03-19 04:04:21',NULL),(3,2,NULL,1,'dinh.le1','$2b$10$aMhbmmsnePMNGdHDVCCP5O3xhDcdzIGRlb/B7upCpZD9FJNgcoF4q','Dinh','Q. LE','Roger','roger@enclave.vn','+84917355190','','','2019-03-19 04:11:11','2019-03-21 08:54:32'),(4,3,NULL,1,'dinh.le2','$2b$10$Z13gdClwf3oK.Cqd1AU0.eVLK.MlJZ0dV.ZTasnw.8HJ8zjaBWpcO','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,NULL,'2019-03-19 04:12:54',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -228,4 +262,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-19 11:31:18
+-- Dump completed on 2019-03-26 17:02:55
