@@ -18,9 +18,6 @@ const User = db.sequelize.define(
         is_active: {
             type: Sequelize.TINYINT
         },
-        vote_ability: {
-            type: Sequelize.TINYINT
-        },
         username: {
             type: Sequelize.STRING
         },

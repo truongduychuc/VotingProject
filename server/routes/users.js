@@ -8,11 +8,14 @@ const Op = Sequelize.Op;
 const multer = require('multer')
 
 const User = require('../models/user');
-const Role = require('../models/user');
+const Role = require('../models/role');
 
 router.use(cors());
 
 process.env.SECRET_KEY = 'secret';
+
+User.belongsTo(Role, {foreignKey: 'id_role'});
+
 
 //REGISTER
 router.post('/register', (req, res) => {
@@ -164,16 +167,19 @@ router.get('/profile', (req, res) => {
 //LIST
 router.get('/list', (req, res) => {
     User.findAll({
-            // where: {
-            //     id_role: {
-            //         [Op.gte]: [2]
-            //     }
-            // },
-            //attributes: ['id', 'id_team', 'id_role', 'first_name', 'last_name', 'english_name']
-            include: [Role]
+            where: {
+                is_active: {
+                    [Op.gte]: [1]
+                }
+            },
+            attributes: ['id', 'id_team', 'first_name', 'last_name', 'english_name'],
+            include: [{
+                    model: Role,
+                    //attributes: ['name']
+                }
+            ]
         })
         .then(users => {
-            //console.log(users)
             res.json(users);
         })
         .catch(err => {
