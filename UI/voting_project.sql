@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `awardDetail`
+-- Table structure for table `awardDetails`
 --
 
-DROP TABLE IF EXISTS `awardDetail`;
+DROP TABLE IF EXISTS `awardDetails`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `awardDetail` (
+CREATE TABLE `awardDetails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   `description` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -37,51 +37,51 @@ CREATE TABLE `awardDetail` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `awardDetail`
+-- Dumping data for table `awardDetails`
 --
 
-LOCK TABLES `awardDetail` WRITE;
-/*!40000 ALTER TABLE `awardDetail` DISABLE KEYS */;
-/*!40000 ALTER TABLE `awardDetail` ENABLE KEYS */;
+LOCK TABLES `awardDetails` WRITE;
+/*!40000 ALTER TABLE `awardDetails` DISABLE KEYS */;
+/*!40000 ALTER TABLE `awardDetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `awardNominee`
+-- Table structure for table `awardNominees`
 --
 
-DROP TABLE IF EXISTS `awardNominee`;
+DROP TABLE IF EXISTS `awardNominees`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `awardNominee` (
+CREATE TABLE `awardNominees` (
   `id_award` int(11) NOT NULL,
   `id_nominee` int(11) NOT NULL,
   `id_team` int(11) NOT NULL,
   PRIMARY KEY (`id_award`),
   KEY `fk_awardNominee_2_idx` (`id_nominee`),
   KEY `fk_awardNominee_3_idx` (`id_team`),
-  CONSTRAINT `fk_awardNominee_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetail` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardNominee_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_awardNominee_2` FOREIGN KEY (`id_nominee`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_awardNominee_3` FOREIGN KEY (`id_team`) REFERENCES `team` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_awardNominee_3` FOREIGN KEY (`id_team`) REFERENCES `teams` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `awardNominee`
+-- Dumping data for table `awardNominees`
 --
 
-LOCK TABLES `awardNominee` WRITE;
-/*!40000 ALTER TABLE `awardNominee` DISABLE KEYS */;
-/*!40000 ALTER TABLE `awardNominee` ENABLE KEYS */;
+LOCK TABLES `awardNominees` WRITE;
+/*!40000 ALTER TABLE `awardNominees` DISABLE KEYS */;
+/*!40000 ALTER TABLE `awardNominees` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `awardVote`
+-- Table structure for table `awardVotes`
 --
 
-DROP TABLE IF EXISTS `awardVote`;
+DROP TABLE IF EXISTS `awardVotes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `awardVote` (
+CREATE TABLE `awardVotes` (
   `id_award` int(11) NOT NULL,
   `id_role` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
@@ -89,29 +89,29 @@ CREATE TABLE `awardVote` (
   PRIMARY KEY (`id_award`),
   KEY `fk_awardRole_2_idx` (`id_role`),
   KEY `fk_awardVote_1_idx` (`id_user`),
-  CONSTRAINT `fk_awardRole_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetail` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_awardRole_2` FOREIGN KEY (`id_role`) REFERENCES `role` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardRole_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardRole_2` FOREIGN KEY (`id_role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_awardVote_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `awardVote`
+-- Dumping data for table `awardVotes`
 --
 
-LOCK TABLES `awardVote` WRITE;
-/*!40000 ALTER TABLE `awardVote` DISABLE KEYS */;
-/*!40000 ALTER TABLE `awardVote` ENABLE KEYS */;
+LOCK TABLES `awardVotes` WRITE;
+/*!40000 ALTER TABLE `awardVotes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `awardVotes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `finalResult`
+-- Table structure for table `finalResults`
 --
 
-DROP TABLE IF EXISTS `finalResult`;
+DROP TABLE IF EXISTS `finalResults`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `finalResult` (
+CREATE TABLE `finalResults` (
   `year` int(11) NOT NULL,
   `id_winner` int(11) NOT NULL,
   `id_award` int(11) NOT NULL,
@@ -119,28 +119,28 @@ CREATE TABLE `finalResult` (
   KEY `fk_finalResult_1_idx` (`id_winner`),
   KEY `fk_finalResult_2_idx` (`id_award`),
   CONSTRAINT `fk_finalResult_1` FOREIGN KEY (`id_winner`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_finalResult_2` FOREIGN KEY (`id_award`) REFERENCES `awardDetail` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_finalResult_3` FOREIGN KEY (`year`) REFERENCES `votingBreakdown` (`year`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_finalResult_2` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_finalResult_3` FOREIGN KEY (`year`) REFERENCES `votingBreakdowns` (`year`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `finalResult`
+-- Dumping data for table `finalResults`
 --
 
-LOCK TABLES `finalResult` WRITE;
-/*!40000 ALTER TABLE `finalResult` DISABLE KEYS */;
-/*!40000 ALTER TABLE `finalResult` ENABLE KEYS */;
+LOCK TABLES `finalResults` WRITE;
+/*!40000 ALTER TABLE `finalResults` DISABLE KEYS */;
+/*!40000 ALTER TABLE `finalResults` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `role`
+-- Table structure for table `roles`
 --
 
-DROP TABLE IF EXISTS `role`;
+DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `role` (
+CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
   `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
@@ -148,23 +148,23 @@ CREATE TABLE `role` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `role`
+-- Dumping data for table `roles`
 --
 
-LOCK TABLES `role` WRITE;
-/*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'admin'),(2,'manager'),(3,'developer');
-/*!40000 ALTER TABLE `role` ENABLE KEYS */;
+LOCK TABLES `roles` WRITE;
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (1,'admin'),(2,'manager'),(3,'developer');
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `team`
+-- Table structure for table `teams`
 --
 
-DROP TABLE IF EXISTS `team`;
+DROP TABLE IF EXISTS `teams`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `team` (
+CREATE TABLE `teams` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
@@ -172,13 +172,13 @@ CREATE TABLE `team` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `team`
+-- Dumping data for table `teams`
 --
 
-LOCK TABLES `team` WRITE;
-/*!40000 ALTER TABLE `team` DISABLE KEYS */;
-INSERT INTO `team` VALUES (1,'admin'),(2,'Roger'),(3,'Lincoln'),(4,'Concord');
-/*!40000 ALTER TABLE `team` ENABLE KEYS */;
+LOCK TABLES `teams` WRITE;
+/*!40000 ALTER TABLE `teams` DISABLE KEYS */;
+INSERT INTO `teams` VALUES (1,'admin'),(2,'Roger'),(3,'Lincoln'),(4,'Concord');
+/*!40000 ALTER TABLE `teams` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -207,9 +207,9 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   KEY `fk_user_1_idx` (`id_team`),
   KEY `fk_user_2_idx` (`id_role`),
-  CONSTRAINT `fk_user_1` FOREIGN KEY (`id_team`) REFERENCES `team` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_user_2` FOREIGN KEY (`id_role`) REFERENCES `role` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  CONSTRAINT `fk_user_1` FOREIGN KEY (`id_team`) REFERENCES `teams` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_2` FOREIGN KEY (`id_role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -223,13 +223,13 @@ INSERT INTO `users` VALUES (1,1,1,1,'admin','admin','admin','admin',NULL,'admin@
 UNLOCK TABLES;
 
 --
--- Table structure for table `votingBreakdown`
+-- Table structure for table `votingBreakdowns`
 --
 
-DROP TABLE IF EXISTS `votingBreakdown`;
+DROP TABLE IF EXISTS `votingBreakdowns`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `votingBreakdown` (
+CREATE TABLE `votingBreakdowns` (
   `year` int(11) NOT NULL,
   `rank` int(11) NOT NULL,
   `id_nominee` int(11) NOT NULL,
@@ -245,12 +245,12 @@ CREATE TABLE `votingBreakdown` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `votingBreakdown`
+-- Dumping data for table `votingBreakdowns`
 --
 
-LOCK TABLES `votingBreakdown` WRITE;
-/*!40000 ALTER TABLE `votingBreakdown` DISABLE KEYS */;
-/*!40000 ALTER TABLE `votingBreakdown` ENABLE KEYS */;
+LOCK TABLES `votingBreakdowns` WRITE;
+/*!40000 ALTER TABLE `votingBreakdowns` DISABLE KEYS */;
+/*!40000 ALTER TABLE `votingBreakdowns` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -262,4 +262,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-26 17:02:55
+-- Dump completed on 2019-03-27 17:14:19
