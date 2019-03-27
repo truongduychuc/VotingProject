@@ -28,6 +28,7 @@ import { CarouselComponent } from './carousel/carousel.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { CreateUserFormComponent } from './create-user-form/create-user-form.component';
 import {HttpClientModule} from "@angular/common/http";
+import { LoginFormComponent } from './login-form/login-form.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import {HttpClientModule} from "@angular/common/http";
     TooltipsComponent,
     CarouselComponent,
     TabsComponent,
-    CreateUserFormComponent
+    CreateUserFormComponent,
+    LoginFormComponent
   ],
   imports: [
     BrowserModule,
