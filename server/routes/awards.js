@@ -9,32 +9,37 @@ router.post('/create', (req, res) => {
     const year = today.getFullYear();
     console.log(year);
     const awardData = {
-            id: req.body.id,
+        name: req.body.name,
+        //description: req.body.description,
+        year: null,
+        date_start: req.body.date_start,
+        date_end: req.body.date_end,
+        prize: req.body.prize,
+        item: req.body.item,
+        create_at: today,
+        update_at: today
+    }
+    Award.findAll({
+        where: {
             name: req.body.name,
-            description: req.body.description,
-            date_start: req.body.date_start,
-            date_end: req.body.date_end,
-            price: req.body.price,
-            item: req.body.item,
-            create_at: today,
-            update_at: today
         }
-        // Award.findAll({
-        //     where: {
-        //         name: req.body.name,
-        //     }
-        // }).then(awards => {
-        //     if (!awards) {
-        //         Award.create(awardData);
-        //     } else {
-        //         if (!(year == awards.create_at.getFullYear())) {
-        //             Award.create(awardData);
-        //         } else {
-        //             res.status(400).send({ message: 'Award already exists' });
-        //         }
+    }).then(awards => {
+        if (!awards) {
+            awardData.year = year;
+            Award.create(awardData);
+            res.status(200).send({ message: 'Create award successfully' });
+        } else {
+            if (!(year == awards.year)) {
+                console.log(awards.year);
+                awardData.year = year;
+                Award.create(awardData);
+                res.status(200).send({ message: 'Create award successfully' });
+            } else {
+                res.status(400).send({ message: 'Award is already exists' });
+            }
 
-    //     }
-    // })
+        }
+    })
 
 })
 module.exports = router;

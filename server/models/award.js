@@ -11,6 +11,9 @@ const Award = db.sequelize.define(
         name: {
             type: Sequelize.STRING
         },
+        year: {
+            type: Sequelize.INTEGER
+        },
         description: {
             type: Sequelize.STRING
         },
@@ -20,10 +23,13 @@ const Award = db.sequelize.define(
         date_end: {
             type: Sequelize.DATE
         },
-        price: {
-            type: Sequelize.INTEGER
+        prize: {
+            type: Sequelize.STRING
         },
         item: {
+            type: Sequelize.STRING
+        },
+        logo_url: {
             type: Sequelize.STRING
         },
         created_at: {

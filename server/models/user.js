@@ -48,6 +48,9 @@ const User = db.sequelize.define(
         other: {
             type: Sequelize.STRING
         },
+        ava_url: {
+            type: Sequelize.STRING
+        },
         created_at: {
             type: Sequelize.DATE,
             defaultValue: Sequelize.NOW

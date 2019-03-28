@@ -14,7 +14,7 @@ router.use(cors());
 
 process.env.SECRET_KEY = 'secret';
 
-User.belongsTo(Role, {foreignKey: 'id_role'});
+User.belongsTo(Role, { foreignKey: 'id_role' });
 
 
 //REGISTER
@@ -46,15 +46,15 @@ router.post('/register', (req, res) => {
             if (!user) {
                 if (req.body.position == "Admin") {
                     userData.id_role = 1;
-                    userData.vote_ability = 0;
+
                 }
                 if (req.body.position == "Manager") {
                     userData.id_role = 2;
-                    userData.vote_ability = 1;
+
                 }
                 if (req.body.position == "Developer") {
                     userData.id_role = 3;
-                    userData.vote_ability = 1;
+
                 }
 
                 const hash = bcrypt.hashSync(userData.password, 10)
@@ -124,24 +124,24 @@ router.post('/authenticate', (req, res) => {
 });
 
 //STORAGE
-// router.use((req, res, next) => {
-//     // it go here
-//     var token = req.headers['authorization'];
-//     if (token) {
-//         //console.log(token);
-//         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-//             if (err) {
-//                 //next();
-//                 return res.status(401).send({ auth: false, message: err });
-//             } else {
-//                 req.decoded = decoded;
-//                 next();
-//             }
-//         });
-//     } else {
-//         res.status(401).send({ auth: false, message: 'No token provided.' });
-//     }
-// });
+router.use((req, res, next) => {
+    // it go here
+    var token = req.headers['authorization'];
+    if (token) {
+        //console.log(token);
+        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+            if (err) {
+                //next();
+                return res.status(401).send({ auth: false, message: err });
+            } else {
+                req.decoded = decoded;
+                next();
+            }
+        });
+    } else {
+        res.status(401).send({ auth: false, message: 'No token provided.' });
+    }
+});
 
 //PROFILE
 router.get('/profile', (req, res) => {
@@ -174,10 +174,9 @@ router.get('/list', (req, res) => {
             },
             attributes: ['id', 'id_team', 'first_name', 'last_name', 'english_name'],
             include: [{
-                    model: Role,
-                    //attributes: ['name']
-                }
-            ]
+                model: Role,
+                //attributes: ['name']
+            }]
         })
         .then(users => {
             res.json(users);
@@ -235,7 +234,7 @@ router.put('/update', (req, res) => {
                 id: req.decoded.id
             }
         }).then(() => {
-            res.status(200).send("Updated successfully");
+            res.status(200).send({ message: 'Updated successfully' });
         }).catch(err => {
             res.status(400).send('err' + err);
         })
@@ -272,7 +271,17 @@ router.post('/upload_avatar', upload.single('avatar'), (req, res, next) => {
     if (req.file === undefined) {
         res.status(404).send({ message: 'Wrong type input' })
     } else {
-        res.status(200).send({ message: 'Uploaded avatar successfully', path: req.file.path })
+        User.update({
+            ava_url: req.file.path
+        }, {
+            where: {
+                id: req.decoded.id
+            }
+        }).then(() => {
+            res.status(200).send({ message: 'Uploaded avatar successfully', path: req.file.path });
+        }).catch(err => {
+            res.status(400).send('err' + err);
+        })
     }
 
 })
