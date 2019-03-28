@@ -24,16 +24,18 @@ DROP TABLE IF EXISTS `awardDetails`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `awardDetails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `description` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `year` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(500) CHARACTER SET utf8 DEFAULT NULL,
   `date_start` datetime NOT NULL,
   `date_end` datetime NOT NULL,
-  `price` float NOT NULL,
-  `item` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `prize` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `item` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `logo_url` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,6 +44,7 @@ CREATE TABLE `awardDetails` (
 
 LOCK TABLES `awardDetails` WRITE;
 /*!40000 ALTER TABLE `awardDetails` DISABLE KEYS */;
+INSERT INTO `awardDetails` VALUES (1,'Employee of the Year','1970-01-01 00:00:02',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:05:44','2019-03-28 10:05:44'),(2,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:09:28','2019-03-28 10:09:28'),(3,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:10:53','2019-03-28 10:10:53'),(4,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:12:10','2019-03-28 10:12:10'),(5,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:13:08','2019-03-28 10:13:08');
 /*!40000 ALTER TABLE `awardDetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -54,14 +57,15 @@ DROP TABLE IF EXISTS `awardNominees`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `awardNominees` (
   `id_award` int(11) NOT NULL,
-  `id_nominee` int(11) NOT NULL,
   `id_team` int(11) NOT NULL,
+  `id_nominee` int(11) NOT NULL,
   PRIMARY KEY (`id_award`),
-  KEY `fk_awardNominee_2_idx` (`id_nominee`),
-  KEY `fk_awardNominee_3_idx` (`id_team`),
-  CONSTRAINT `fk_awardNominee_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_awardNominee_2` FOREIGN KEY (`id_nominee`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_awardNominee_3` FOREIGN KEY (`id_team`) REFERENCES `teams` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_awardNominees_awardDetails1_idx` (`id_award`),
+  KEY `fk_awardNominees_votingBreakdowns1_idx` (`id_award`,`id_nominee`),
+  KEY `fk_awardNominees_users1_idx` (`id_nominee`),
+  CONSTRAINT `fk_awardNominees_awardDetails1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardNominees_users1` FOREIGN KEY (`id_nominee`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_awardNominees_votingBreakdowns1` FOREIGN KEY (`id_award`, `id_nominee`) REFERENCES `votingBreakdowns` (`id_award`, `id_nominee`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -75,36 +79,6 @@ LOCK TABLES `awardNominees` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `awardVotes`
---
-
-DROP TABLE IF EXISTS `awardVotes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `awardVotes` (
-  `id_award` int(11) NOT NULL,
-  `id_role` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `vote_ability` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id_award`),
-  KEY `fk_awardRole_2_idx` (`id_role`),
-  KEY `fk_awardVote_1_idx` (`id_user`),
-  CONSTRAINT `fk_awardRole_1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_awardRole_2` FOREIGN KEY (`id_role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_awardVote_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `awardVotes`
---
-
-LOCK TABLES `awardVotes` WRITE;
-/*!40000 ALTER TABLE `awardVotes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `awardVotes` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `finalResults`
 --
 
@@ -112,15 +86,11 @@ DROP TABLE IF EXISTS `finalResults`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `finalResults` (
-  `year` int(11) NOT NULL,
-  `id_winner` int(11) NOT NULL,
   `id_award` int(11) NOT NULL,
-  PRIMARY KEY (`year`),
-  KEY `fk_finalResult_1_idx` (`id_winner`),
-  KEY `fk_finalResult_2_idx` (`id_award`),
-  CONSTRAINT `fk_finalResult_1` FOREIGN KEY (`id_winner`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_finalResult_2` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_finalResult_3` FOREIGN KEY (`year`) REFERENCES `votingBreakdowns` (`year`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  `id_nominee` int(11) NOT NULL,
+  PRIMARY KEY (`id_award`),
+  KEY `fk_finalResults_votingBreakdowns1_idx` (`id_award`,`id_nominee`),
+  CONSTRAINT `fk_finalResults_votingBreakdowns1` FOREIGN KEY (`id_award`, `id_nominee`) REFERENCES `votingBreakdowns` (`id_award`, `id_nominee`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -141,10 +111,10 @@ DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roles` (
-  `id` int(11) NOT NULL,
-  `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,7 +136,7 @@ DROP TABLE IF EXISTS `teams`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teams` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(45) CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -177,8 +147,36 @@ CREATE TABLE `teams` (
 
 LOCK TABLES `teams` WRITE;
 /*!40000 ALTER TABLE `teams` DISABLE KEYS */;
-INSERT INTO `teams` VALUES (1,'admin'),(2,'Roger'),(3,'Lincoln'),(4,'Concord');
 /*!40000 ALTER TABLE `teams` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `userAwardVotes`
+--
+
+DROP TABLE IF EXISTS `userAwardVotes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `userAwardVotes` (
+  `id_award` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `vote_ability` tinyint(1) NOT NULL,
+  `vote_status` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id_award`,`id_user`),
+  KEY `fk_userAwardVote_users1_idx` (`id_user`),
+  KEY `fk_userAwardVote_awardDetails1_idx` (`id_award`),
+  CONSTRAINT `fk_userAwardVote_awardDetails1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_userAwardVote_users1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `userAwardVotes`
+--
+
+LOCK TABLES `userAwardVotes` WRITE;
+/*!40000 ALTER TABLE `userAwardVotes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `userAwardVotes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -193,23 +191,24 @@ CREATE TABLE `users` (
   `id_role` int(11) NOT NULL,
   `id_team` int(11) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL,
-  `username` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(45) CHARACTER SET utf8 NOT NULL,
   `password` varchar(60) CHARACTER SET utf8 NOT NULL,
-  `first_name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `last_name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `english_name` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `email` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `phone` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `address` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `other` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `first_name` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `last_name` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `english_name` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `email` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `phone` varchar(15) CHARACTER SET utf8 DEFAULT NULL,
+  `address` varchar(60) CHARACTER SET utf8 DEFAULT NULL,
+  `other` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `ava_url` varchar(200) CHARACTER SET utf8 DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_user_1_idx` (`id_team`),
-  KEY `fk_user_2_idx` (`id_role`),
+  KEY `fk_users_1_idx` (`id_role`),
   CONSTRAINT `fk_user_1` FOREIGN KEY (`id_team`) REFERENCES `teams` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_user_2` FOREIGN KEY (`id_role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  CONSTRAINT `fk_users_1` FOREIGN KEY (`id_role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,7 +217,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,1,1,'admin','admin','admin','admin',NULL,'admin@enclave.vn',NULL,NULL,NULL,NULL,NULL),(2,3,NULL,0,'dinh.le','$2b$10$rrKZUobPulu8eT.P35lzXuogdhcGL3EojD.6NXr.ZIq6B9/iESlji','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,NULL,'2019-03-19 04:04:21',NULL),(3,2,NULL,1,'dinh.le1','$2b$10$aMhbmmsnePMNGdHDVCCP5O3xhDcdzIGRlb/B7upCpZD9FJNgcoF4q','Dinh','Q. LE','Roger','roger@enclave.vn','+84917355190','','','2019-03-19 04:11:11','2019-03-21 08:54:32'),(4,3,NULL,1,'dinh.le2','$2b$10$Z13gdClwf3oK.Cqd1AU0.eVLK.MlJZ0dV.ZTasnw.8HJ8zjaBWpcO','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,NULL,'2019-03-19 04:12:54',NULL);
+INSERT INTO `users` VALUES (1,1,NULL,1,'admin','$2b$10$wfJKbsW2ELRWPNNdRjXJvul5d6SlILIEOj7.jy30f84QYsVVx2qZm','','','','admin@enclave.vn',NULL,NULL,NULL,NULL,'2019-03-28 09:35:08','2019-03-28 09:35:08'),(6,3,NULL,0,'dinh.le','$2b$10$yRaXvOLyTjHs.uLrEvdkbenk0b5bvpuSjdwzOvSVtQ7RP3DH0a67S','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,NULL,NULL,'2019-03-28 09:36:35','2019-03-28 09:36:35'),(7,3,NULL,1,'dinh.le1','$2b$10$cpS84H8cIybJos5OHys8Eu41YFGq3S22aPRJjcETKZNzYZqb5pq9G','Dinh','Q. LE','Roger','roger@enclave.vn','+84917355190','','','uploads/dinh.le1_2019-03-28T09:45:54.210Z_[Eureka] Dinh (Roger) Q. LE.png','2019-03-28 09:40:12','2019-03-28 09:40:40');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,7 +229,7 @@ DROP TABLE IF EXISTS `votingBreakdowns`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `votingBreakdowns` (
-  `year` int(11) NOT NULL,
+  `id_award` int(11) NOT NULL,
   `rank` int(11) NOT NULL,
   `id_nominee` int(11) NOT NULL,
   `first_votes` int(11) NOT NULL,
@@ -238,9 +237,7 @@ CREATE TABLE `votingBreakdowns` (
   `third_votes` int(11) NOT NULL,
   `percent` float NOT NULL,
   `total_points` int(11) NOT NULL,
-  PRIMARY KEY (`year`,`rank`),
-  KEY `fk_votingBreakdown_1_idx` (`id_nominee`),
-  CONSTRAINT `fk_votingBreakdown_1` FOREIGN KEY (`id_nominee`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`id_award`,`id_nominee`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -262,4 +259,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-27 17:14:19
+-- Dump completed on 2019-03-28 17:17:40
