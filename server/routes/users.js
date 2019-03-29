@@ -22,10 +22,9 @@ router.post('/register', (req, res) => {
     const today = new Date();
 
     const userData = {
-        id_role: null,
+        id_role: req.body.id_role,
         id_team: null,
         is_active: 1,
-        vote_ability: null,
         username: req.body.username,
         password: req.body.password,
         first_name: req.body.first_name,
@@ -44,18 +43,18 @@ router.post('/register', (req, res) => {
         //TODO bcrypt
         .then(user => {
             if (!user) {
-                if (req.body.position == "Admin") {
-                    userData.id_role = 1;
+                // if (req.body.position == "Admin") {
+                //     userData.id_role = 1;
 
-                }
-                if (req.body.position == "Manager") {
-                    userData.id_role = 2;
+                // }
+                // if (req.body.position == "Manager") {
+                //     userData.id_role = 2;
 
-                }
-                if (req.body.position == "Developer") {
-                    userData.id_role = 3;
+                // }
+                // if (req.body.position == "Developer") {
+                //     userData.id_role = 3;
 
-                }
+                // }
 
                 const hash = bcrypt.hashSync(userData.password, 10)
                 userData.password = hash;
@@ -65,14 +64,14 @@ router.post('/register', (req, res) => {
                         res.status(200).send({ message: "Created user successfully" });
                     })
                     .catch(err => {
-                        res.status(200).send({ 'err': err });
+                        res.status(400).send({ message: err });
                     })
             } else {
                 res.status(400).send({ message: 'User already exists' });
             }
         })
         .catch(err => {
-            res.send('error: ' + err);
+            res.send({ message: err });
         })
 })
 
@@ -93,6 +92,7 @@ router.post('/authenticate', (req, res) => {
                         //console.log(user)
                         const payload = {
                             id: user.id,
+                            id_role: user.id_role,
                             username: user.username,
                             email: user.email
                         }
@@ -106,7 +106,7 @@ router.post('/authenticate', (req, res) => {
                             last_name: user.last_name,
                             english_name: user.english_name,
                             position: user.position,
-                            token: token
+                            token: token,
                         };
                         res.json(body);
                     } else {
@@ -119,7 +119,7 @@ router.post('/authenticate', (req, res) => {
 
         })
         .catch(err => {
-            res.send('err: ' + err);
+            res.status(400).send({ message: err });
         })
 });
 
@@ -159,9 +159,8 @@ router.get('/profile', (req, res) => {
             }
         })
         .catch(err => {
-            res.send('err:' + err);
+            res.status(400).send({ message: err });
         });
-
 });
 
 //LIST
@@ -179,10 +178,10 @@ router.get('/list', (req, res) => {
             }]
         })
         .then(users => {
-            res.json(users);
+            res.status(200).json(users);
         })
         .catch(err => {
-            res.send('err' + err);
+            res.status(400).send({ message: err });
         });
 });
 
@@ -194,10 +193,6 @@ router.put('/change_password', (req, res) => {
             id: req.decoded.id
         }
     }).then(user => {
-        //con = user.correctPassword(req.body.old_password);
-        //console.log(con)
-        // console.log(user.password())
-        // console.log(user.password)
         if (bcrypt.compareSync(req.body.old_password, user.password())) {
             const hash = bcrypt.hash(req.body.new_password, 10);
             User.update({
@@ -210,36 +205,79 @@ router.put('/change_password', (req, res) => {
             }).then(() => {
                 res.status(200).send("Updated successfully");
             }).catch(err => {
-                res.status(400).send('err' + err);
+                res.status(400).send({ message: err });
             });
         } else {
             res.status(400).send("Incorrect old password");
         }
     }).catch(err => {
-        res.status(400).send('err' + err)
+        res.status(400).send({ message: err });
     })
 });
 
-//UPDATE INFORMATION
+//RESET PASSWORD
+router.put('/reset_password/:id', authorize('1'), (req, res) => {
+    const today = new Date();
+    const hash = bcrypt.hashSync('123456', 10)
+    User.update({
+        password: hash,
+        updated_at: today
+    }, {
+        where: {
+            id: req.params.id
+        }
+    }).then(() => {
+        res.status(200).send({ message: 'Reset password successfully' });
+    }).catch(err => {
+        res.status(400).send({ message: err });
+    })
+})
+
+//UPDATE USER INFORMATION
+router.put('/update/:id', authorize('1'), (req, res) => {
+    const today = new Date();
+    //const id = req.params.id;
+    User.update({
+        id_role: req.body.id_role,
+        id_team: req.body.id_team,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        english_name: req.body.english_name,
+        is_active: req.body.is_active,
+        email: req.body.email,
+        phone: req.body.phone,
+        address: req.body.address,
+        other: req.body.other,
+        updated_at: today
+    }, {
+        where: {
+            id: req.params.id
+        }
+    }).then(() => {
+        res.status(200).send({ message: 'Updated successfully' });
+    }).catch(err => {
+        res.status(400).send({ message: err });
+    })
+})
+
+
+//UPDATE PERSONAL INFORMATION
 router.put('/update', (req, res) => {
     const today = new Date()
-
     User.update({
-            phone: req.body.phone,
-            address: req.body.address,
-            other: req.body.other,
-            updated_at: today
-        }, {
-            where: {
-                id: req.decoded.id
-            }
-        }).then(() => {
-            res.status(200).send({ message: 'Updated successfully' });
-        }).catch(err => {
-            res.status(400).send('err' + err);
-        })
-        // }).catch(err => {
-        //     res.status(400).send('err' + err);
+        phone: req.body.phone,
+        address: req.body.address,
+        other: req.body.other,
+        updated_at: today
+    }, {
+        where: {
+            id: req.decoded.id
+        }
+    }).then(() => {
+        res.status(200).send({ message: 'Updated successfully' });
+    }).catch(err => {
+        res.status(400).send({ message: err });
+    })
 })
 
 //UPLOAD AVATAR
@@ -302,7 +340,19 @@ router.post('/delete_user', (req, res) => {
     })
 })
 
-
+function authorize(id_role) {
+    return [
+        // authorize based on user role
+        (req, res, next) => {
+            if (!(id_role == req.decoded.id_role)) {
+                // user's role is not authorized
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+            // authentication and authorization successful
+            next();
+        }
+    ];
+}
 // function verifyToken(req, res, next) {
 //     const bearerHeader = req.headers['authorization'];
 //     if (typeof bearerHeader !== 'undefined') {

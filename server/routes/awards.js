@@ -5,9 +5,7 @@ const Award = require('../models/award');
 
 router.post('/create', (req, res) => {
     const today = new Date();
-    console.log(today);
     const year = today.getFullYear();
-    console.log(year);
     const awardData = {
         name: req.body.name,
         //description: req.body.description,
@@ -22,23 +20,18 @@ router.post('/create', (req, res) => {
     Award.findAll({
         where: {
             name: req.body.name,
+            year: year
         }
     }).then(awards => {
         if (!awards) {
             awardData.year = year;
             Award.create(awardData);
-            res.status(200).send({ message: 'Create award successfully' });
+            res.status(200).send({ message: 'Create award successfully.' });
         } else {
-            if (!(year == awards.year)) {
-                console.log(awards.year);
-                awardData.year = year;
-                Award.create(awardData);
-                res.status(200).send({ message: 'Create award successfully' });
-            } else {
-                res.status(400).send({ message: 'Award is already exists' });
-            }
-
+            res.status(400).send({ message: 'Award already exists.' });
         }
+    }).catch(err => {
+        res.status(400).send({ error: err })
     })
 
 })
