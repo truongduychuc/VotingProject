@@ -5,7 +5,7 @@
         <h6>Login</h6>
       </div>
       <div class="card-body">
-        <form [formGroup]="loginForm">
+        <form (ngSubmit)="loginWithUserAndPass()" [formGroup]="loginForm">
           <div class="form-group row">
             <label class="col-sm-3 col-form-label">Username</label>
             <div class="col-sm-9">
