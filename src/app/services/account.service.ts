@@ -15,7 +15,7 @@ export class AccountService {
   registerNewUser(newUser: User): Observable<User> {
     // JSON.stringify: convert object to JSON string
     return this.httpClient.post<User>(this.serverURL + '/users/register', JSON.stringify(newUser), {
-      headers: new HttpHeaders({
+      headers: new HttpHeaders({  // the header is included in post req
         'Content-Type': 'application/json'
       })
     });
