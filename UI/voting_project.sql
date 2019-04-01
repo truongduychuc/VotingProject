@@ -35,7 +35,7 @@ CREATE TABLE `awardDetails` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +44,7 @@ CREATE TABLE `awardDetails` (
 
 LOCK TABLES `awardDetails` WRITE;
 /*!40000 ALTER TABLE `awardDetails` DISABLE KEYS */;
-INSERT INTO `awardDetails` VALUES (1,'Employee of the Year','1970-01-01 00:00:02',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:05:44','2019-03-28 10:05:44'),(2,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:09:28','2019-03-28 10:09:28'),(3,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:10:53','2019-03-28 10:10:53'),(4,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:12:10','2019-03-28 10:12:10'),(5,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-03-28 10:13:08','2019-03-28 10:13:08');
+INSERT INTO `awardDetails` VALUES (6,'Employee of the Year','2018',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-04-01 04:39:59','2019-04-01 04:39:59'),(7,'Employee of the Year','2018',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-04-01 06:13:42','2019-04-01 06:13:42'),(8,'Employee of the Year','2018',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-04-01 10:15:34','2019-04-01 10:15:34'),(9,'Employee of the Year','2019',NULL,'2019-03-26 00:00:00','2019-03-28 00:00:00','VND 5,000,000.00','No',NULL,'2019-04-01 10:17:59','2019-04-01 10:17:59');
 /*!40000 ALTER TABLE `awardDetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -138,7 +138,7 @@ CREATE TABLE `teams` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -148,35 +148,6 @@ CREATE TABLE `teams` (
 LOCK TABLES `teams` WRITE;
 /*!40000 ALTER TABLE `teams` DISABLE KEYS */;
 /*!40000 ALTER TABLE `teams` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `userAwardVotes`
---
-
-DROP TABLE IF EXISTS `userAwardVotes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `userAwardVotes` (
-  `id_award` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `vote_ability` tinyint(1) NOT NULL,
-  `vote_status` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id_award`,`id_user`),
-  KEY `fk_userAwardVote_users1_idx` (`id_user`),
-  KEY `fk_userAwardVote_awardDetails1_idx` (`id_award`),
-  CONSTRAINT `fk_userAwardVote_awardDetails1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_userAwardVote_users1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `userAwardVotes`
---
-
-LOCK TABLES `userAwardVotes` WRITE;
-/*!40000 ALTER TABLE `userAwardVotes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `userAwardVotes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -217,8 +188,39 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,NULL,1,'admin','$2b$10$wfJKbsW2ELRWPNNdRjXJvul5d6SlILIEOj7.jy30f84QYsVVx2qZm','','','','admin@enclave.vn',NULL,NULL,NULL,NULL,'2019-03-28 09:35:08','2019-03-28 09:35:08'),(6,3,NULL,0,'dinh.le','$2b$10$yRaXvOLyTjHs.uLrEvdkbenk0b5bvpuSjdwzOvSVtQ7RP3DH0a67S','Dinh','Q. LE','Roger','roger@enclave.vn',NULL,NULL,NULL,NULL,'2019-03-28 09:36:35','2019-03-28 09:36:35'),(7,3,NULL,1,'dinh.le1','$2b$10$cpS84H8cIybJos5OHys8Eu41YFGq3S22aPRJjcETKZNzYZqb5pq9G','Dinh','Q. LE','Roger','roger@enclave.vn','+84917355190','','','uploads/dinh.le1_2019-03-28T09:45:54.210Z_[Eureka] Dinh (Roger) Q. LE.png','2019-03-28 09:40:12','2019-03-28 09:40:40');
+INSERT INTO `users` VALUES (1,1,NULL,1,'admin','$2b$10$wfJKbsW2ELRWPNNdRjXJvul5d6SlILIEOj7.jy30f84QYsVVx2qZm','','','','admin@enclave.vn',NULL,NULL,NULL,NULL,'2019-03-28 09:35:08','2019-03-28 09:35:08'),(6,3,NULL,0,'dinh.le','$2b$10$ymd/UXiW08zCH3D8BJWANeI5ZZkoaWA84CD5VJXbGZV2ujiZxm4hW','Dinh','Q. LE','Roger','roger@enclave.vn','+84917355190','','',NULL,'2019-03-28 09:36:35','2019-03-29 10:07:42'),(7,3,NULL,1,'dinh.le1','$2b$10$cpS84H8cIybJos5OHys8Eu41YFGq3S22aPRJjcETKZNzYZqb5pq9G','Dinh','Q. LE','Roger','roger@enclave.vn','+84917355190','','','uploads/dinh.le1_2019-03-28T09:45:54.210Z_[Eureka] Dinh (Roger) Q. LE.png','2019-03-28 09:40:12','2019-03-28 09:40:40');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `voters`
+--
+
+DROP TABLE IF EXISTS `voters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `voters` (
+  `id_award` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `vote_ability` tinyint(1) NOT NULL,
+  `vote_status` tinyint(1) NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_award`,`id_user`),
+  KEY `fk_userAwardVote_users1_idx` (`id_user`),
+  KEY `fk_userAwardVote_awardDetails1_idx` (`id_award`),
+  CONSTRAINT `fk_userAwardVote_awardDetails1` FOREIGN KEY (`id_award`) REFERENCES `awardDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_userAwardVote_users1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `voters`
+--
+
+LOCK TABLES `voters` WRITE;
+/*!40000 ALTER TABLE `voters` DISABLE KEYS */;
+INSERT INTO `voters` VALUES (6,1,1,1,NULL),(8,6,1,1,'2019-04-01 10:15:34'),(8,7,1,1,'2019-04-01 10:15:34'),(9,6,1,1,'2019-04-01 10:17:59'),(9,7,1,1,'2019-04-01 10:17:59');
+/*!40000 ALTER TABLE `voters` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -259,4 +261,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-28 17:17:40
+-- Dump completed on 2019-04-01 17:24:21
