@@ -152,10 +152,10 @@ router.get('/profile', (req, res) => {
             }
         })
         .then(user => {
-            if (user) {
-                res.json(user);
+            if (!user) {
+                res.status(400).send({ message: 'User does not exist' });
             } else {
-                res.send('User does not exist');
+                res.status(200).send(user);
             }
         })
         .catch(err => {
@@ -178,7 +178,11 @@ router.get('/list', (req, res) => {
             }]
         })
         .then(users => {
-            res.status(200).json(users);
+            if (users.length == 0) {
+                res.status(400).send({ message: 'There is no user' })
+            } else {
+                res.status(200).json(users);
+            }
         })
         .catch(err => {
             res.status(400).send({ message: err });
