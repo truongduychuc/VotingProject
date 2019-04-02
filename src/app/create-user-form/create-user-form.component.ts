@@ -10,10 +10,8 @@ import {User} from '../models/user';
 })
 export class CreateUserFormComponent implements OnInit {
   createUser: FormGroup;
-
   constructor(private formBuilder: FormBuilder, private accountService: AccountService) {
   }
-
   ngOnInit() {
     // generate form by using FormBuilder
     this.generateForm();
