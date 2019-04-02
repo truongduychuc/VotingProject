@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthenticationService} from "../services/authentication.service";
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { AuthenticationService} from "../services/authentication.service";
+import { first } from 'rxjs/operators';
+import { Router } from "@angular/router";
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
@@ -8,7 +10,7 @@ import {AuthenticationService} from "../services/authentication.service";
 })
 export class LoginFormComponent implements OnInit {
   loginForm: FormGroup;
-  constructor(private formBuilder: FormBuilder, private authService: AuthenticationService) { }
+  constructor(private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router) { }
 
   ngOnInit() {
     this.generateForm();
@@ -26,11 +28,13 @@ export class LoginFormComponent implements OnInit {
     if(this.loginForm.invalid) {
       return;
     }
-    const username = this.loginForm.controls['username'].value;
-    const password = this.loginForm.controls['password'].value;
-    this.authService.login(username, password).subscribe(res => {
-    console.log(res);
-    }, error1 => console.log(error1));
+    const username = this.getControl.username.value;
+    const password = this.getControl.password.value;
+    this.authService.login(username, password).pipe(first()).subscribe(res => {
+      this.router.navigate(['dashboard']);
+    }, errorLogin => {
+      console.log(JSON.stringify(errorLogin));
+    } );
   }
 
   // get all controls of loginForm, can use this function with command like getControl.controlName;
