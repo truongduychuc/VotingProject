@@ -15,7 +15,7 @@ export class AuthenticationService {
       username: username,
       password: password
     };
-    return this.httpClient.post<any>(this.serverURL + '/users/authenticate',userTryingToLogin).pipe(map(
+    return this.httpClient.post<any>(this.serverURL + '/users/authenticate',userTryingToLogin,).pipe(map(
       res => {
         this.setSession(res);
         console.log('Authentication result: ' + JSON.stringify(res));
