@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../database/db');
 
 const Nominee = db.sequelize.define(
-    'awardNominee', {
+    'nominee', {
         id_award: {
             type: Sequelize.INTEGER,
             primaryKey: true
