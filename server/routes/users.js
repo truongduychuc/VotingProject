@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const multer = require('multer')
+const authenticate = require('../helpers/authenticate');
+//const authorize = require('../helpers/authorize');
 
 const User = require('../models/user');
 const Role = require('../models/role');
@@ -124,24 +126,26 @@ router.post('/authenticate', (req, res) => {
 });
 
 //STORAGE
-router.use((req, res, next) => {
-    // it go here
-    var token = req.headers['authorization'];
-    if (token) {
-        //console.log(token);
-        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-            if (err) {
-                //next();
-                return res.status(401).send({ auth: false, message: err });
-            } else {
-                req.decoded = decoded;
-                next();
-            }
-        });
-    } else {
-        res.status(401).send({ auth: false, message: 'No token provided.' });
-    }
-});
+router.use(authenticate);
+
+// router.use((req, res, next) => {
+//     // it go here
+//     var token = req.headers['authorization'];
+//     if (token) {
+//         //console.log(token);
+//         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+//             if (err) {
+//                 //next();
+//                 return res.status(401).send({ auth: false, message: err });
+//             } else {
+//                 req.decoded = decoded;
+//                 next();
+//             }
+//         });
+//     } else {
+//         res.status(401).send({ auth: false, message: 'No token provided.' });
+//     }
+// });
 
 //PROFILE
 router.get('/profile', (req, res) => {
@@ -357,6 +361,8 @@ function authorize(id_role) {
         }
     ];
 }
+
+
 // function verifyToken(req, res, next) {
 //     const bearerHeader = req.headers['authorization'];
 //     if (typeof bearerHeader !== 'undefined') {
