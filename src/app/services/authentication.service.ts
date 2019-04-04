@@ -3,7 +3,8 @@ import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 // A lightweight JavaScript date library for parsing, validating, manipulating, and formatting dates.
 import * as moment from "moment";
 import * as jwt_decode from "jwt-decode";
-import { map } from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
+import {throwError} from "rxjs";
 @Injectable({
   providedIn: 'root'
 })
@@ -18,6 +19,7 @@ export class AuthenticationService {
     return this.httpClient.post<any>(this.serverURL + '/users/authenticate',userTryingToLogin,).pipe(map(
       res => {
         this.setSession(res);
+        console.log(res.status);
         console.log('Authentication result: ' + JSON.stringify(res));
       }
     ));
