@@ -14,7 +14,6 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit() {
     this.generateForm();
-    this.authService.logout();
   }
   // create form by using form builder
   private generateForm(): void {
@@ -33,7 +32,7 @@ export class LoginFormComponent implements OnInit {
     this.authService.login(username, password).pipe(first()).subscribe(res => {
       this.router.navigate(['dashboard']);
     }, errorLogin => {
-      console.log(JSON.stringify(errorLogin));
+      console.log('Login form' + JSON.stringify(errorLogin));
     } );
   }
 
