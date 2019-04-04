@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpHandler, HttpInterceptor, HttpRequest, HttpEvent, HttpErrorResponse} from "@angular/common/http";
 import {AuthenticationService} from "../services/authentication.service";
 import {Observable, throwError} from "rxjs";
-import {catchError, map} from "rxjs/operators";
+import {catchError} from "rxjs/operators";
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor{
@@ -18,7 +18,7 @@ export class ErrorInterceptor implements HttpInterceptor{
         alert(err.error.message);
       }
       if(err.status === 404) {
-        alert(err.error.message);
+        alert(err.error.message); //alert, for example: 'User or password is incorrect'
       }
       if(err.status === 403) {
         alert(err.error);
