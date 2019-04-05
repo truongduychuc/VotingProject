@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { AuthenticationService} from "../services/authentication.service";
+import { AuthenticationService} from "../_services/authentication.service";
 import { first } from 'rxjs/operators';
 import { Router } from "@angular/router";
 @Component({
@@ -14,6 +14,9 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit() {
     this.generateForm();
+    if(this.authService.isLoggedIn()) {
+      this.router.navigate(['dashboard']);
+    }
   }
   // create form by using form builder
   private generateForm(): void {
