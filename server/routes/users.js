@@ -5,9 +5,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
-const multer = require('multer')
-const authenticate = require('../helpers/authenticate');
-//const authorize = require('../helpers/authorize');
+const multer = require('multer');
+
+const authorize = require('../helpers/authorize');
 
 const User = require('../models/user');
 const Role = require('../models/role');
@@ -45,22 +45,9 @@ router.post('/register', (req, res) => {
         //TODO bcrypt
         .then(user => {
             if (!user) {
-                // if (req.body.position == "Admin") {
-                //     userData.id_role = 1;
-
-                // }
-                // if (req.body.position == "Manager") {
-                //     userData.id_role = 2;
-
-                // }
-                // if (req.body.position == "Developer") {
-                //     userData.id_role = 3;
-
-                // }
-
                 const hash = bcrypt.hashSync(userData.password, 10)
                 userData.password = hash;
-
+                //Create user
                 User.create(userData)
                     .then(() => {
                         res.status(200).send({ message: "Created user successfully" });
@@ -90,8 +77,6 @@ router.post('/authenticate', (req, res) => {
             } else {
                 if (bcrypt.compareSync(req.body.password, user.password())) {
                     if (user.is_active == 1) {
-                        //console.log(user.dataValues)
-                        //console.log(user)
                         const payload = {
                             id: user.id,
                             id_role: user.id_role,
@@ -126,7 +111,7 @@ router.post('/authenticate', (req, res) => {
 });
 
 //STORAGE
-router.use(authenticate);
+// router.use(authenticate);
 
 // router.use((req, res, next) => {
 //     // it go here
@@ -148,7 +133,7 @@ router.use(authenticate);
 // });
 
 //PROFILE
-router.get('/profile', (req, res) => {
+router.get('/profile', authorize(), (req, res) => {
     //var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
     User.findOne({
             where: {
@@ -167,8 +152,41 @@ router.get('/profile', (req, res) => {
         });
 });
 
+//GET USER BY ID
+router.get('/profile/:id', authorize(), (req, res) => {
+    const id = parseInt(req.params.id);
+    Role.findOne({
+        where: {
+            id: req.decoded.id_role
+        }
+    }).then(role => {
+        // only allow admins to access other user records
+        if (id !== req.decoded.id && role.name !== 'admin') {
+            return res.status(401).json({ message: 'Unauthorized' });
+        } else {
+            User.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                })
+                .then(user => {
+                    if (!user) {
+                        res.status(400).send({ message: 'User does not exist' });
+                    } else {
+                        res.status(200).send(user);
+                    }
+                })
+                .catch(err => {
+                    res.status(400).send({ message1: err });
+                });
+        }
+    }).catch(err => {
+        res.status(400).send({ message2: err });
+    })
+})
+
 //LIST
-router.get('/list', (req, res) => {
+router.get('/list', authorize(), (req, res) => {
     User.findAll({
             where: {
                 is_active: {
@@ -194,7 +212,7 @@ router.get('/list', (req, res) => {
 });
 
 //CHANGE_PASSWORD
-router.put('/change_password', (req, res) => {
+router.put('/change_password', authorize(), (req, res) => {
     const today = new Date()
     User.findOne({
         where: {
@@ -224,53 +242,77 @@ router.put('/change_password', (req, res) => {
 });
 
 //RESET PASSWORD
-router.put('/reset_password/:id', authorize('1'), (req, res) => {
+router.put('/reset_password/:id', authorize('admin'), (req, res) => {
     const today = new Date();
     const hash = bcrypt.hashSync('123456', 10)
-    User.update({
-        password: hash,
-        updated_at: today
-    }, {
+    User.findOne({
         where: {
             id: req.params.id
         }
-    }).then(() => {
-        res.status(200).send({ message: 'Reset password successfully' });
+    }).then(user => {
+        if (!user) {
+            res.status(400).send({ message: 'User does not exist' });
+        } else {
+            User.update({
+                password: hash,
+                updated_at: today
+            }, {
+                where: {
+                    id: req.params.id
+                }
+            }).then(() => {
+                res.status(200).send({ message: 'Reset password successfully' });
+            }).catch(err => {
+                res.status(400).send({ message1: err });
+            })
+        }
     }).catch(err => {
-        res.status(400).send({ message: err });
+        res.status(400).send({ message2: err });
     })
-})
+});
 
 //UPDATE USER INFORMATION
-router.put('/update/:id', authorize('1'), (req, res) => {
+router.put('/update/:id', authorize('admin'), (req, res) => {
     const today = new Date();
     //const id = req.params.id;
-    User.update({
-        id_role: req.body.id_role,
-        id_team: req.body.id_team,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        english_name: req.body.english_name,
-        is_active: req.body.is_active,
-        email: req.body.email,
-        phone: req.body.phone,
-        address: req.body.address,
-        other: req.body.other,
-        updated_at: today
-    }, {
+    User.findOne({
         where: {
             id: req.params.id
         }
-    }).then(() => {
-        res.status(200).send({ message: 'Updated successfully' });
+    }).then(user => {
+        if (!user) {
+            res.status(400).send({ message: 'User does not exist' });
+        } else {
+            User.update({
+                id_role: req.body.id_role,
+                id_team: req.body.id_team,
+                first_name: req.body.first_name,
+                last_name: req.body.last_name,
+                english_name: req.body.english_name,
+                is_active: req.body.is_active,
+                email: req.body.email,
+                phone: req.body.phone,
+                address: req.body.address,
+                other: req.body.other,
+                updated_at: today
+            }, {
+                where: {
+                    id: req.params.id
+                }
+            }).then(() => {
+                res.status(200).send({ message: 'Updated successfully' });
+            }).catch(err => {
+                res.status(400).send({ message1: err });
+            })
+        }
     }).catch(err => {
-        res.status(400).send({ message: err });
+        res.status(400).send({ message2: err });
     })
 })
 
 
 //UPDATE PERSONAL INFORMATION
-router.put('/update', (req, res) => {
+router.put('/update_profile', authorize(), (req, res) => {
     const today = new Date()
     User.update({
         phone: req.body.phone,
@@ -291,7 +333,7 @@ router.put('/update', (req, res) => {
 //UPLOAD AVATAR
 const storage = multer.diskStorage({
     destination: (res, file, cb) => {
-        cb(null, './uploads/')
+        cb(null, './uploads/avatar/')
     },
     filename: (req, file, cb) => {
         cb(null, req.decoded.username + '_' + new Date().toISOString() + '_' + file.originalname)
@@ -312,8 +354,8 @@ const upload = multer({
     fileFilter: fileFilter
 })
 
-router.post('/upload_avatar', upload.single('avatar'), (req, res, next) => {
-    console.log(req.file);
+router.post('/upload_avatar', authorize(), upload.single('avatar'), (req, res, next) => {
+    //console.log(req.file);
     if (req.file === undefined) {
         res.status(404).send({ message: 'Wrong type input' })
     } else {
@@ -348,20 +390,44 @@ router.post('/delete_user', (req, res) => {
     })
 })
 
-function authorize(id_role) {
-    return [
-        // authorize based on user role
-        (req, res, next) => {
-            if (!(id_role == req.decoded.id_role)) {
-                // user's role is not authorized
-                return res.status(401).json({ message: 'Unauthorized' });
-            }
-            // authentication and authorization successful
-            next();
-        }
-    ];
-}
+// router.post('/', (req, res) => {
+//     //To calculate Total Count use MySQL count function
+//     var query = "Select count(*) as TotalCount from ??";
+//     // Mention table from where you want to fetch records example-users
+//     var table = ["users"];
+//     query = mysql.format(query, table);
+//     connection.query(query, function(err, rows) {
+//         if (err) {
+//             return err;
+//         } else {
 
+//             //store Total count in variable
+//             let totalCount = rows[0].TotalCount
+
+//             if (req.body.start == '' || req.body.limit == '') {
+//                 let startNum = 0;
+//                 let LimitNum = 10;
+//             } else {
+//                 //parse int Convert String to number 
+//                 let startNum = parseInt(req.body.start);
+//                 let LimitNum = parseInt(req.body.limit);
+//             }
+//         }
+
+//         var query = "Select * from ?? ORDER BY created_at DESC limit ? OFFSET ?";
+//         //Mention table from where you want to fetch records example-users & send limit and start 
+//         var table = ["users", LimitNum, startNum];
+//         query = mysql.format(query, table);
+//         connection.query(query, function(err, rest) {
+//             if (err) {
+//                 res.json(err);
+//             } else {
+//                 // Total Count varibale display total Count in Db and data display the records
+//                 res.json({ "Total Count": totalCount, "data": rest })
+//             }
+//         });
+//     });
+// })
 
 // function verifyToken(req, res, next) {
 //     const bearerHeader = req.headers['authorization'];
@@ -374,4 +440,5 @@ function authorize(id_role) {
 //         res.sendStatus(403);
 //     }
 // }
+
 module.exports = router;

@@ -14,6 +14,9 @@ const Award = db.sequelize.define(
         year: {
             type: Sequelize.INTEGER
         },
+        status: {
+            type: Sequelize.TINYINT
+        },
         description: {
             type: Sequelize.STRING
         },
