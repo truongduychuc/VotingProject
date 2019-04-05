@@ -20,6 +20,7 @@ import { TabsComponent } from './tabs/tabs.component';
 import {CreateUserFormComponent} from './create-user-form/create-user-form.component';
 import { LoginFormComponent} from './login-form/login-form.component';
 import {AuthenticationGuard} from "./guards/authentication.guard";
+import {EmployeeListComponent} from "./employee-list/employee-list.component";
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -40,7 +41,8 @@ const routes: Routes = [
   { path: 'carousel', component: CarouselComponent },
   { path: 'tabs', component: TabsComponent },
   { path: 'create-user', component: CreateUserFormComponent},
-  { path: 'login', component: LoginFormComponent}
+  { path: 'login', component: LoginFormComponent},
+  { path: 'employee-list', component: EmployeeListComponent}
 ];
 
 @NgModule({

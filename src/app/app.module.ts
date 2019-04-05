@@ -31,6 +31,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { LoginFormComponent } from './login-form/login-form.component';
 import {AuthInterceptor} from "./_interceptors/auth.interceptor";
 import {ErrorInterceptor} from "./_interceptors/error.interceptor";
+import { EmployeeListComponent } from './employee-list/employee-list.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import {ErrorInterceptor} from "./_interceptors/error.interceptor";
     CarouselComponent,
     TabsComponent,
     CreateUserFormComponent,
-    LoginFormComponent
+    LoginFormComponent,
+    EmployeeListComponent
   ],
   imports: [
     BrowserModule,
