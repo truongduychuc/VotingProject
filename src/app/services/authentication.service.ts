@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
-// A lightweight JavaScript date library for parsing, validating, manipulating, and formatting dates.
 import * as moment from "moment";
 import * as jwt_decode from "jwt-decode";
 
@@ -23,8 +22,9 @@ export class AuthenticationService {
     it is included in payload of the token, but the token is decoded. => can't get.*/
     //
     const decodedToken = this.getDecodedAccessToken(authenticationResult.token);
-    console.log('Token: ' + decodedToken);
-    const expiresAt = moment().add(decodedToken.expiresIn,'second');
+    console.log('Token: ' + JSON.stringify(decodedToken));
+    console.log('Exp' + decodedToken.exp);
+    const expiresAt = moment().add(decodedToken.exp,'second');
     localStorage.setItem('username_token', authenticationResult.username);
     localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()) );
   }
@@ -33,6 +33,8 @@ export class AuthenticationService {
     localStorage.removeItem('expires_at');
   }
   isLoggedIn() {
+    let now = moment();
+    console.log('Now is '+ now);
     return moment().isBefore(this.getExpiration());
   }
   isLoggedOut() {

@@ -30,6 +30,10 @@ export class LoginFormComponent implements OnInit {
     const password = this.loginForm.controls['password'].value;
     this.authService.login(username, password).subscribe(res => {
     console.log(res);
+    this.authService.setSession(res);
+    console.log(this.authService.getExpiration());
+    console.log(this.authService.isLoggedIn());
+
     }, error1 => console.log(error1));
   }
 
