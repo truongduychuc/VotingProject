@@ -11,9 +11,9 @@
             <div class="col-sm-9">
               <input type="text" formControlName="username" class="form-control" placeholder="Enter username">
             <!--Input validation, note: touched - after user click on the input the first time  -->
-              <p class="text-small text-danger" *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].errors?.required">
+              <small class="text-small text-danger" *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].errors?.required">
                 Username is required
-              </p>
+              </small>
             </div>
           </div>
           <div class="form-group row">
@@ -23,10 +23,10 @@
               <p class="text-small text-danger" *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].errors?.required">
                 Password is required
               </p>
-              <p class="text-small text-danger text-left"
+              <small class="text-small text-danger text-left"
                  *ngIf="loginForm.controls['password'].errors?.minlength != null">
                 Password's minimum length is 8
-              </p>
+              </small>
             </div>
           </div>
           <div class="btn-container-center">

@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h3>Employee list</h3>
+        <div class="row">
+          <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+              <label>
+                Show
+                <select class="form-control-sm">
+                  <option [value]="option" *ngFor="let option of itemsPerPage">{{option}}</option>
+                </select>
+                 entries
+              </label>
+              </div>
+          </div>
+          <div class="col-md-6 col-sm-12">
+              <div class="form-group row float-right">
+                <div class="col-9">
+                  <input class="form-control" placeholder="Search employee...">
+                </div>
+              </div>
+          </div>
+        </div>
+
+<!--        table-->
+        <div class="row">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Team</th>
+                <th>Email adress</th>
+                <th>Action</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let employee of listOfAllEmployee">
+                <td>{{employee.first_name}} ({{employee.english_name}}) {{employee.last_name|uppercase}}</td>
+                <td>{{employee.position}}</td>
+                <td>{{employee.team}}</td>
+                <td>{{employee.email}}</td>
+                <td>Edit</td>
+              </tr>
+              </tbody>
+            </table>
+            <p>{{item}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

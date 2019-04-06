@@ -27,8 +27,11 @@ import { TooltipsComponent } from './tooltips/tooltips.component';
 import { CarouselComponent } from './carousel/carousel.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { CreateUserFormComponent } from './create-user-form/create-user-form.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { LoginFormComponent } from './login-form/login-form.component';
+import {AuthInterceptor} from "./_interceptors/auth.interceptor";
+import {ErrorInterceptor} from "./_interceptors/error.interceptor";
+import { EmployeeListComponent } from './employee-list/employee-list.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +56,8 @@ import { LoginFormComponent } from './login-form/login-form.component';
     CarouselComponent,
     TabsComponent,
     CreateUserFormComponent,
-    LoginFormComponent
+    LoginFormComponent,
+    EmployeeListComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +68,10 @@ import { LoginFormComponent } from './login-form/login-form.component';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

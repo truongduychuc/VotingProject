@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AccountService} from '../services/account.service';
-import {User} from '../models/user';
+import {AccountService} from '../_services/account.service';
+import {User} from '../_models/user';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-create-user-form',
@@ -10,10 +11,8 @@ import {User} from '../models/user';
 })
 export class CreateUserFormComponent implements OnInit {
   createUser: FormGroup;
-
-  constructor(private formBuilder: FormBuilder, private accountService: AccountService) {
+  constructor(private formBuilder: FormBuilder, private accountService: AccountService, private router: Router) {
   }
-
   ngOnInit() {
     // generate form by using FormBuilder
     this.generateForm();
@@ -39,7 +38,6 @@ export class CreateUserFormComponent implements OnInit {
     if (this.createUser.invalid) {
       return;
     }
-    console.log(this.createUser.value);
     // get value from inputs and create a new User object
   let newAccount = <User> {
       username: this.createUser.controls['username'].value,
@@ -51,7 +49,11 @@ export class CreateUserFormComponent implements OnInit {
       position: this.createUser.controls['position'].value
     };
   // using service send post method, and retrieve message and error
-    this.accountService.registerNewUser(newAccount).subscribe(data => console.log(data), error1 => console.log(error1));
+    this.accountService.registerNewUser(newAccount).subscribe(data => {
+      alert(data.message);
+      this.router.navigate(['login']);
+
+    }, error1 => console.log(error1));
   }
 
   // this function helps us to compare password
