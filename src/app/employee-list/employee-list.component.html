@@ -18,7 +18,7 @@
           <div class="col-md-6 col-sm-12">
               <div class="form-group row float-right">
                 <div class="col-9">
-                  <input [(ngModel)]="searchKeyWord" class="form-control" placeholder="Search..." mdbInput>
+                  <input type="text" [(ngModel)]="searchKeyWord" id="search" class="form-control" placeholder="Search..." mdbInput>
                 </div>
               </div>
           </div>
@@ -46,7 +46,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr *ngFor="let employee of listOfAllEmployee">
+              <tr *ngFor="let employee of listOfEmployees">
                 <td>{{employee.first_name}} ({{employee.english_name}}) {{employee.last_name|uppercase}}</td>
                 <td>{{employee.position}}</td>
                 <td>{{employee.team}}</td>
@@ -54,8 +54,14 @@
                 <td>Edit</td>
               </tr>
               </tbody>
+              <tfoot>
+                <tr>
+                  <mdb-table-pagination [searchDataSource]="listOfEmployees" searchPagination="true"
+                  paginationAlign="end">
+                  </mdb-table-pagination>
+                </tr>
+              </tfoot>
             </table>
-            <p>{{item}}</p>
           </div>
         </div>
       </div>
