@@ -22,4 +22,12 @@ export class AccountService {
       })
     });
   }
+  changePassword(current_password: string, new_password: string) {
+    let changePasswordObj = {
+      old_password: current_password,
+      new_password: new_password
+    }
+    console.log(changePasswordObj);
+    return this.httpClient.put(this.serverURL + '/users/change_password', changePasswordObj);
+  }
 }

@@ -5,5 +5,5 @@ export interface User {
   last_name: string;
   english_name: string;
   email: string;
-  position: string;
+  id_role: number;
 }
