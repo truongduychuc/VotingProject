@@ -50,7 +50,7 @@ router.post('/register', (req, res) => {
                 //Create user
                 User.create(userData)
                     .then(() => {
-                        res.status(200).send({ message: "Created user successfully" });
+                        res.status(200).send({ message: 'Created user successfully' });
                     })
                     .catch(err => {
                         res.status(400).send({ message: err });
@@ -97,7 +97,7 @@ router.post('/authenticate', (req, res) => {
                         };
                         res.json(body);
                     } else {
-                        res.status(403).send('Your account has been temporarily locked');
+                        res.status(403).send({message: 'Your account has been temporarily locked'});
                     }
                 } else {
                     res.status(404).send({ message: 'Username or password is not correct!', token: null });
@@ -229,12 +229,12 @@ router.put('/change_password', authorize(), (req, res) => {
                     id: req.decoded.id
                 }
             }).then(() => {
-                res.status(200).send("Updated successfully");
+                res.status(200).send({message: 'Updated successfully'});
             }).catch(err => {
                 res.status(400).send({ message: err });
             });
         } else {
-            res.status(400).send("Incorrect old password");
+            res.status(400).send({message: 'Incorrect old password'});
         }
     }).catch(err => {
         res.status(400).send({ message: err });
