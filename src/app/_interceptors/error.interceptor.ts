@@ -21,10 +21,11 @@ export class ErrorInterceptor implements HttpInterceptor{
         alert(err.error.message); //alert, for example: 'User or password is incorrect'
       }
       if(err.status === 403) {
-        alert(err.error);
+        alert(err.error.message);
       }
+      console.log(err);
       const error = err.error.message || err.statusText;
-      console.log('Interceptor: ' + error);
+      console.log('Interceptor: ' + error + error.status);
       return throwError(error);
     }));
  }
