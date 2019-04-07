@@ -220,7 +220,7 @@ router.put('/change_password', authorize(), (req, res) => {
         }
     }).then(user => {
         if (bcrypt.compareSync(req.body.old_password, user.password())) {
-            const hash = bcrypt.hash(req.body.new_password, 10);
+            const hash = bcrypt.hashSync(req.body.new_password, 10);
             User.update({
                 password: hash,
                 updated_at: today
