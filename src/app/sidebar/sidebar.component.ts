@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Router} from "@angular/router";
+import {AuthenticationService} from "../_services/authentication.service";
 
 @Component({
   selector: 'app-sidebar',
@@ -7,9 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidebarComponent implements OnInit {
   public samplePagesCollapsed = true;
-  constructor() { }
+
+  constructor(private router: Router, private authService: AuthenticationService) {
+
+  }
 
   ngOnInit() {
+  }
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['login']);
   }
 
 }
