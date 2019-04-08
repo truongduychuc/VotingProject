@@ -17,6 +17,7 @@ import {ErrorInterceptor} from "./_interceptors/error.interceptor";
 import {EmployeeListComponent} from './employee-list/employee-list.component';
 import {InputsModule, TableModule, IconsModule} from "angular-bootstrap-md";
 import { ChangePasswordFormComponent } from './change-password-form/change-password-form.component';
+import { DefaultComponent } from './default/default.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,6 +29,7 @@ import { ChangePasswordFormComponent } from './change-password-form/change-passw
     LoginFormComponent,
     EmployeeListComponent,
     ChangePasswordFormComponent,
+    DefaultComponent
   ],
   imports: [
     BrowserModule,
