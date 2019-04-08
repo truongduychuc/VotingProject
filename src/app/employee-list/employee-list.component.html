@@ -30,16 +30,16 @@
             <table mdbTable class="table table-striped">
               <thead>
               <tr>
-                <th scope="col" [mdbTableSort]="listOfAllEmployee" sortBy="last_name" (click)="onChangeDirection()">Name
+                <th scope="col" [mdbTableSort]="listOfEmployees" sortBy="last_name" (click)="onChangeDirection()">Name
                   <mdb-icon fas [icon]="CURRENT_SORT_ICON"></mdb-icon>
                 </th>
-                <th scope="col" [mdbTableSort]="listOfAllEmployee" sortBy="position">Position
+                <th scope="col" [mdbTableSort]="listOfEmployees" sortBy="position">Position
                   <mdb-icon fas [icon]="CURRENT_SORT_ICON"></mdb-icon>
                 </th>
-                <th scope="col" [mdbTableSort]="listOfAllEmployee" sortBy="team">Team
+                <th scope="col" [mdbTableSort]="listOfEmployees" sortBy="team">Team
                   <mdb-icon fas [icon]="CURRENT_SORT_ICON"></mdb-icon>
                 </th>
-                <th scope="col" [mdbTableSort]="listOfAllEmployee" sortBy="email">Email address
+                <th scope="col" [mdbTableSort]="listOfEmployees" sortBy="email">Email address
                   <mdb-icon fas [icon]="CURRENT_SORT_ICON"></mdb-icon>
                 </th>
                 <th>Action</th>
