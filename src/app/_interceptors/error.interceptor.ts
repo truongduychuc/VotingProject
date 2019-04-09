@@ -25,7 +25,6 @@ export class ErrorInterceptor implements HttpInterceptor{
     }),catchError((err:HttpErrorResponse) => {
       if(err.status === 401) {
         this.authService.logout();
-        location.reload(true);
       }
       if(err.status === 400) {
         alert(err.error.message);
@@ -38,7 +37,6 @@ export class ErrorInterceptor implements HttpInterceptor{
       }
       console.log(err);
       const error = err.error.message || err.statusText;
-      console.log('Interceptor: ' + error + error.status);
       return throwError(error);
     }));
  }
