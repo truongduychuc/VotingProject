@@ -46,7 +46,7 @@ export class CreateUserFormComponent implements OnInit {
       last_name: this.createUser.controls['lastName'].value,
       english_name: this.createUser.controls['englishName'].value,
       email: this.createUser.controls['email'].value,
-      position: this.createUser.controls['position'].value
+      id_role: parseInt(this.createUser.controls['position'].value)
     };
   // using service send post method, and retrieve message and error
     this.accountService.registerNewUser(newAccount).subscribe(data => {

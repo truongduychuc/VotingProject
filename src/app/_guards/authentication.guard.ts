@@ -13,7 +13,7 @@ export class AuthenticationGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     if(this.authService.isLoggedOut()) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['default']);
       return false;
     }
     return true;
