@@ -4,14 +4,14 @@
         <div class="nav-link">
           <div class="user-wrapper">
             <div class="profile-image">
-              <a routerLink="/change-password">
-                <img src="assets/images/faces/face1.jpg" alt="profile image">
+              <a>
+                <img [src]="currentUser.ava_url===null?'assets/images/faces/profile/default-avatar.png':currentUser.ava_url" alt="profile image">
               </a>
             </div>
             <div class="text-wrapper">
-              <p class="profile-name">Richard V.Welsh</p>
+              <p class="profile-name">{{currentUser.first_name}} ({{currentUser.english_name}}) {{currentUser.last_name|uppercase}}</p>
               <div>
-                <small class="designation text-muted">Manager</small>
+                <small class="designation text-muted">{{currentUser.id_role}}</small>
                 <span class="status-indicator online"></span>
               </div>
             </div>
