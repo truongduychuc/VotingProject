@@ -30,7 +30,7 @@ export class LoginFormComponent implements OnInit {
     const username = this.getControl.username.value;
     const password = this.getControl.password.value;
     this.authService.login(username, password).pipe(first()).subscribe(res => {
-      this.router.navigate(['dashboard']);
+      this.router.navigate(['/dashboard']);
     }, errorLogin => {
       console.log('Login form' + JSON.stringify(errorLogin));
     } );

@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {AccountService} from "../_services/account.service";
+import {AccountService} from "../../_services/account.service";
 import {MdbTablePaginationComponent, MdbTableService} from "angular-bootstrap-md";
 
 @Component({

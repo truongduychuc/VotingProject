@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from "@angular/router";
-import {AuthenticationService} from "../_services/authentication.service";
-import {AccountService} from "../_services/account.service";
+import {AuthenticationService} from "../../_services/authentication.service";
+import {AccountService} from "../../_services/account.service";
 import {map} from 'rxjs/operators';
-import {User} from "../_models/user";
+import {User} from "../../_models/user";
 
 @Component({
   selector: 'app-sidebar',
