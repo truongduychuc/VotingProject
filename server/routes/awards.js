@@ -183,11 +183,10 @@ router.get('/list', (req, res) => {
     Award.findAll({
             where: {
                 status: 0
-            }
-        }, {
+            },
             order: [
-                ['year', 'DESC']
-            ]
+                ['date_start', 'DESC']
+            ],
         })
         .then(awards => {
             if (awards.length === 0) {

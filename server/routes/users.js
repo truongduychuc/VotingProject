@@ -11,13 +11,14 @@ const authorize = require('../helpers/authorize');
 
 const User = require('../models/user');
 const Role = require('../models/role');
+const Team = require('../models/team');
 
 router.use(cors());
 
 process.env.SECRET_KEY = 'secret';
 
 User.belongsTo(Role, { foreignKey: 'id_role' });
-
+User.belongsTo(Team, { foreignKey: 'id_team' });
 
 //REGISTER
 router.post('/register', (req, res) => {
@@ -25,7 +26,7 @@ router.post('/register', (req, res) => {
 
     const userData = {
         id_role: req.body.id_role,
-        id_team: null,
+        id_team: req.body.id_team,
         is_active: 1,
         username: req.body.username,
         password: req.body.password,
@@ -69,7 +70,10 @@ router.post('/authenticate', (req, res) => {
     User.findOne({
             where: {
                 username: req.body.username
-            }
+            },
+            include: [{
+                model: Role
+            }]
         })
         .then(user => {
             if (!user) {
@@ -92,12 +96,12 @@ router.post('/authenticate', (req, res) => {
                             first_name: user.first_name,
                             last_name: user.last_name,
                             english_name: user.english_name,
-                            position: user.position,
+                            position: user.role.name,
                             token: token,
                         };
                         res.json(body);
                     } else {
-                        res.status(403).send({message: 'Your account has been temporarily locked'});
+                        res.status(403).send({ message: 'Your account has been temporarily locked' });
                     }
                 } else {
                     res.status(404).send({ message: 'Username or password is not correct!', token: null });
@@ -109,6 +113,36 @@ router.post('/authenticate', (req, res) => {
             res.status(400).send({ message: err });
         })
 });
+
+//ROLE
+router.get('/role', (req, res) => {
+    Role.findAll()
+        .then(roles => {
+            if (roles.length == 0) {
+                res.status(400).send({ message: 'There is no role' })
+            } else {
+                res.status(200).json(roles);
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ message: err });
+        })
+})
+
+//TEAM
+router.get('/team', (req, res) => {
+    Team.findAll()
+        .then(teams => {
+            if (teams.length == 0) {
+                res.status(400).send({ message: 'There is no team' })
+            } else {
+                res.status(200).json(teams);
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ message: err });
+        })
+})
 
 //STORAGE
 // router.use(authenticate);
@@ -138,7 +172,17 @@ router.get('/profile', authorize(), (req, res) => {
     User.findOne({
             where: {
                 id: req.decoded.id
-            }
+            },
+            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'other',
+                'ava_url'
+            ],
+            include: [{
+                model: Role,
+                //attributes: ['name']
+            }, {
+                model: Team,
+                //attributes: ['name']
+            }]
         })
         .then(user => {
             if (!user) {
@@ -186,30 +230,80 @@ router.get('/profile/:id', authorize(), (req, res) => {
 })
 
 //LIST
-router.get('/list', authorize(), (req, res) => {
-    User.findAll({
+router.get('/list', (req, res) => {
+    let limit = 10; //number of records per page
+    let page = 1;
+    let col = 'first_name';
+    let type = 'ASC';
+    if (req.query.count != null && req.query.page != null) {
+        limit = parseInt(req.query.count);
+        page = parseInt(req.query.page);
+    }
+    if (req.query.col != null && req.query.type != null) {
+        col = req.query.col;
+        type = req.query.type;
+    }
+    console.log(col);
+    console.log(req.query.col);
+    User.findAndCountAll({
             where: {
+                id_role: {
+                    [Op.gt]: [1]
+                },
                 is_active: {
                     [Op.gte]: [1]
                 }
-            },
-            attributes: ['id', 'id_team', 'first_name', 'last_name', 'english_name'],
-            include: [{
-                model: Role,
-                //attributes: ['name']
-            }]
-        })
-        .then(users => {
-            if (users.length == 0) {
-                res.status(400).send({ message: 'There is no user' })
-            } else {
-                res.status(200).json(users);
             }
+        })
+        .then(data => {
+            //let page = req.params.page; //page number
+            let pages = Math.ceil(data.count / limit);
+            offset = limit * (page - 1);
+            if (page > pages) {
+                offset = limit * (pages - 1);
+            }
+            User.findAll({
+                    where: {
+                        id_role: {
+                            [Op.gt]: [1]
+                        },
+                        is_active: {
+                            [Op.gte]: [1]
+                        }
+                    },
+                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                    include: [{
+                            model: Role,
+                            //attributes: ['name']  
+                        },
+                        {
+                            model: Team,
+                            //attributes: ['name']
+                        }
+                    ],
+                    order: [
+                        [col, type]
+                    ],
+                    limit: limit,
+                    offset: offset,
+                    //$sort: { id: 1 }
+                })
+                .then(users => {
+                    if (users.length == 0) {
+                        res.status(400).send({ message: 'There is no user' });
+                    } else {
+                        res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                    }
+                })
+                .catch(err => {
+                    res.status(400).send({ message1: err })
+                })
         })
         .catch(err => {
             res.status(400).send({ message: err });
-        });
-});
+        })
+})
+
 
 //CHANGE_PASSWORD
 router.put('/change_password', authorize(), (req, res) => {
@@ -219,22 +313,26 @@ router.put('/change_password', authorize(), (req, res) => {
             id: req.decoded.id
         }
     }).then(user => {
-        if (bcrypt.compareSync(req.body.old_password, user.password())) {
-            const hash = bcrypt.hashSync(req.body.new_password, 10);
-            User.update({
-                password: hash,
-                updated_at: today
-            }, {
-                where: {
-                    id: req.decoded.id
-                }
-            }).then(() => {
-                res.status(200).send({message: 'Updated successfully'});
-            }).catch(err => {
-                res.status(400).send({ message: err });
-            });
+        if (!user) {
+            res.status(400)({ message: 'User does not exist' });
         } else {
-            res.status(400).send({message: 'Incorrect old password'});
+            if (bcrypt.compareSync(req.body.old_password, user.password())) {
+                const hash = bcrypt.hashSync(req.body.new_password, 10);
+                User.update({
+                    password: hash,
+                    updated_at: today
+                }, {
+                    where: {
+                        id: req.decoded.id
+                    }
+                }).then(() => {
+                    res.status(200).send({ message: 'Updated successfully' });
+                }).catch(err => {
+                    res.status(400).send({ message: err });
+                });
+            } else {
+                res.status(400).send({ message: 'Incorrect old password' });
+            }
         }
     }).catch(err => {
         res.status(400).send({ message: err });
@@ -333,7 +431,7 @@ router.put('/update_profile', authorize(), (req, res) => {
 //UPLOAD AVATAR
 const storage = multer.diskStorage({
     destination: (res, file, cb) => {
-        cb(null, './uploads/avatar/')
+        cb(null, './uploads/avatars/')
     },
     filename: (req, file, cb) => {
         cb(null, req.decoded.username + '_' + new Date().toISOString() + '_' + file.originalname)
@@ -389,6 +487,7 @@ router.post('/delete_user', (req, res) => {
         }
     })
 })
+
 
 // router.post('/', (req, res) => {
 //     //To calculate Total Count use MySQL count function

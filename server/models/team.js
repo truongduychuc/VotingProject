@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 const db = require('../database/db');
 
-const Role = db.sequelize.define(
-    'role', {
+const Team = db.sequelize.define(
+    'team', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -15,10 +15,4 @@ const Role = db.sequelize.define(
     }
 );
 
-// Role.associate = (models) => {
-//     Role.hasMany(models.User, {
-//         foreignKey: 'position',
-//     });
-// }
-
-module.exports = Role;
+module.exports = Team;

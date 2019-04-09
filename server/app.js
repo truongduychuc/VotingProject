@@ -8,8 +8,8 @@ const userRoutes = require('./routes/users');
 const awardRoutes = require('./routes/awards')
 
 app.use(bodyParser.json());
-app.use('/users/uploads/avatars', express.static('uploads'))
-app.use('/users/uploads/logos', express.static('uploads'))
+app.use('/uploads/avatars', express.static('uploads/avatars'))
+app.use('/uploads/logos', express.static('uploads/logos'))
 app.use(cors());
 app.use(
     bodyParser.urlencoded({
