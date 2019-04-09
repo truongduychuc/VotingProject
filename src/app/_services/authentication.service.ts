@@ -18,7 +18,6 @@ export class AuthenticationService {
     return this.httpClient.post<any>(this.serverURL + '/users/authenticate',userTryingToLogin,).pipe(map(
       res => {
         this.setSession(res);
-        console.log(res.status);
         console.log('Authentication result: ' + JSON.stringify(res));
       }
     ));
