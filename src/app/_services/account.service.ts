@@ -31,11 +31,6 @@ export class AccountService {
     console.log(changePasswordObj);
     return this.httpClient.put(this.serverURL + '/users/change_password', changePasswordObj);
   }
-
-  getPersonalProfile() {
-    return this.httpClient.get(this.serverURL + '/users/profile');
-  }
-
   getAllRoles() {
     return this.httpClient.get(this.serverURL + '/users/role');
   }

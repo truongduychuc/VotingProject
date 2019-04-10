@@ -11,6 +11,7 @@ import {AccountService} from "./account.service";
 })
 export class AuthenticationService {
   serverURL = 'http://localhost:4000';
+  currentUser: User;
   constructor(private httpClient: HttpClient, private authService: AuthenticationService, private accountService: AccountService) { }
   login(username: string, password: string) {
     let userTryingToLogin = {
@@ -37,17 +38,20 @@ export class AuthenticationService {
     this.setCurrentUser();
   }
 
-  private setToken(token,expiresTime) {
+  private setToken(token, expiresTime) {
     // storage token to client
-    localStorage.setItem('token', token );
+    localStorage.setItem('token', token);
     localStorage.setItem('expires_at', JSON.stringify(expiresTime.valueOf()));
   }
+
+  // optional, using for something is relative with localStorage
   private setCurrentUser(): void {
     // get current user's profile from back-end
-    this.accountService.getPersonalProfile().subscribe(
+    this.getPersonalProfile().subscribe(
       (user:User) => {
         let currentUser:User = user;
         localStorage.setItem('currentUser', JSON.stringify(user));
+        this.currentUser = user;
         console.log(localStorage.getItem('currentUser'));
       },error1 => {
         console.log(error1);
@@ -57,6 +61,11 @@ export class AuthenticationService {
   getCurrentUser(): User {
     return JSON.parse(localStorage.getItem('currentUser'));
   }
+
+  getPersonalProfile() {
+    return this.httpClient.get(this.serverURL + '/users/profile');
+  }
+
   logout() {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
@@ -76,6 +85,8 @@ export class AuthenticationService {
     const expiresAt = JSON.parse(expiration);
     return moment(expiresAt);
   }
+
+  // for jwt decoding, this is optional
   private getDecodedAccessToken(token: string): any {
     try{
       return jwt_decode(token);
