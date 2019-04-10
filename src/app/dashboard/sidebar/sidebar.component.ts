@@ -3,6 +3,7 @@ import {Router} from "@angular/router";
 import {AuthenticationService} from "../../_services/authentication.service";
 import {AccountService} from "../../_services/account.service";
 import {User} from "../../_models/user";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-sidebar',
@@ -13,11 +14,17 @@ export class SidebarComponent implements OnInit {
   public samplePagesCollapsed = true;
   currentUser: User;
   constructor(private router: Router, private authService: AuthenticationService, private accountService: AccountService) {
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
 
   ngOnInit() {
     console.log('Inited!');
+    /*get personal profile asynchronously, because if you get it from localStorage or something is not observable,
+you need to reload the page to see currentUser's properties*/
+    this.authService.getPersonalProfile().subscribe((userProfile:User) => {
+      this.currentUser = userProfile;
+    }, (err: HttpErrorResponse) => {
+      console.log(err + ' status: ' +err.status);
+    })
   }
   logout() {
     this.authService.logout();

@@ -9,9 +9,9 @@
               </a>
             </div>
             <div class="text-wrapper">
-              <p class="profile-name">{{currentUser.first_name}} ({{currentUser.english_name}}) {{currentUser.last_name|uppercase}}</p>
+              <p class="profile-name">{{currentUser?.first_name}} ({{currentUser?.english_name}}) {{currentUser?.last_name|uppercase}}</p>
               <div>
-                <small class="designation text-muted">{{currentUser.position}}</small>
+                <small class="designation text-muted">{{currentUser?.position}}</small>
                 <span class="status-indicator online"></span>
               </div>
             </div>
