@@ -14,6 +14,9 @@ export class LoginFormComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router, private accountService: AccountService) { }
 
   ngOnInit() {
+    if(this.authService.isLoggedIn()) {
+      this.router.navigate(['dashboard']);
+    }
     this.generateForm();
   }
   // create form by using form builder

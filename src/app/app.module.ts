@@ -9,11 +9,13 @@ import {ErrorInterceptor} from "./_interceptors/error.interceptor";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {DefaultComponent} from "./default/default.component";
 import {LoginFormComponent} from "./default/login-form/login-form.component";
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 @NgModule({
   declarations: [
     AppComponent,
     DefaultComponent,
-    LoginFormComponent
+    LoginFormComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
