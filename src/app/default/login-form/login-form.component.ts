@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { AuthenticationService} from "../../_services/authentication.service";
-import { first } from 'rxjs/operators';
+import {first, tap} from 'rxjs/operators';
 import { Router } from "@angular/router";
+import {AccountService} from "../../_services/account.service";
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
@@ -10,7 +11,7 @@ import { Router } from "@angular/router";
 })
 export class LoginFormComponent implements OnInit {
   loginForm: FormGroup;
-  constructor(private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router) { }
+  constructor(private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router, private accountService: AccountService) { }
 
   ngOnInit() {
     this.generateForm();
@@ -29,8 +30,9 @@ export class LoginFormComponent implements OnInit {
     }
     const username = this.getControl.username.value;
     const password = this.getControl.password.value;
-    this.authService.login(username, password).pipe(first()).subscribe(res => {
-      this.router.navigate(['/dashboard']);
+    this.authService.login(username, password).subscribe(res => {
+      // get current user after set token
+        this.router.navigate(['dashboard']);
     }, errorLogin => {
       console.log('Login form' + JSON.stringify(errorLogin));
     } );

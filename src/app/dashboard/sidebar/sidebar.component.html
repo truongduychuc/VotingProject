@@ -5,13 +5,13 @@
           <div class="user-wrapper">
             <div class="profile-image">
               <a>
-                <img [src]="currentUser.ava_url===null?'assets/images/faces/profile/default-avatar.png':currentUser.ava_url" alt="profile image">
+                <img src="assets/images/faces/profile/default-avatar.png" alt="profile image">
               </a>
             </div>
             <div class="text-wrapper">
               <p class="profile-name">{{currentUser.first_name}} ({{currentUser.english_name}}) {{currentUser.last_name|uppercase}}</p>
               <div>
-                <small class="designation text-muted">{{currentUser.id_role}}</small>
+                <small class="designation text-muted">{{currentUser.position}}</small>
                 <span class="status-indicator online"></span>
               </div>
             </div>
@@ -29,13 +29,13 @@
         </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLinkActive="active">
+      <a class="nav-link" routerLink="data-tracking" routerLinkActive="active">
         <i class="menu-icon mdi mdi-desktop-mac"></i>
         <span class="menu-title">Dashboard</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+      <a class="nav-link" routerLinkActive="active">
         <i class="menu-icon mdi mdi-information-outline"></i>
         <span class="menu-title">Personal Information</span>
       </a>
@@ -47,13 +47,13 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLink="/employee-list" routerLinkActive="active">
+      <a class="nav-link" routerLink="employee-list" routerLinkActive="active">
         <i class="menu-icon mdi mdi-format-list-numbers"></i>
         <span class="menu-title">Employee list</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLink="/progressbar" routerLinkActive="active">
+      <a class="nav-link" routerLinkActive="active">
         <i class="menu-icon mdi mdi-trophy-outline"></i>
         <span class="menu-title">Awards</span>
       </a>

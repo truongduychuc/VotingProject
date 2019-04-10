@@ -32,7 +32,17 @@ export class AccountService {
     return this.httpClient.put(this.serverURL + '/users/change_password', changePasswordObj);
   }
 
-  getProfile() {
+  getPersonalProfile() {
     return this.httpClient.get(this.serverURL + '/users/profile');
+  }
+
+  getAllRoles() {
+    return this.httpClient.get(this.serverURL + '/users/role');
+  }
+  getOtherProfile(id:number) {
+
+  }
+  getEmployeeList() {
+
   }
 }
