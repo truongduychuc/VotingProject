@@ -17,8 +17,10 @@ router.use(cors());
 
 process.env.SECRET_KEY = 'secret';
 
-User.belongsTo(Role, { foreignKey: 'id_role' });
-User.belongsTo(Team, { foreignKey: 'id_team' });
+Role.hasMany(User, { foreignKey: 'id_role', constraints: false });
+User.belongsTo(Role, { foreignKey: 'id_role', constraints: false });
+Team.hasMany(User, { foreignKey: 'id_team', constraints: false });
+User.belongsTo(Team, { foreignKey: 'id_team', constraints: false });
 
 //REGISTER
 router.post('/register', (req, res) => {
@@ -84,15 +86,15 @@ router.post('/authenticate', (req, res) => {
                         const payload = {
                             id: user.id,
                             id_role: user.id_role,
-                            username: user.username,
-                            email: user.email
+                            // username: user.username,
+                            // email: user.email
                         }
                         let token = jwt.sign(payload, process.env.SECRET_KEY, {
                             expiresIn: 86400
                         });
                         const body = {
-                            id: user.id,
-                            username: user.username,
+                            //id: user.id,
+                            //username: user.username,
                             first_name: user.first_name,
                             last_name: user.last_name,
                             english_name: user.english_name,
@@ -235,6 +237,7 @@ router.get('/list', (req, res) => {
     let page = 1;
     let col = 'first_name';
     let type = 'ASC';
+    let table = 'user';
     if (req.query.count != null && req.query.page != null) {
         limit = parseInt(req.query.count);
         page = parseInt(req.query.page);
@@ -243,8 +246,16 @@ router.get('/list', (req, res) => {
         col = req.query.col;
         type = req.query.type;
     }
-    console.log(col);
-    console.log(req.query.col);
+
+    //Search
+    let search = req.query.search;
+    console.log(search);
+    console.log(search == '');
+
+    // Make lowercase
+    // search = search.toLowerCase();
+
+
     User.findAndCountAll({
             where: {
                 id_role: {
@@ -262,48 +273,201 @@ router.get('/list', (req, res) => {
             if (page > pages) {
                 offset = limit * (pages - 1);
             }
-            User.findAll({
-                    where: {
-                        id_role: {
-                            [Op.gt]: [1]
+            if (table == 'user') {
+                if (search == '') {}
+                User.findAll({
+                        where: {
+                            id_role: {
+                                [Op.gt]: [1]
+                            },
+                            is_active: {
+                                [Op.gte]: [1]
+                            }
                         },
-                        is_active: {
-                            [Op.gte]: [1]
+                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                        include: [{
+                                model: Role,
+                                //attributes: ['name']  
+                            },
+                            {
+                                model: Team,
+                                //attributes: ['name']
+                            }
+                        ],
+                        order: [
+                            [col, type]
+                        ],
+                        limit: limit,
+                        offset: offset,
+                        //$sort: { id: 1 }
+                    })
+                    .then(users => {
+                        if (users.length == 0) {
+                            res.status(400).send({ message: 'There is no user' });
+                        } else {
+                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
                         }
-                    },
-                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                    include: [{
-                            model: Role,
-                            //attributes: ['name']  
+                    })
+                    .catch(err => {
+                        res.status(400).send({ message1: err })
+                    })
+            } else {
+                User.findAll({
+                        where: {
+                            id_role: {
+                                [Op.gt]: [1]
+                            },
+                            is_active: {
+                                [Op.gte]: [1]
+                            }
                         },
-                        {
-                            model: Team,
-                            //attributes: ['name']
+                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                        include: [{
+                                model: Role,
+                                //attributes: ['name']  
+                            },
+                            {
+                                model: Team,
+                                //attributes: ['name']
+                            }
+                        ],
+                        order: [
+                            [table, col, type]
+                        ],
+                        limit: limit,
+                        offset: offset,
+                        //$sort: { id: 1 }
+                    })
+                    .then(users => {
+                        if (users.length == 0) {
+                            res.status(400).send({ message: 'There is no user' });
+                        } else {
+                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
                         }
-                    ],
-                    order: [
-                        [col, type]
-                    ],
-                    limit: limit,
-                    offset: offset,
-                    //$sort: { id: 1 }
-                })
-                .then(users => {
-                    if (users.length == 0) {
-                        res.status(400).send({ message: 'There is no user' });
-                    } else {
-                        res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                    }
-                })
-                .catch(err => {
-                    res.status(400).send({ message1: err })
-                })
+                    })
+                    .catch(err => {
+                        res.status(400).send({ message1: err })
+                    })
+            }
         })
         .catch(err => {
             res.status(400).send({ message: err });
         })
 })
 
+//LIST (admin role)
+router.get('/list/admin', authorize('admin'), (req, res) => {
+    let limit = 10; //number of records per page
+    let page = 1;
+    let col = 'first_name';
+    let type = 'ASC';
+    let table = 'user';
+    if (req.query.count != null && req.query.page != null) {
+        limit = parseInt(req.query.count);
+        page = parseInt(req.query.page);
+    }
+    if (req.query.col != null && req.query.type != null) {
+        col = req.query.col;
+        type = req.query.type;
+    }
+    User.findAndCountAll({
+            // where: {
+            //     id_role: {
+            //         [Op.gt]: [1]
+            //     },
+            //     is_active: {
+            //         [Op.gte]: [1]
+            //     }
+            // }
+        })
+        .then(data => {
+            //let page = req.params.page; //page number
+            let pages = Math.ceil(data.count / limit);
+            offset = limit * (page - 1);
+            if (page > pages) {
+                offset = limit * (pages - 1);
+            }
+            if (table == 'user') {
+                User.findAll({
+                        // where: {
+                        //     id_role: {
+                        //         [Op.gt]: [1]
+                        //     },
+                        //     is_active: {
+                        //         [Op.gte]: [1]
+                        //     }
+                        // },
+                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                        include: [{
+                                model: Role,
+                                //attributes: ['name']  
+                            },
+                            {
+                                model: Team,
+                                //attributes: ['name']
+                            }
+                        ],
+                        order: [
+                            [col, type]
+                        ],
+                        limit: limit,
+                        offset: offset,
+                        //$sort: { id: 1 }
+                    })
+                    .then(users => {
+                        if (users.length == 0) {
+                            res.status(400).send({ message: 'There is no user' });
+                        } else {
+                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                        }
+                    })
+                    .catch(err => {
+                        res.status(400).send({ message1: err })
+                    })
+            } else {
+                User.findAll({
+                        // where: {
+                        //     id_role: {
+                        //         [Op.gt]: [1]
+                        //     },
+                        //     is_active: {
+                        //         [Op.gte]: [1]
+                        //     }
+                        // },
+                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                        include: [{
+                                model: Role,
+                                //attributes: ['name']  
+                            },
+                            {
+                                model: Team,
+                                //attributes: ['name']
+                            }
+                        ],
+                        order: [
+                            [table, col, type]
+                        ],
+                        limit: limit,
+                        offset: offset,
+                        //$sort: { id: 1 }
+                    })
+                    .then(users => {
+                        if (users.length == 0) {
+                            res.status(400).send({ message: 'There is no user' });
+                        } else {
+                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                        }
+                    })
+                    .catch(err => {
+                        res.status(400).send({ message1: err })
+                    })
+            }
+
+        })
+        .catch(err => {
+            res.status(400).send({ message: err });
+        })
+})
 
 //CHANGE_PASSWORD
 router.put('/change_password', authorize(), (req, res) => {
@@ -438,6 +602,7 @@ const storage = multer.diskStorage({
     }
 })
 const fileFilter = (req, file, cb) => {
+    //validate image type
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
         cb(null, true)
     } else {
@@ -473,11 +638,10 @@ router.post('/upload_avatar', authorize(), upload.single('avatar'), (req, res, n
 })
 
 //DELETE
-
-router.post('/delete_user', (req, res) => {
+router.post('/delete/:id', (req, res) => {
     User.destroy({
         where: {
-            id: req.body.id
+            id: req.params.id
         }
     }).then(user => {
         if (!user) {

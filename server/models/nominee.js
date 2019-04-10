@@ -12,6 +12,9 @@ const Nominee = db.sequelize.define(
         },
         id_nominee: {
             type: Sequelize.INTEGER
+        },
+        updated_at: {
+            type: Sequelize.DATE
         }
     }, {
         timestamps: false

@@ -60,12 +60,6 @@ const User = db.sequelize.define(
             defaultValue: Sequelize.NOW
         },
     }, {
-        // instanceMethods: {
-        //     toJson: function() {
-        //         delete this.dataValues.password;
-        //         return JSON.stringify(this.dataValues);
-        //     }
-        // },
         timestamps: false,
     }
 );
