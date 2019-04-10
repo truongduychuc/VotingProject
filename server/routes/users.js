@@ -237,16 +237,20 @@ router.get('/list', (req, res) => {
     let page = 1;
     let col = 'first_name';
     let type = 'ASC';
-    let table = 'user';
-    if (req.query.count != null && req.query.page != null) {
+    let table = req.query.table;
+    if (req.query.count != null) {
         limit = parseInt(req.query.count);
+    }
+    if (req.query.page != null) {
         page = parseInt(req.query.page);
     }
     if (req.query.col != null && req.query.type != null) {
         col = req.query.col;
         type = req.query.type;
     }
-
+    if (table == null) {
+        table = 'user';
+    }
     //Search
     let search = req.query.search;
     console.log(search);
@@ -255,104 +259,269 @@ router.get('/list', (req, res) => {
     // Make lowercase
     // search = search.toLowerCase();
 
-
-    User.findAndCountAll({
-            where: {
-                id_role: {
-                    [Op.gt]: [1]
-                },
-                is_active: {
-                    [Op.gte]: [1]
+    //Check search box
+    if (search == '') {
+        //Count total entries
+        User.findAndCountAll({
+                where: {
+                    id_role: {
+                        [Op.gt]: [1]
+                    },
+                    is_active: {
+                        [Op.gte]: [1]
+                    }
                 }
-            }
-        })
-        .then(data => {
-            //let page = req.params.page; //page number
-            let pages = Math.ceil(data.count / limit);
-            offset = limit * (page - 1);
-            if (page > pages) {
-                offset = limit * (pages - 1);
-            }
-            if (table == 'user') {
-                if (search == '') {}
-                User.findAll({
+            })
+            .then(data => {
+                //let page = req.params.page; //page number
+                let pages = Math.ceil(data.count / limit);
+                offset = limit * (page - 1);
+                //Check if page number input is greater than real total pages
+                if (page > pages) {
+                    offset = limit * (pages - 1);
+                }
+                if (table == 'user') {
+                    console.log(111111);
+                    User.findAll({
+                            where: {
+                                id_role: {
+                                    [Op.gt]: [1]
+                                },
+                                is_active: {
+                                    [Op.gte]: [1]
+                                }
+                            },
+                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                            include: [{
+                                    model: Role,
+                                    //attributes: ['name']  
+                                },
+                                {
+                                    model: Team,
+                                    //attributes: ['name']
+                                }
+                            ],
+                            order: [
+                                [col, type]
+                            ],
+                            limit: limit,
+                            offset: offset,
+                            //$sort: { id: 1 }
+                        })
+                        .then(users => {
+                            if (users.length == 0) {
+                                res.status(400).send({ message: 'There is no user' });
+                            } else {
+                                res.status(200).json({ 'result': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                            }
+                        })
+                        .catch(err => {
+                            res.status(400).send({ message1: err })
+                        })
+                } else {
+                    User.findAll({
+                            where: {
+                                id_role: {
+                                    [Op.gt]: [1]
+                                },
+                                is_active: {
+                                    [Op.gte]: [1]
+                                }
+                            },
+                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                            include: [{
+                                    model: Role,
+                                    //attributes: ['name']  
+                                },
+                                {
+                                    model: Team,
+                                    //attributes: ['name']
+                                }
+                            ],
+                            order: [
+                                [table, col, type]
+                            ],
+                            limit: limit,
+                            offset: offset,
+                            //$sort: { id: 1 }
+                        })
+                        .then(users => {
+                            if (users.length == 0) {
+                                res.status(400).send({ message: 'There is no user' });
+                            } else {
+                                res.status(200).json({ 'result': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                            }
+                        })
+                        .catch(err => {
+                            res.status(400).send({ message1: err })
+                        })
+                }
+            })
+            .catch(err => {
+                res.status(400).send({ message: err });
+            })
+    } else {
+        User.findAndCountAll({
+                where: {
+                    id_role: {
+                        [Op.gt]: [1]
+                    },
+                    is_active: {
+                        [Op.gte]: [1]
+                    }
+                }
+            })
+            .then(data => {
+                // let totalCount = data.count;
+                User.findAndCountAll({
                         where: {
                             id_role: {
                                 [Op.gt]: [1]
                             },
                             is_active: {
                                 [Op.gte]: [1]
-                            }
-                        },
-                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                        include: [{
-                                model: Role,
-                                //attributes: ['name']  
                             },
-                            {
-                                model: Team,
-                                //attributes: ['name']
-                            }
-                        ],
-                        order: [
-                            [col, type]
-                        ],
-                        limit: limit,
-                        offset: offset,
-                        //$sort: { id: 1 }
+                            [Op.or]: [{
+                                    first_name: {
+                                        [Op.like]: '%' + search + '%'
+                                    }
+                                },
+                                {
+                                    english_name: {
+                                        [Op.like]: '%' + search + '%'
+                                    }
+                                },
+                                {
+                                    email: {
+                                        [Op.like]: '%' + search + '%'
+                                    }
+                                }
+                            ]
+                        }
                     })
-                    .then(users => {
-                        if (users.length == 0) {
-                            res.status(400).send({ message: 'There is no user' });
+                    .then(data1 => {
+                        //let page = req.params.page; //page number
+                        let pages = Math.ceil(data1.count / limit);
+                        offset = limit * (page - 1);
+                        if (page > pages) {
+                            offset = limit * (pages - 1);
+                        }
+                        if (table == 'user') {
+                            User.findAll({
+                                    where: {
+                                        id_role: {
+                                            [Op.gt]: [1]
+                                        },
+                                        is_active: {
+                                            [Op.gte]: [1]
+                                        },
+                                        [Op.or]: [{
+                                                first_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                english_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                email: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                    include: [{
+                                            model: Role,
+                                            //attributes: ['name']  
+                                        },
+                                        {
+                                            model: Team,
+                                            //attributes: ['name']
+                                        }
+                                    ],
+                                    order: [
+                                        [col, type]
+                                    ],
+                                    limit: limit,
+                                    offset: offset,
+                                    //$sort: { id: 1 }
+                                })
+                                .then(users => {
+                                    if (users.length == 0) {
+                                        res.status(400).send({ message: 'There is no user' });
+                                    } else {
+                                        res.status(200).json({ 'result': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                    }
+                                })
+                                .catch(err => {
+                                    res.status(400).send({ message1: err })
+                                })
                         } else {
-                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                            User.findAll({
+                                    where: {
+                                        id_role: {
+                                            [Op.gt]: [1]
+                                        },
+                                        is_active: {
+                                            [Op.gte]: [1]
+                                        },
+                                        [Op.or]: [{
+                                                first_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                english_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                email: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                    include: [{
+                                            model: Role,
+                                            //attributes: ['name']  
+                                        },
+                                        {
+                                            model: Team,
+                                            //attributes: ['name']
+                                        }
+                                    ],
+                                    order: [
+                                        [table, col, type]
+                                    ],
+                                    limit: limit,
+                                    offset: offset,
+                                    //$sort: { id: 1 }
+                                })
+                                .then(users => {
+                                    if (users.length == 0) {
+                                        res.status(400).send({ message: 'There is no user' });
+                                    } else {
+                                        res.status(200).json({ 'result': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                    }
+                                })
+                                .catch(err => {
+                                    res.status(400).send({ message1: err })
+                                })
                         }
                     })
                     .catch(err => {
-                        res.status(400).send({ message1: err })
+                        res.status(400).send({ message1: err });
                     })
-            } else {
-                User.findAll({
-                        where: {
-                            id_role: {
-                                [Op.gt]: [1]
-                            },
-                            is_active: {
-                                [Op.gte]: [1]
-                            }
-                        },
-                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                        include: [{
-                                model: Role,
-                                //attributes: ['name']  
-                            },
-                            {
-                                model: Team,
-                                //attributes: ['name']
-                            }
-                        ],
-                        order: [
-                            [table, col, type]
-                        ],
-                        limit: limit,
-                        offset: offset,
-                        //$sort: { id: 1 }
-                    })
-                    .then(users => {
-                        if (users.length == 0) {
-                            res.status(400).send({ message: 'There is no user' });
-                        } else {
-                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                        }
-                    })
-                    .catch(err => {
-                        res.status(400).send({ message1: err })
-                    })
-            }
-        })
-        .catch(err => {
-            res.status(400).send({ message: err });
-        })
+            })
+            .catch(err => {
+                res.status(400).send({ message: err });
+            })
+    }
 })
 
 //LIST (admin role)
