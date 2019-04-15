@@ -5,25 +5,24 @@
           <div class="user-wrapper">
             <div class="profile-image">
               <a>
-                <img src="assets/images/faces/profile/default-avatar.png" alt="profile image">
+                <img src="assets/images/faces/profile/default-avatar.png" title="Click to change avatar" alt="profile image">
               </a>
             </div>
             <div class="text-wrapper">
-              <p class="profile-name">{{currentUser?.first_name}} ({{currentUser?.english_name}}) {{currentUser?.last_name|uppercase}}</p>
+              <div class="row">
+                <p class="profile-name">{{currentUser?.first_name}} ({{currentUser?.english_name}}) {{currentUser?.last_name|uppercase}}</p>
+                <div ngbDropdown class="d-inline-block">
+                  <button id="dropDownOptions" ngbDropdownToggle></button>
+                  <div ngbDropdownMenu aria-labelledby="dropDownOptions">
+                    <button routerLink="/change-password" ngbDropdownItem>Change password</button>
+                    <button (click)="logout()" ngbDropdownItem>Log out</button>
+                  </div>
+                </div>
+              </div>
               <div>
-                <small class="designation text-muted">{{currentUser?.position}}</small>
+                <small class="designation text-muted">{{currentUser?.role.name}}</small>
                 <span class="status-indicator online"></span>
               </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-12">
-              <button class="btn btn-inverse-info btn-block"routerLink="change-password">Change password</button>
-            </div>
-            <div class="col-12">
-              <button (click)="logout()" class="btn btn-inverse-danger btn-block mt-2">Log out
-                <i class="fas fa-sign-out-alt"></i>
-              </button>
             </div>
           </div>
         </div>
@@ -35,13 +34,13 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLinkActive="active">
+      <a class="nav-link" routerLink="personal-info" routerLinkActive="active">
         <i class="menu-icon mdi mdi-information-outline"></i>
         <span class="menu-title">Personal Information</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link">
+      <a class="nav-link" routerLink="vote" routerLinkActive="active">
         <i class="menu-icon mdi mdi-checkbox-marked-outline" routerLinkActive="active"></i>
         <span class="menu-title">Voting</span>
       </a>

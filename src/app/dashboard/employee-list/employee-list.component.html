@@ -1,14 +1,18 @@
 
 <div class="card">
       <div class="card-body">
-        <h3>Employee list</h3>
+        <div class="row">
+          <div class="col-12">
+            <h3>Employee list</h3>
+          </div>
+        </div>
         <div class="row">
           <div class="col-md-6 col-sm-12">
               <div class="form-group row">
-              <label>
+              <label class="col-form-label">
                 Show
-                <select class="form-control-sm" [(ngModel)]="pageSize">
-                  <option [selected]="index ===1?true:false" [ngValue]="itemsPerPage" *ngFor="let itemsPerPage of itemsPerPageArr; let index">{{itemsPerPage}}</option>
+                <select class="form-control-sm" (change)="onChangeItemsPerPage()" [(ngModel)]="currentPageSize">
+                  <option *ngFor="let itemsPerPage of itemsPerPageArr" [value]="itemsPerPage" >{{itemsPerPage}}</option>
                 </select>
                  entries
               </label>
@@ -16,45 +20,52 @@
           </div>
           <div class="col-md-6 col-sm-12">
               <div class="form-group row float-right">
-                <div class="col-9">
-                  <input type="text" id="search" class="form-control" placeholder="Search...">
-                </div>
+                  <input type="text" id="search" class="form-control" (keyup)="searchOnText()" [(ngModel)]="currentSearchText" placeholder="Search...">
               </div>
           </div>
         </div>
 
 <!--        table-->
         <div class="row">
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead style="background-color: mediumpurple; color: #ffffff;">
-              <tr>
-                <th scope="col">Name
-                </th>
-                <th scope="col">Position
-                </th>
-                <th scope="col">Team
-                </th>
-                <th scope="col">Email address
-                </th>
-                <th>Action</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let employee of listOfEmployees">
-                <td>{{employee.first_name}} ({{employee.english_name}}) {{employee.last_name|uppercase}}</td>
-                <td>{{employee.position}}</td>
-                <td>{{employee.team}}</td>
-                <td>{{employee.email}}</td>
-                <td>Edit</td>
-              </tr>
-              </tbody>
-            </table>
+          <div class="col-12">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead style="background-color: mediumpurple; color: #ffffff;">
+                <tr>
+                  <th scope="col">Name
+                  </th>
+                  <th scope="col">Position
+                  </th>
+                  <th class="text-center" align="center" scope="col">Team
+                  </th>
+                  <th scope="col">Email address
+                  </th>
+                  <th align="center" scope="col">English name
+                  </th>
+                  <th class="text-center" align="center" scope="col">Tool</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user of usersList">
+                  <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
+                  <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
+                  <td>{{user.role?.name}}</td>
+                  <td align="center">{{user.team?.name}}</td>
+                  <td>{{user.email}}</td>
+                  <td align="center">{{user.english_name}}</td>
+                  <td align="center">
+                    <button class="btn btn-info btn-sm shadow">Edit</button>
+                    <button class="btn btn-danger btn-sm shadow ml-2" (click)="deleteUser(user.id)">Delete</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
         <!--Pagination -->
-        <div class="row d-flex justify-content-md-end pagination-container">
-            <ngb-pagination size="sm" collectionSize="200" [pageSize]="pageSize" [(page)]="page" maxSize="5" [rotate]="true" [ellipses]="false" [boundaryLinks]="true">
+        <div *ngIf="totalRecords > currentPageSize" class="row d-flex justify-content-md-end pagination-container">
+            <ngb-pagination size="sm" (pageChange)="pageChange($event)" [collectionSize]="currentRecords" [pageSize]="currentPageSize" [(page)]="currentPage" maxSize="5" [rotate]="true" [ellipses]="false" [boundaryLinks]="true">
               <ng-template ngbPaginationPrevious>Prev</ng-template>
               <ng-template ngbPaginationNext>Next</ng-template>
               <ng-template ngbPaginationFirst>First</ng-template>

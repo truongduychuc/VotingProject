@@ -13,6 +13,8 @@ import {DashboardRoutingModule} from "./dashboard-routing.module";
 import {RouterModule} from "@angular/router";
 import {DashboardComponent} from "./dashboard.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {PersonalInformationComponent } from './personal-information/personal-information.component';
+import { VotingComponent } from './voting/voting.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     SidebarComponent,
     FooterComponent,
     DataTrackingComponent,
-    DashboardComponent
+    DashboardComponent,
+    PersonalInformationComponent,
+    VotingComponent
   ],
   imports: [
     CommonModule,

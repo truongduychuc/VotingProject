@@ -8,6 +8,11 @@
 .pagination-container {
   overflow-x: auto;
 }
-thead {
-  background-color: $blue-teal-gradient;;
+table{
+  thead {
+    background-color: $blue-teal-gradient;;
+  }
+  .btn {
+    border: none;
+  }
 }

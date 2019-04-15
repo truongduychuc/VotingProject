@@ -1,8 +1,13 @@
+import {Team} from "./team";
+import {Role} from "./role";
+
 export interface User {
   id?: number;
   id_role?: number;
-  position?: string;
+  id_team?: number;
   is_active?: number;
+  role?: Role;
+  team?: Team;
   username: string;
   password?: string;
   first_name: string;

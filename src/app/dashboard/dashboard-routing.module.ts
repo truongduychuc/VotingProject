@@ -6,6 +6,8 @@ import {RouterModule, Routes} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {DataTrackingComponent} from "./data-tracking/data-tracking.component";
 import {DashboardComponent} from "./dashboard.component";
+import {PersonalInformationComponent} from "./personal-information/personal-information.component";
+import {VotingComponent} from "./voting/voting.component";
 
 const dashboardRoutes: Routes = [
   { path: '', component: DashboardComponent, children: [
@@ -13,7 +15,9 @@ const dashboardRoutes: Routes = [
       {path: 'data-tracking', component: DataTrackingComponent},
       {path: 'employee-list', component: EmployeeListComponent},
       {path: 'create-user', component: CreateUserFormComponent},
-      {path: 'change-password', component: ChangePasswordFormComponent}
+      {path: 'change-password', component: ChangePasswordFormComponent},
+      {path: 'vote', component: VotingComponent},
+      {path: 'personal-info', component: PersonalInformationComponent}
     ]}
 ];
 @NgModule({

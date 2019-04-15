@@ -28,9 +28,6 @@ export class LoginFormComponent implements OnInit {
   }
 
   loginWithUserAndPass() {
-    if(this.loginForm.invalid) {
-      return;
-    }
     const username = this.getControl.username.value;
     const password = this.getControl.password.value;
     this.authService.login(username, password).subscribe(res => {

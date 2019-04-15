@@ -51,7 +51,7 @@ export class CreateUserFormComponent implements OnInit {
   // using service send post method, and retrieve message and error
     this.accountService.registerNewUser(newAccount).subscribe(data => {
       alert(data.message);
-      this.router.navigate(['login']);
+      this.router.navigate(['start-page']);
 
     }, error1 => console.log(error1));
   }

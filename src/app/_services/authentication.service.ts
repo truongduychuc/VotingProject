@@ -6,6 +6,7 @@ import * as jwt_decode from "jwt-decode";
 import {map} from 'rxjs/operators';
 import {User} from "../_models/user";
 import {AccountService} from "./account.service";
+import {Observable} from "rxjs";
 @Injectable({
   providedIn: 'root'
 })
@@ -62,8 +63,8 @@ export class AuthenticationService {
     return JSON.parse(localStorage.getItem('currentUser'));
   }
 
-  getPersonalProfile() {
-    return this.httpClient.get(this.serverURL + '/users/profile');
+  getPersonalProfile(): Observable<User> {
+    return this.httpClient.get<User>(this.serverURL + '/users/profile');
   }
 
   logout() {
