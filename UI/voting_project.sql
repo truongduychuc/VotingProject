@@ -187,7 +187,7 @@ CREATE TABLE `users` (
   KEY `fk_users_1_idx` (`id_role`),
   CONSTRAINT `fk_user_1` FOREIGN KEY (`id_team`) REFERENCES `teams` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_1` FOREIGN KEY (`id_role`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,7 +262,7 @@ CREATE TABLE `votingBreakdowns` (
 
 LOCK TABLES `votingBreakdowns` WRITE;
 /*!40000 ALTER TABLE `votingBreakdowns` DISABLE KEYS */;
-INSERT INTO `votingBreakdowns` VALUES (30,1,6,6,6,6,30,72);
+INSERT INTO `votingBreakdowns` VALUES (30,1,6,6,6,6,30,72),(30,2,8,5,5,5,20.2,45),(30,3,10,4,4,4,15.8,36);
 /*!40000 ALTER TABLE `votingBreakdowns` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -275,4 +275,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-04-10 17:31:38
+-- Dump completed on 2019-04-15 16:52:05
