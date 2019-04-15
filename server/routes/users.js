@@ -237,176 +237,95 @@ router.get('/list', (req, res) => {
     let page = 1;
     let col = 'first_name';
     let type = 'ASC';
-    let table = req.query.table;
-    if (req.query.count != null) {
+    let table = 'user';
+    if (req.query.count != null && req.query.count != '') {
         limit = parseInt(req.query.count);
     }
-    if (req.query.page != null) {
+    if (req.query.page != null && req.query.page != '') {
         page = parseInt(req.query.page);
     }
-    if (req.query.col != null && req.query.type != null) {
+    if ((req.query.col != null && req.query.type != null) && (req.query.type != '' && req.query.col != '')) {
         col = req.query.col;
         type = req.query.type;
     }
-    if (table == null) {
-        table = 'user';
+    if (req.query.table != null && req.query.table != '') {
+        table = req.query.table;
     }
+
     //Search
     let search = req.query.search;
-    console.log(search);
-    console.log(search == '');
 
     // Make lowercase
     // search = search.toLowerCase();
 
-    //Check search box
-    if (search == '') {
-        //Count total entries
-        User.findAndCountAll({
-                where: {
-                    id_role: {
-                        [Op.gt]: [1]
-                    },
-                    is_active: {
-                        [Op.gte]: [1]
+    //Count total entries
+    User.findAndCountAll({
+            where: {
+                id_role: {
+                    [Op.gt]: [1]
+                },
+                is_active: {
+                    [Op.gte]: [1]
+                }
+            }
+        })
+        .then(data => {
+            if (data.count == 0) {
+                res.status(400).send({ message: 'There is no user', total_counts: data.count })
+            }
+            // data.count != 0 
+            else {
+                //Check search box
+                if ((search == '') || (search == null)) {
+                    // if (search == '') {
+                    let pages = Math.ceil(data.count / limit);
+                    offset = limit * (page - 1);
+                    //Check if page number input is greater than real total pages
+                    if (page > pages) {
+                        offset = limit * (pages - 1);
                     }
-                }
-            })
-            .then(data => {
-                //let page = req.params.page; //page number
-                let pages = Math.ceil(data.count / limit);
-                offset = limit * (page - 1);
-                //Check if page number input is greater than real total pages
-                if (page > pages) {
-                    offset = limit * (pages - 1);
-                }
-                if (table == 'user') {
-                    console.log(111111);
-                    User.findAll({
-                            where: {
-                                id_role: {
-                                    [Op.gt]: [1]
-                                },
-                                is_active: {
-                                    [Op.gte]: [1]
-                                }
-                            },
-                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                            include: [{
-                                    model: Role,
-                                    //attributes: ['name']  
-                                },
-                                {
-                                    model: Team,
-                                    //attributes: ['name']
-                                }
-                            ],
-                            order: [
-                                [col, type]
-                            ],
-                            limit: limit,
-                            offset: offset,
-                            //$sort: { id: 1 }
-                        })
-                        .then(users => {
-                            if (users.length == 0) {
-                                res.status(400).send({ message: 'There is no user' });
-                            } else {
-                                res.status(200).json({ 'result': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                            }
-                        })
-                        .catch(err => {
-                            res.status(400).send({ message1: err })
-                        })
-                } else {
-                    User.findAll({
-                            where: {
-                                id_role: {
-                                    [Op.gt]: [1]
-                                },
-                                is_active: {
-                                    [Op.gte]: [1]
-                                }
-                            },
-                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                            include: [{
-                                    model: Role,
-                                    //attributes: ['name']  
-                                },
-                                {
-                                    model: Team,
-                                    //attributes: ['name']
-                                }
-                            ],
-                            order: [
-                                [table, col, type]
-                            ],
-                            limit: limit,
-                            offset: offset,
-                            //$sort: { id: 1 }
-                        })
-                        .then(users => {
-                            if (users.length == 0) {
-                                res.status(400).send({ message: 'There is no user' });
-                            } else {
-                                res.status(200).json({ 'result': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                            }
-                        })
-                        .catch(err => {
-                            res.status(400).send({ message1: err })
-                        })
-                }
-            })
-            .catch(err => {
-                res.status(400).send({ message: err });
-            })
-    } else {
-        User.findAndCountAll({
-                where: {
-                    id_role: {
-                        [Op.gt]: [1]
-                    },
-                    is_active: {
-                        [Op.gte]: [1]
-                    }
-                }
-            })
-            .then(data => {
-                // let totalCount = data.count;
-                User.findAndCountAll({
-                        where: {
-                            id_role: {
-                                [Op.gt]: [1]
-                            },
-                            is_active: {
-                                [Op.gte]: [1]
-                            },
-                            [Op.or]: [{
-                                    first_name: {
-                                        [Op.like]: '%' + search + '%'
+                    if (table == 'user') {
+                        console.log(111111);
+                        User.findAll({
+                                where: {
+                                    id_role: {
+                                        [Op.gt]: [1]
+                                    },
+                                    is_active: {
+                                        [Op.gte]: [1]
                                     }
                                 },
-                                {
-                                    english_name: {
-                                        [Op.like]: '%' + search + '%'
+                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                include: [{
+                                        model: Role,
+                                        required: true,
+                                        //attributes: ['name']  
+                                    },
+                                    {
+                                        model: Team,
+                                        required: true,
+                                        //attributes: ['name']
                                     }
-                                },
-                                {
-                                    email: {
-                                        [Op.like]: '%' + search + '%'
-                                    }
+                                ],
+                                order: [
+                                    [col, type]
+                                ],
+                                limit: limit,
+                                offset: offset,
+                                //$sort: { id: 1 }
+                            })
+                            .then(users => {
+                                if (users.length == 0) {
+                                    res.status(400).send({ message: 'There is no user' });
+                                } else {
+                                    res.status(200).json({ 'data': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
                                 }
-                            ]
-                        }
-                    })
-                    .then(data1 => {
-                        //let page = req.params.page; //page number
-                        let pages = Math.ceil(data1.count / limit);
-                        offset = limit * (page - 1);
-                        if (page > pages) {
-                            offset = limit * (pages - 1);
-                        }
-                        if (table == 'user') {
+                            })
+                            .catch(err => {
+                                res.status(400).send({ message1: err })
+                            })
+                    } else {
+                        if (table == 'role' || table == 'team') {
                             User.findAll({
                                     where: {
                                         id_role: {
@@ -414,84 +333,17 @@ router.get('/list', (req, res) => {
                                         },
                                         is_active: {
                                             [Op.gte]: [1]
-                                        },
-                                        [Op.or]: [{
-                                                first_name: {
-                                                    [Op.like]: '%' + search + '%'
-                                                }
-                                            },
-                                            {
-                                                english_name: {
-                                                    [Op.like]: '%' + search + '%'
-                                                }
-                                            },
-                                            {
-                                                email: {
-                                                    [Op.like]: '%' + search + '%'
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                    include: [{
-                                            model: Role,
-                                            //attributes: ['name']  
-                                        },
-                                        {
-                                            model: Team,
-                                            //attributes: ['name']
                                         }
-                                    ],
-                                    order: [
-                                        [col, type]
-                                    ],
-                                    limit: limit,
-                                    offset: offset,
-                                    //$sort: { id: 1 }
-                                })
-                                .then(users => {
-                                    if (users.length == 0) {
-                                        res.status(400).send({ message: 'There is no user' });
-                                    } else {
-                                        res.status(200).json({ 'result': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                                    }
-                                })
-                                .catch(err => {
-                                    res.status(400).send({ message1: err })
-                                })
-                        } else {
-                            User.findAll({
-                                    where: {
-                                        id_role: {
-                                            [Op.gt]: [1]
-                                        },
-                                        is_active: {
-                                            [Op.gte]: [1]
-                                        },
-                                        [Op.or]: [{
-                                                first_name: {
-                                                    [Op.like]: '%' + search + '%'
-                                                }
-                                            },
-                                            {
-                                                english_name: {
-                                                    [Op.like]: '%' + search + '%'
-                                                }
-                                            },
-                                            {
-                                                email: {
-                                                    [Op.like]: '%' + search + '%'
-                                                }
-                                            }
-                                        ]
                                     },
                                     attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
                                     include: [{
                                             model: Role,
+                                            required: true,
                                             //attributes: ['name']  
                                         },
                                         {
                                             model: Team,
+                                            required: true,
                                             //attributes: ['name']
                                         }
                                     ],
@@ -506,22 +358,235 @@ router.get('/list', (req, res) => {
                                     if (users.length == 0) {
                                         res.status(400).send({ message: 'There is no user' });
                                     } else {
-                                        res.status(200).json({ 'result': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                        res.status(200).json({ 'data': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
                                     }
                                 })
                                 .catch(err => {
-                                    res.status(400).send({ message1: err })
+                                    res.status(400).send({ message1: err });
                                 })
+                        } else {
+                            res.status(400).send({ message: 'Wrong table' });
                         }
-                    })
-                    .catch(err => {
-                        res.status(400).send({ message1: err });
-                    })
-            })
-            .catch(err => {
-                res.status(400).send({ message: err });
-            })
-    }
+                    }
+                }
+                // search != '' && search != null
+                else {
+                    console.log(2222);
+                    User.findAndCountAll({
+                            where: {
+                                id_role: {
+                                    [Op.gt]: [1]
+                                },
+                                is_active: {
+                                    [Op.gte]: [1]
+                                },
+                                [Op.or]: [{
+                                        first_name: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        last_name: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        english_name: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        email: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        '$role.name$': {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        '$team.name$': {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    }
+                                ]
+                            },
+                            include: [{
+                                    model: Role,
+                                    required: true,
+                                },
+                                {
+                                    model: Team,
+                                    required: true,
+                                }
+                            ],
+                        })
+                        .then(data1 => {
+                            if (data1.count == 0) {
+                                res.status(400).send({ message: 'There is no result', count: data1.count })
+                            } else {
+                                console.log(data1.count);
+                                let pages = Math.ceil(data1.count / limit);
+                                offset = limit * (page - 1);
+                                if (page > pages) {
+                                    offset = limit * (pages - 1);
+                                }
+                                //console.log(data1, page, pages, offset, limit);
+                                if (table == 'user') {
+                                    User.findAll({
+                                            where: {
+                                                id_role: {
+                                                    [Op.gt]: [1]
+                                                },
+                                                is_active: {
+                                                    [Op.gte]: [1]
+                                                },
+                                                [Op.or]: [{
+                                                        first_name: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        last_name: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        english_name: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        email: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        '$role.name$': {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        '$team.name$': {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                            include: [{
+                                                    model: Role,
+                                                    required: true,
+                                                },
+                                                {
+                                                    model: Team,
+                                                    required: true,
+                                                }
+                                            ],
+                                            order: [
+                                                [col, type]
+                                            ],
+                                            limit: limit,
+                                            offset: offset,
+                                            //$sort: { id: 1 }
+                                        })
+                                        .then(users => {
+                                            if (users.length == 0) {
+                                                res.status(400).send({ message: 'There is no user' });
+                                            } else {
+                                                res.status(200).json({ 'data': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                            }
+                                        })
+                                        .catch(err => {
+                                            res.status(400).send({ message1: err })
+                                        })
+                                } else {
+                                    if (table == 'role' || table == 'team') {
+                                        User.findAll({
+                                                where: {
+                                                    id_role: {
+                                                        [Op.gt]: [1]
+                                                    },
+                                                    is_active: {
+                                                        [Op.gte]: [1]
+                                                    },
+                                                    [Op.or]: [{
+                                                            first_name: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            last_name: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            english_name: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            email: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            '$role.name$': {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            '$team.name$': {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                                include: [{
+                                                        model: Role,
+                                                        required: true,
+                                                        //attributes: ['name']  
+                                                    },
+                                                    {
+                                                        model: Team,
+                                                        required: true,
+                                                        //attributes: ['name']
+                                                    }
+                                                ],
+                                                order: [
+                                                    [table, col, type]
+                                                ],
+                                                limit: limit,
+                                                offset: offset,
+                                                //$sort: { id: 1 }
+                                            })
+                                            .then(users => {
+                                                if (users.length == 0) {
+                                                    res.status(400).send({ message: 'There is no user' });
+                                                } else {
+                                                    res.status(200).json({ 'data': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                }
+                                            })
+                                            .catch(err => {
+                                                res.status(400).send({ message1: err })
+                                            })
+                                    } else {
+                                        res.status(400).send({ message: 'Wrong table' })
+                                    }
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            res.status(400).send({ message1: err });
+                        })
+                }
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ message: err });
+        })
 })
 
 //LIST (admin role)
@@ -531,14 +596,26 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
     let col = 'first_name';
     let type = 'ASC';
     let table = 'user';
-    if (req.query.count != null && req.query.page != null) {
+    if (req.query.count != null && req.query.count != '') {
         limit = parseInt(req.query.count);
+    }
+    if (req.query.page != null && req.query.page != '') {
         page = parseInt(req.query.page);
     }
-    if (req.query.col != null && req.query.type != null) {
+    if ((req.query.col != null && req.query.type != null) && (req.query.type != '' && req.query.col != '')) {
         col = req.query.col;
         type = req.query.type;
     }
+    if (req.query.table != null && req.query.table != '') {
+        table = req.query.table;
+    }
+    //Search
+    let search = req.query.search;
+
+    // Make lowercase
+    // search = search.toLowerCase();
+
+    //Count total entries
     User.findAndCountAll({
             // where: {
             //     id_role: {
@@ -550,88 +627,323 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
             // }
         })
         .then(data => {
-            //let page = req.params.page; //page number
-            let pages = Math.ceil(data.count / limit);
-            offset = limit * (page - 1);
-            if (page > pages) {
-                offset = limit * (pages - 1);
+            if (data.count == 0) {
+                res.status(400).send({ message: 'There is no user', total_counts: data.count })
             }
-            if (table == 'user') {
-                User.findAll({
-                        // where: {
-                        //     id_role: {
-                        //         [Op.gt]: [1]
-                        //     },
-                        //     is_active: {
-                        //         [Op.gte]: [1]
-                        //     }
-                        // },
-                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                        include: [{
-                                model: Role,
-                                //attributes: ['name']  
-                            },
-                            {
-                                model: Team,
-                                //attributes: ['name']
-                            }
-                        ],
-                        order: [
-                            [col, type]
-                        ],
-                        limit: limit,
-                        offset: offset,
-                        //$sort: { id: 1 }
-                    })
-                    .then(users => {
-                        if (users.length == 0) {
-                            res.status(400).send({ message: 'There is no user' });
+            // data.count != 0 
+            else {
+                //Check search box
+                if ((search == '') || (search == null)) {
+                    // if (search == '') {
+                    let pages = Math.ceil(data.count / limit);
+                    offset = limit * (page - 1);
+                    //Check if page number input is greater than real total pages
+                    if (page > pages) {
+                        offset = limit * (pages - 1);
+                    }
+                    if (table == 'user') {
+                        console.log(111111);
+                        User.findAll({
+                                // where: {
+                                //     id_role: {
+                                //         [Op.gt]: [1]
+                                //     },
+                                //     is_active: {
+                                //         [Op.gte]: [1]
+                                //     }
+                                // },
+                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                include: [{
+                                        model: Role,
+                                        required: true,
+                                        //attributes: ['name']  
+                                    },
+                                    {
+                                        model: Team,
+                                        required: true,
+                                        //attributes: ['name']
+                                    }
+                                ],
+                                order: [
+                                    [col, type]
+                                ],
+                                limit: limit,
+                                offset: offset,
+                                //$sort: { id: 1 }
+                            })
+                            .then(users => {
+                                if (users.length == 0) {
+                                    res.status(400).send({ message: 'There is no user' });
+                                } else {
+                                    res.status(200).json({ 'data': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                }
+                            })
+                            .catch(err => {
+                                res.status(400).send({ message1: err })
+                            })
+                    } else {
+                        if (table == 'role' || table == 'team') {
+                            User.findAll({
+                                    // where: {
+                                    //     id_role: {
+                                    //         [Op.gt]: [1]
+                                    //     },
+                                    //     is_active: {
+                                    //         [Op.gte]: [1]
+                                    //     }
+                                    // },
+                                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                    include: [{
+                                            model: Role,
+                                            required: true,
+                                            //attributes: ['name']  
+                                        },
+                                        {
+                                            model: Team,
+                                            required: true,
+                                            //attributes: ['name']
+                                        }
+                                    ],
+                                    order: [
+                                        [table, col, type]
+                                    ],
+                                    limit: limit,
+                                    offset: offset,
+                                    //$sort: { id: 1 }
+                                })
+                                .then(users => {
+                                    if (users.length == 0) {
+                                        res.status(400).send({ message: 'There is no user' });
+                                    } else {
+                                        res.status(200).json({ 'data': users, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                    }
+                                })
+                                .catch(err => {
+                                    res.status(400).send({ message1: err })
+                                })
                         } else {
-                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                            res.status(400).send({ message: 'Wrong table' })
                         }
-                    })
-                    .catch(err => {
-                        res.status(400).send({ message1: err })
-                    })
-            } else {
-                User.findAll({
-                        // where: {
-                        //     id_role: {
-                        //         [Op.gt]: [1]
-                        //     },
-                        //     is_active: {
-                        //         [Op.gte]: [1]
-                        //     }
-                        // },
-                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                        include: [{
-                                model: Role,
-                                //attributes: ['name']  
+                    }
+                }
+                // search != '' && search != null
+                else {
+                    console.log(2222);
+                    // let totalCount = data.count;
+                    User.findAndCountAll({
+                            where: {
+                                // id_role: {
+                                //     [Op.gt]: [1]
+                                // },
+                                // is_active: {
+                                //     [Op.gte]: [1]
+                                // },
+                                [Op.or]: [{
+                                        first_name: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        last_name: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        english_name: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        email: {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        '$role.name$': {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    },
+                                    {
+                                        '$team.name$': {
+                                            [Op.like]: '%' + search + '%'
+                                        }
+                                    }
+                                ]
                             },
-                            {
-                                model: Team,
-                                //attributes: ['name']
+                            include: [{
+                                    model: Role,
+                                    required: true,
+                                    //attributes: ['name']  
+                                },
+                                {
+                                    model: Team,
+                                    required: true,
+                                    //attributes: ['name']
+                                }
+                            ],
+                        })
+                        .then(data1 => {
+                            if (data1.count == 0) {
+                                res.status(400).send({ message: 'There is no result', total_counts: data1.count })
+                            } else {
+                                let pages = Math.ceil(data1.count / limit);
+                                offset = limit * (page - 1);
+                                if (page > pages) {
+                                    offset = limit * (pages - 1);
+                                }
+                                console.log(data1, page, pages, offset, limit);
+                                if (table == 'user') {
+                                    User.findAll({
+                                            where: {
+                                                // id_role: {
+                                                //     [Op.gt]: [1]
+                                                // },
+                                                // is_active: {
+                                                //     [Op.gte]: [1]
+                                                // },
+                                                [Op.or]: [{
+                                                        first_name: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        last_name: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        english_name: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        email: {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        '$role.name$': {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    },
+                                                    {
+                                                        '$team.name$': {
+                                                            [Op.like]: '%' + search + '%'
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                            include: [{
+                                                    model: Role,
+                                                    required: true,
+                                                    //attributes: ['name']  
+                                                },
+                                                {
+                                                    model: Team,
+                                                    required: true,
+                                                    //attributes: ['name']
+                                                }
+                                            ],
+                                            order: [
+                                                [col, type]
+                                            ],
+                                            limit: limit,
+                                            offset: offset,
+                                            //$sort: { id: 1 }
+                                        })
+                                        .then(users => {
+                                            if (users.length == 0) {
+                                                res.status(400).send({ message: 'There is no result' });
+                                            } else {
+                                                res.status(200).json({ 'data': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                            }
+                                        })
+                                        .catch(err => {
+                                            res.status(400).send({ message1: err })
+                                        })
+                                } else {
+                                    if (table == 'role' || table == 'team') {
+                                        User.findAll({
+                                                where: {
+                                                    // id_role: {
+                                                    //     [Op.gt]: [1]
+                                                    // },
+                                                    // is_active: {
+                                                    //     [Op.gte]: [1]
+                                                    // },
+                                                    [Op.or]: [{
+                                                            first_name: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            last_name: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            english_name: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            email: {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            '$role.name$': {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        },
+                                                        {
+                                                            '$team.name$': {
+                                                                [Op.like]: '%' + search + '%'
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                                include: [{
+                                                        model: Role,
+                                                        required: true,
+                                                        //attributes: ['name']  
+                                                    },
+                                                    {
+                                                        model: Team,
+                                                        required: true,
+                                                        //attributes: ['name']
+                                                    }
+                                                ],
+                                                order: [
+                                                    [table, col, type]
+                                                ],
+                                                limit: limit,
+                                                offset: offset,
+                                                //$sort: { id: 1 }
+                                            })
+                                            .then(users => {
+                                                if (users.length == 0) {
+                                                    res.status(400).send({ message: 'There is no user' });
+                                                } else {
+                                                    res.status(200).json({ 'data': users, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                }
+                                            })
+                                            .catch(err => {
+                                                res.status(400).send({ message1: err })
+                                            })
+                                    } else {
+                                        res.status(400).send({ message: 'Wrong table' })
+                                    }
+                                }
                             }
-                        ],
-                        order: [
-                            [table, col, type]
-                        ],
-                        limit: limit,
-                        offset: offset,
-                        //$sort: { id: 1 }
-                    })
-                    .then(users => {
-                        if (users.length == 0) {
-                            res.status(400).send({ message: 'There is no user' });
-                        } else {
-                            res.status(200).json({ 'result': users, 'counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                        }
-                    })
-                    .catch(err => {
-                        res.status(400).send({ message1: err })
-                    })
+                        })
+                        .catch(err => {
+                            res.status(400).send({ message1: err });
+                        })
+                }
             }
-
         })
         .catch(err => {
             res.status(400).send({ message: err });
