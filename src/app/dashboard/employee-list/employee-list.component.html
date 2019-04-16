@@ -7,7 +7,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6 col-sm-12">
+          <div class="col-sm-6 d-flex justify-content-sm-start">
               <div class="form-group row">
               <label class="col-form-label">
                 Show
@@ -18,7 +18,7 @@
               </label>
               </div>
           </div>
-          <div class="col-md-6 col-sm-12">
+          <div class="col-sm-6 d-flex justify-content-sm-end">
               <div class="form-group row float-right">
                   <input type="text" id="search" class="form-control" (keyup)="searchOnText()" [(ngModel)]="currentSearchText" placeholder="Search...">
               </div>
@@ -27,25 +27,29 @@
 
 <!--        table-->
         <div class="row">
-          <div class="col-12">
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead style="background-color: mediumpurple; color: #ffffff;">
                 <tr>
-                  <th scope="col">Name
+                  <th (click)="sortOnColumn('first_name','user')" class="hand-cursor" scope="col" title="Click column name to change sort direction">Name
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon by sort direction-->
                   </th>
-                  <th scope="col">Position
+                  <th (click)="sortOnColumn('name','role')" class="hand-cursor" title="Click column name to change sort direction" scope="col">Position
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'role')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
                   </th>
-                  <th class="text-center" align="center" scope="col">Team
+                  <th (click)="sortOnColumn('name','team')" class="hand-cursor" title="Click column name to change sort direction"  class="text-center" align="center" scope="col">Team
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'team')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
                   </th>
-                  <th scope="col">Email address
+                  <th (click)="sortOnColumn('email','user')" class="hand-cursor" title="Click column name to change sort direction" scope="col">Email address
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'email')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
                   </th>
-                  <th align="center" scope="col">English name
+                  <th (click)="sortOnColumn('english_name','user')" class="hand-cursor" title="Click column name to change sort direction" class="text-center" align="center" scope="col">English name
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'english_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
                   </th>
                   <th class="text-center" align="center" scope="col">Tool</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody *ngIf="!error"> <!--There's result from search operator-->
                 <tr *ngFor="let user of usersList">
                   <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
                   <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
@@ -54,17 +58,20 @@
                   <td>{{user.email}}</td>
                   <td align="center">{{user.english_name}}</td>
                   <td align="center">
-                    <button class="btn btn-info btn-sm shadow">Edit</button>
-                    <button class="btn btn-danger btn-sm shadow ml-2" (click)="deleteUser(user.id)">Delete</button>
+                    <button class="btn btn-info btn-sm">Edit</button>
+                    <button class="btn btn-danger btn-sm ml-2" (click)="deleteUser(user.id)">Delete</button>
                   </td>
                 </tr>
                 </tbody>
+                <tfoot *ngIf="error">
+                <!--If search result is empty-->
+                <h4 class="text-danger">No result matched</h4>
+                </tfoot>
               </table>
             </div>
           </div>
-        </div>
         <!--Pagination -->
-        <div *ngIf="totalRecords > currentPageSize" class="row d-flex justify-content-md-end pagination-container">
+        <div *ngIf="totalRecords > currentPageSize && !error" class="row d-flex justify-content-end pagination-container">
             <ngb-pagination size="sm" (pageChange)="pageChange($event)" [collectionSize]="currentRecords" [pageSize]="currentPageSize" [(page)]="currentPage" maxSize="5" [rotate]="true" [ellipses]="false" [boundaryLinks]="true">
               <ng-template ngbPaginationPrevious>Prev</ng-template>
               <ng-template ngbPaginationNext>Next</ng-template>

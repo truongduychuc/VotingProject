@@ -9,10 +9,25 @@
   overflow-x: auto;
 }
 table{
+  table-layout: auto;
+  width: 100%;
   thead {
-    background-color: $blue-teal-gradient;;
+    background-color: $blue-teal-gradient;
+  }
+  th {
+    position: relative;
+  }
+  td {
+    word-wrap: break-word;
   }
   .btn {
     border: none;
+  }
+  .hand-cursor {
+    cursor: pointer;
+  }
+  .sort-icon {
+    position: absolute;
+    right: 10%;
   }
 }
