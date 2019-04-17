@@ -1,8 +1,11 @@
 @import '../../../styles';
 .row {
-  margin: 10px 0px;
+  margin: 1rem 0px;
   .form-control-sm {
     padding: 0.2rem 0.3rem;
+  }
+  .text-small {
+    font-size: 12.8px;
   }
 }
 .pagination-container {
@@ -10,15 +13,15 @@
 }
 table{
   table-layout: auto;
-  width: 100%;
-  thead {
-    background-color: $blue-teal-gradient;
-  }
   th {
     position: relative;
+    background-color: #9068be;
+    word-wrap: break-word;
+    padding: 13px 18px!important;
   }
   td {
     word-wrap: break-word;
+    padding: 7px 15px!important;
   }
   .btn {
     border: none;
@@ -28,6 +31,11 @@ table{
   }
   .sort-icon {
     position: absolute;
-    right: 10%;
+  }
+}
+.pagination {
+  .active {
+    background-color: blue;
+    color: white;
   }
 }

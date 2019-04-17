@@ -10,7 +10,8 @@
                 Employee Name
               </label>
               <div class="col-sm-9">
-                <input type="text" class="form-control form-control-lg">
+                <input disabled="disabled" [value]="currentUserProfile?.first_name + ' (' + currentUserProfile?.english_name+') ' + currentUserProfile?.last_name"
+                       type="text" class="form-control form-control-lg">
               </div>
             </div>
             <div class="form-group row">
@@ -18,7 +19,7 @@
                 Email
               </label>
               <div class="col-sm-9">
-                <input type="text" class="form-control form-control-lg">
+                <input disabled="disabled" [value]="currentUserProfile?.email" type="text" class="form-control form-control-lg">
               </div>
             </div>
             <div class="form-group row">
@@ -26,7 +27,7 @@
                 Phone
               </label>
               <div class="col-sm-9">
-                <input type="text" class="form-control form-control-lg">
+                <input [value]="currentUserProfile?.phone" [readOnly]="!editable" type="text" class="form-control form-control-lg">
               </div>
             </div>
             <div class="form-group row">
@@ -34,7 +35,7 @@
                 Address
               </label>
               <div class="col-sm-9">
-                <input type="text" class="form-control form-control-lg">
+                <input [value]="currentUserProfile?.address" [readOnly]="!editable" type="text" class="form-control form-control-lg">
               </div>
             </div>
           </div>
@@ -44,7 +45,7 @@
                 Team
               </label>
               <div class="col-sm-9">
-                <input type="text" class="form-control form-control-lg">
+                <input [value]="currentUserProfile?.team.name" disabled="disabled" type="text" class="form-control form-control-lg disabled">
               </div>
             </div>
             <div class="form-group row">
@@ -52,7 +53,7 @@
                 Direct Manager
               </label>
               <div class="col-sm-9">
-                <input type="text" class="form-control form-control-lg">
+                <input disabled="disabled" type="text" class="form-control form-control-lg">
               </div>
             </div>
             <div class="form-group row">
@@ -60,14 +61,14 @@
                 Other
               </label>
               <div class="col-sm-9">
-                <input type="text" class="form-control form-control-lg">
+                <input [readOnly]="!editable" [value]="currentUserProfile?.other" type="text" class="form-control form-control-lg">
               </div>
             </div>
           </div>
         </div>
       </form>
       <div class="d-flex justify-content-center flex-wrap">
-        <button class="btn btn-warning mr-md-4 ml-md-0 m-sm-2">Edit</button>
+        <button (click)="changeEditable()" class="btn btn-warning mr-md-4 ml-md-0 m-sm-2">Edit</button>
         <button class="btn btn-info ml-md-4 mr-md-0 m-sm-2">Save</button>
       </div>
     </div>
