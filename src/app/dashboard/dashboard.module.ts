@@ -6,7 +6,7 @@ import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {FooterComponent} from "./footer/footer.component";
 import {NavbarComponent} from "./navbar/navbar.component";
 import {SidebarComponent} from "./sidebar/sidebar.component";
-import {IconsModule, InputsModule, TableModule} from "angular-bootstrap-md";
+import {IconsModule} from "angular-bootstrap-md";
 import {DataTrackingComponent } from './data-tracking/data-tracking.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {DashboardRoutingModule} from "./dashboard-routing.module";
@@ -14,7 +14,7 @@ import {RouterModule} from "@angular/router";
 import {DashboardComponent} from "./dashboard.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
-import { VotingComponent } from './voting/voting.component';
+import {VotingComponent } from './voting/voting.component';
 
 @NgModule({
   declarations: [
@@ -35,9 +35,7 @@ import { VotingComponent } from './voting/voting.component';
     RouterModule,
     FormsModule,
     DashboardRoutingModule,
-    TableModule,
     IconsModule,
-    InputsModule,
     NgbModule
   ]
 })

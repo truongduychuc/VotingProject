@@ -128,8 +128,11 @@
         &:hover {
           &:not(.nav-profile) {
             >.nav-link {
-              background: $sidebar-light-menu-hover-bg;
-              color: $sidebar-light-menu-hover-color;
+              background: #0fdfd3; // for menu on sidebar
+              color: white;
+              >i {
+                color: white;
+              }
             }
           }
         }
@@ -176,12 +179,12 @@
     top: $navbar-height;
     bottom: 0;
     overflow: auto;
-    right: -$sidebar-width-lg;
+    left: -$sidebar-width-lg;
     -webkit-transition: all 0.25s ease-out;
     -o-transition: all 0.25s ease-out;
     transition: all 0.25s ease-out;
     &.active {
-      right: 0;
+      left: 0;
     }
   }
 }

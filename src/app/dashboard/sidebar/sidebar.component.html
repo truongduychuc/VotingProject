@@ -1,35 +1,8 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
-    <li class="nav-profile nav-item">
-        <div class="nav-link">
-          <div class="user-wrapper">
-            <div class="profile-image">
-              <a>
-                <img src="assets/images/faces/profile/default-avatar.png" title="Click to change avatar" alt="profile image">
-              </a>
-            </div>
-            <div class="text-wrapper">
-              <div class="row">
-                <p class="profile-name">{{currentUser?.first_name}} ({{currentUser?.english_name}}) {{currentUser?.last_name|uppercase}}</p>
-                <div ngbDropdown class="d-inline-block">
-                  <button id="dropDownOptions" ngbDropdownToggle></button>
-                  <div ngbDropdownMenu aria-labelledby="dropDownOptions">
-                    <button routerLink="/change-password" ngbDropdownItem>Change password</button>
-                    <button (click)="logout()" ngbDropdownItem>Log out</button>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <small class="designation text-muted">{{currentUser?.role.name}}</small>
-                <span class="status-indicator online"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-    </li>
     <li class="nav-item">
       <a class="nav-link" routerLink="data-tracking" routerLinkActive="active">
-        <i class="menu-icon mdi mdi-desktop-mac"></i>
+        <i class="menu-icon mdi mdi-television"></i>
         <span class="menu-title">Dashboard</span>
       </a>
     </li>
