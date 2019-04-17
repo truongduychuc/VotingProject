@@ -1,13 +1,13 @@
 
-<div class="card">
+<div class="card shadow">
       <div class="card-body">
         <div class="row">
-          <div class="col-12">
+          <div class="col-12 text-center">
             <h3>Employee list</h3>
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-6 d-flex justify-content-sm-start">
+          <div class="col-sm-6 d-flex justify-content-sm-start p-0">
               <div class="form-group row">
               <label class="col-form-label">
                 Show
@@ -18,7 +18,7 @@
               </label>
               </div>
           </div>
-          <div class="col-sm-6 d-flex justify-content-sm-end">
+          <div class="col-sm-6 d-flex justify-content-sm-end p-0">
               <div class="form-group row float-right">
                   <input type="text" id="search" class="form-control" (keyup)="searchOnText()" [(ngModel)]="currentSearchText" placeholder="Search...">
               </div>
@@ -31,20 +31,20 @@
               <table class="table table-striped">
                 <thead style="background-color: mediumpurple; color: #ffffff;">
                 <tr>
-                  <th (click)="sortOnColumn('first_name','user')" class="hand-cursor" scope="col" title="Click column name to change sort direction">Name
-                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon by sort direction-->
+                  <th (click)="sortOnColumn('first_name','user')" class="hand-cursor" scope="col" title="Click column's name to change sort direction">Name
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon by sort direction-->
                   </th>
-                  <th (click)="sortOnColumn('name','role')" class="hand-cursor" title="Click column name to change sort direction" scope="col">Position
-                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'role')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
+                  <th (click)="sortOnColumn('name','role')" class="hand-cursor" title="Click column's name to change sort direction" scope="col">Position
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'role')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
-                  <th (click)="sortOnColumn('name','team')" class="hand-cursor" title="Click column name to change sort direction"  class="text-center" align="center" scope="col">Team
-                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'team')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
+                  <th (click)="sortOnColumn('name','team')" class="hand-cursor" title="Click column's name to change sort direction"  class="text-center" align="center" scope="col">Team
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'team')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
-                  <th (click)="sortOnColumn('email','user')" class="hand-cursor" title="Click column name to change sort direction" scope="col">Email address
-                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'email')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
+                  <th (click)="sortOnColumn('email','user')" class="hand-cursor" title="Click column's name to change sort direction" scope="col">Email address
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'email')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
-                  <th (click)="sortOnColumn('english_name','user')" class="hand-cursor" title="Click column name to change sort direction" class="text-center" align="center" scope="col">English name
-                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'english_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-alpha-down':'fas fa-sort-alpha-up'"></i>  <!--Change icon-->
+                  <th (click)="sortOnColumn('english_name','user')" class="hand-cursor" title="Click column's name to change sort direction" class="text-center" align="center" scope="col">English name
+                    <i class="sort-icon" [hidden]="!(currentSortedColumn == 'english_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
                   <th class="text-center" align="center" scope="col">Tool</th>
                 </tr>
@@ -53,7 +53,7 @@
                 <tr *ngFor="let user of usersList">
                   <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
                   <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
-                  <td>{{user.role?.name}}</td>
+                  <td  >{{user.role?.name}}</td>
                   <td align="center">{{user.team?.name}}</td>
                   <td>{{user.email}}</td>
                   <td align="center">{{user.english_name}}</td>
@@ -71,13 +71,25 @@
             </div>
           </div>
         <!--Pagination -->
-        <div *ngIf="totalRecords > currentPageSize && !error" class="row d-flex justify-content-end pagination-container">
-            <ngb-pagination size="sm" (pageChange)="pageChange($event)" [collectionSize]="currentRecords" [pageSize]="currentPageSize" [(page)]="currentPage" maxSize="5" [rotate]="true" [ellipses]="false" [boundaryLinks]="true">
+        <div *ngIf="!error" class="row">
+          <div class="col-sm-6 d-flex justify-content-sm-start p-0">
+            <p class="text-small" *ngIf="currentRecords > currentPageSize">Showing 1 to {{currentPageSize}} of {{currentRecords}}
+              <span *ngIf="totalRecords == currentRecords"> total entries</span>
+              <span *ngIf="totalRecords>currentRecords"> entries (filtered from {{totalRecords}} total entries)</span>
+          </p>
+            <p class="text-small" *ngIf="currentRecords <= currentPageSize">Showing {{currentRecords}} of {{currentRecords}}
+              <span *ngIf="totalRecords == currentRecords"> total entries</span>
+              <span *ngIf="totalRecords>currentRecords"> (filtered from {{totalRecords}} total entries)</span>
+            </p>
+          </div>
+          <div *ngIf="currentRecords > currentPageSize" class="col-sm-6 d-flex justify-content-sm-end pagination-container p-0">
+            <ngb-pagination class="pagination" size="sm" (pageChange)="pageChange($event)" [collectionSize]="currentRecords" [pageSize]="currentPageSize" [(page)]="currentPage" maxSize="5" [rotate]="true" [ellipses]="false" [boundaryLinks]="true">
               <ng-template ngbPaginationPrevious>Prev</ng-template>
               <ng-template ngbPaginationNext>Next</ng-template>
               <ng-template ngbPaginationFirst>First</ng-template>
               <ng-template ngbPaginationLast>Last</ng-template>
             </ngb-pagination>
+          </div>
         </div>
       </div>
     </div>
