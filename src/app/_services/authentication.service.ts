@@ -6,7 +6,6 @@ import * as jwt_decode from "jwt-decode";
 import {map} from 'rxjs/operators';
 import {User} from "../_models/user";
 import {AccountService} from "./account.service";
-import {Observable} from "rxjs";
 @Injectable({
   providedIn: 'root'
 })
@@ -48,7 +47,7 @@ export class AuthenticationService {
   // optional, using for something is relative with localStorage
   private setCurrentUser(): void {
     // get current user's profile from back-end
-    this.getPersonalProfile().subscribe(
+    this.accountService.getPersonalProfile().subscribe(
       (user:User) => {
         let currentUser:User = user;
         localStorage.setItem('currentUser', JSON.stringify(user));
@@ -63,9 +62,6 @@ export class AuthenticationService {
     return JSON.parse(localStorage.getItem('currentUser'));
   }
 
-  getPersonalProfile(): Observable<User> {
-    return this.httpClient.get<User>(this.serverURL + '/users/profile');
-  }
 
   logout() {
     localStorage.removeItem('currentUser');

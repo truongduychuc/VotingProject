@@ -13,14 +13,14 @@ import {HttpErrorResponse} from "@angular/common/http";
 export class SidebarComponent implements OnInit {
   public samplePagesCollapsed = true;
   currentUser: User;
-  constructor(private router: Router, private authService: AuthenticationService, private accountService: AccountService) {
+  constructor(private router: Router,private authService: AuthenticationService, private accountService: AccountService) {
   }
 
   ngOnInit() {
     console.log('Inited!');
     /*get personal profile asynchronously, because if you get it from localStorage or something is not observable,
 you need to reload the page to see currentUser's properties*/
-    this.authService.getPersonalProfile().subscribe((userProfile:User) => {
+    this.accountService.getPersonalProfile().subscribe((userProfile:User) => {
       this.currentUser = userProfile;
     }, (err: HttpErrorResponse) => {
       console.log(err + ' status: ' +err.status);

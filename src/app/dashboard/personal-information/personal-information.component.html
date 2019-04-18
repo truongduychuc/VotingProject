@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-body">
       <h3>Edit personal profile</h3>
-      <form>
+      <form (ngSubmit)="updateInfo()" [formGroup]="personalUpdating">
         <div class="row">
           <div class="col-md-6">
             <div class="form-group row">
@@ -27,7 +27,7 @@
                 Phone
               </label>
               <div class="col-sm-9">
-                <input [value]="currentUserProfile?.phone" [readOnly]="!editable" type="text" class="form-control form-control-lg">
+                <input formControlName="phone" [readOnly]="!editable" type="text" class="form-control form-control-lg">
               </div>
             </div>
             <div class="form-group row">
@@ -35,7 +35,7 @@
                 Address
               </label>
               <div class="col-sm-9">
-                <input [value]="currentUserProfile?.address" [readOnly]="!editable" type="text" class="form-control form-control-lg">
+                <input  formControlName="address" [readOnly]="!editable" type="text" class="form-control form-control-lg">
               </div>
             </div>
           </div>
@@ -45,7 +45,7 @@
                 Team
               </label>
               <div class="col-sm-9">
-                <input [value]="currentUserProfile?.team.name" disabled="disabled" type="text" class="form-control form-control-lg disabled">
+                <input [value]="currentUserProfile?.team?.name" disabled="disabled" type="text" class="form-control form-control-lg">
               </div>
             </div>
             <div class="form-group row">
@@ -61,16 +61,16 @@
                 Other
               </label>
               <div class="col-sm-9">
-                <input [readOnly]="!editable" [value]="currentUserProfile?.other" type="text" class="form-control form-control-lg">
+                <input formControlName="other" [readOnly]="!editable" type="text" class="form-control form-control-lg">
               </div>
             </div>
           </div>
         </div>
+        <div class="d-flex justify-content-center flex-wrap">
+          <button type="button" (click)="changeEditable()" class="btn btn-warning mr-md-4 ml-md-0 m-sm-2">Edit</button>
+          <input type="submit" class="btn btn-info ml-md-4 mr-md-0 m-sm-2" value="Save">
+        </div>
       </form>
-      <div class="d-flex justify-content-center flex-wrap">
-        <button (click)="changeEditable()" class="btn btn-warning mr-md-4 ml-md-0 m-sm-2">Edit</button>
-        <button class="btn btn-info ml-md-4 mr-md-0 m-sm-2">Save</button>
-      </div>
     </div>
   </div>
 </div>

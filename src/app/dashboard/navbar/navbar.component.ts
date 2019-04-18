@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
+import {AccountService} from "../../_services/account.service";
+import {Router} from "@angular/router";
+import {AuthenticationService} from "../../_services/authentication.service";
 
 @Component({
   selector: 'app-navbar',
@@ -9,6 +12,9 @@ import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 })
 export class NavbarComponent implements OnInit {
   public sidebarOpened = false;
+  constructor(private authService: AuthenticationService, private accountService: AccountService, private router: Router, config: NgbDropdownConfig) {
+    config.placement = 'bottom-right';
+  }
   toggleOffcanvas() {
     this.sidebarOpened = !this.sidebarOpened;
     if (this.sidebarOpened) {
@@ -18,10 +24,11 @@ export class NavbarComponent implements OnInit {
       document.querySelector('.sidebar-offcanvas').classList.remove('active');
     }
   }
-  constructor(config: NgbDropdownConfig) {
-    config.placement = 'bottom-right';
-  }
   ngOnInit() {
+  }
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['start-page']);
   }
 
 }

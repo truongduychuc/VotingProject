@@ -31,6 +31,12 @@ export class AccountService {
   getAllRoles(): Observable<Role[]> {
     return this.httpClient.get<Role[]>(this.serverURL + '/users/role');
   }
+  getPersonalProfile(): Observable<User> {
+    return this.httpClient.get<User>(this.serverURL + '/users/profile');
+  }
+  updatePersonalProfile(updateInfo: Object) {
+    return this.httpClient.put(this.serverURL + '/users/update_profile', updateInfo);
+  }
   getOtherProfile(id:number) {
 
   }
