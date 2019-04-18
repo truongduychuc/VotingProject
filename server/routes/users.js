@@ -190,7 +190,24 @@ router.get('/profile', authorize(), (req, res) => {
             if (!user) {
                 res.status(400).send({ message: 'User does not exist' });
             } else {
-                res.status(200).send(user);
+                //console.log(user.team.id);
+                User.findOne({
+                        where: {
+                            id_team: user.team.id,
+                            id_role: 2
+                        },
+                        attributes: ['first_name', 'last_name', 'english_name'],
+                    })
+                    .then(directManager => {
+                        if (!directManager) {
+                            res.status(200).send({ user, directManager: 'This user has no direct manager' });
+                        } else {
+                            res.status(200).send({ user, directManager: directManager });
+                        }
+                    })
+                    .catch(err => {
+                        res.status(400).send({ message: err });
+                    });
             }
         })
         .catch(err => {
@@ -219,7 +236,23 @@ router.get('/profile/:id', authorize(), (req, res) => {
                     if (!user) {
                         res.status(400).send({ message: 'User does not exist' });
                     } else {
-                        res.status(200).send(user);
+                        User.findOne({
+                                where: {
+                                    id_team: user.team.id,
+                                    id_role: 2
+                                },
+                                attributes: ['first_name', 'last_name', 'english_name'],
+                            })
+                            .then(directManager => {
+                                if (!directManager) {
+                                    res.status(200).send({ user, directManager: 'This user has no direct manager' });
+                                } else {
+                                    res.status(200).send({ user, directManager: directManager });
+                                }
+                            })
+                            .catch(err => {
+                                res.status(400).send({ message: err });
+                            });
                     }
                 })
                 .catch(err => {
