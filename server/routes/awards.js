@@ -14,6 +14,7 @@ const User = require('../models/user');
 const Nominee = require('../models/nominee');
 const Winner = require('../models/winner');
 const Breakdown = require('../models/breakdown');
+const multichain = require('../helpers/multichain');
 
 router.use(cors());
 
@@ -81,119 +82,122 @@ router.post('/create', (req, res) => {
     //     }
     // }
 
-    function checkDateinput() {
-        if (req.body.date_start > req.body.date_end) {
-            res.status(400).send({ message: 'Date end must be greater than date start' });
-            return false;
-        } else {
-            var con = moment(req.body.date_start).isBefore(today);
-            if (con) {
-                res.status(400).send({ message: 'Date start must be greater than today' });
-                return false;
-            } else {
-                return true;
+    // function checkDateinput() {
+    //     if (req.body.date_start > req.body.date_end) {
+    //         res.status(400).send({ message: 'Date end must be greater than date start' });
+    //         return false;
+    //     } else {
+    //         var con = moment(req.body.date_start).isBefore(today);
+    //         if (con) {
+    //             res.status(400).send({ message: 'Date start must be greater than today' });
+    //             return false;
+    //         } else {
+    //             return true;
+    //         }
+    //     }
+    // }
+
+    // if ((req.body.year < (year - 1)) || (req.body.year > year)) {
+    //     console.log(today);
+    //     res.status(400).send({ message: 'Wrong year input' });
+    // } else {
+    // if (!checkDateinput()) {
+    //     console.log('Date input wrong');
+    // } else {
+    Award.findAll({
+            where: {
+                name: req.body.name,
+                year: 2000
             }
-        }
-    }
-
-    if ((req.body.year < (year - 1)) || (req.body.year > year)) {
-
-        console.log(today);
-        res.status(400).send({ message: 'Wrong year input' });
-    } else {
-        if (!checkDateinput()) {
-            console.log('Date input wrong');
-        } else {
-            Award.findAll({
-                    where: {
-                        name: req.body.name,
-                        year: req.body.year
-                    }
-                })
-                .then(awards => {
-                    if (awards.length != 0) {
-                        res.status(400).send({ message: 'Award already exists.' });
-                    } else {
-                        //Create award
-                        awardData.year = year;
-                        Award.create(awardData)
-                            .then(award => {
-                                voterData.id_award = award.id;
-                                nomineeData.id_award = award.id;
-                                //Find voter with role
-                                const voter = req.body.id_role_voter;
-                                if (voter.length == 0) {
-                                    res.status(400).send({ message: 'There is no voter' });
-                                } else {
-                                    for (var j = 0; j < voter.length; j++) {
-                                        User.findAll({
-                                                where: {
-                                                    id_role: voter[j]
-                                                }
-                                            })
-                                            .then(users => {
-                                                if (users.length == 0) {
-                                                    res.status(400).send({ message: 'There is no user' });
-                                                } else {
-                                                    for (var i = 0; i < users.length; i++) {
-                                                        voterData.id_user = users[i].id;
-                                                        //Add voter
-                                                        Voter.create(voterData)
-                                                            .then(() => {})
-                                                            .catch(err => {
-                                                                console.log('error0' + err)
-                                                                res.status(400).send({ error0: err })
-                                                            })
-                                                    }
-                                                }
-                                            })
-                                            .catch(err => {
-                                                res.status(400).send({ error1: err })
-                                            })
-                                    }
-                                }
-                                // Find nominee with id
-                                const nominee = req.body.id_nominee;
-                                if (nominee.length == 0) {
-                                    res.status(400).send({ message: 'There is no nominee' });
-                                } else {
-                                    for (var k = 0; k < nominee.length; k++) {
-                                        User.findAll({
-                                                where: {
-                                                    id: nominee[k]
-                                                }
-                                            })
-                                            .then(users => {
-                                                for (var i = 0; i < users.length; i++) {
-                                                    nomineeData.id_team = users[i].id_team;
-                                                    nomineeData.id_nominee = users[i].id;
-                                                    //Add nominee
-                                                    Nominee.create(nomineeData)
-                                                        .then(() => {})
-                                                        .catch(err => {
-                                                            console.log('error0' + err)
-                                                            res.status(400).send({ error5: err })
-                                                        })
-                                                }
-                                            })
-                                            .catch(err => {
-                                                console.log(err);
-                                                res.status(400).send({ error4: err })
-                                            })
-                                    }
-                                }
-                                res.status(200).send({ message: 'Create award successfully.' });
-                            })
-                            .catch(err => {
-                                res.status(400).send({ error2: err })
-                            })
-                    }
-                })
-                .catch(err => {
-                    res.status(400).send({ error3: err })
-                })
-        }
-    }
+        })
+        .then(awards => {
+            if (awards.length != 0) {
+                res.status(400).send({ message: 'Award already exists.' });
+            } else {
+                //Create award
+                awardData.year = year;
+                Award.create(awardData)
+                    .then(award => {
+                        //multichain.getInfo();
+                        let stream_name = 'award_' + award.id;
+                        console.log(stream_name);
+                        multichain.createStream(stream_name);
+                        voterData.id_award = award.id;
+                        nomineeData.id_award = award.id;
+                        //Find voter with role
+                        const voter = req.body.id_role_voter;
+                        if (voter.length == 0) {
+                            res.status(400).send({ message: 'There is no voter' });
+                        } else {
+                            for (var j = 0; j < voter.length; j++) {
+                                User.findAll({
+                                        where: {
+                                            id_role: voter[j]
+                                        }
+                                    })
+                                    .then(users => {
+                                        if (users.length == 0) {
+                                            res.status(400).send({ message: 'There is no user' });
+                                        } else {
+                                            for (var i = 0; i < users.length; i++) {
+                                                voterData.id_user = users[i].id;
+                                                //Add voter
+                                                Voter.create(voterData)
+                                                    .then(() => {})
+                                                    .catch(err => {
+                                                        console.log('error0' + err)
+                                                        res.status(400).send({ error0: err })
+                                                    })
+                                            }
+                                        }
+                                    })
+                                    .catch(err => {
+                                        res.status(400).send({ error1: err })
+                                    })
+                            }
+                        }
+                        // Find nominee with id
+                        const nominee = req.body.id_nominee;
+                        if (nominee.length == 0) {
+                            res.status(400).send({ message: 'There is no nominee' });
+                        } else {
+                            for (var k = 0; k < nominee.length; k++) {
+                                User.findAll({
+                                        where: {
+                                            id: nominee[k]
+                                        }
+                                    })
+                                    .then(users => {
+                                        for (var i = 0; i < users.length; i++) {
+                                            nomineeData.id_team = users[i].id_team;
+                                            nomineeData.id_nominee = users[i].id;
+                                            //Add nominee
+                                            Nominee.create(nomineeData)
+                                                .then(() => {})
+                                                .catch(err => {
+                                                    console.log('error0' + err)
+                                                    res.status(400).send({ error5: err })
+                                                })
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                        res.status(400).send({ error4: err })
+                                    })
+                            }
+                        }
+                        res.status(200).send({ message: 'Create award successfully.' });
+                    })
+                    .catch(err => {
+                        res.status(400).send({ error2: err })
+                    })
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ error3: err })
+        })
+        // }
+        // }
 })
 
 
