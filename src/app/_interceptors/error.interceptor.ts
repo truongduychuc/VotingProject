@@ -20,19 +20,24 @@ export class ErrorInterceptor implements HttpInterceptor{
       if (evt instanceof HttpResponse) {
         if (evt.body && evt.body.success) {
           console.log(evt.body.success.message);
+          alert(evt.body.success.message);
         }
       }
     }),catchError((err:HttpErrorResponse) => {
       if(err.status === 401) {
-        this.authService.logout();
+        console.log(err.error.message);
+        alert(err.error.message);
       }
       if(err.status === 400) {
+        console.log(err.error.message);
         alert(err.error.message);
       }
       if(err.status === 404) {
+        console.log(err.error.message);
         alert(err.error.message); //alert, for example: 'User or password is incorrect'
       }
       if(err.status === 403) {
+        console.log(err.error.message);
         alert(err.error.message);
       }
       console.log(err);

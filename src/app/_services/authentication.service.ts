@@ -6,13 +6,14 @@ import * as jwt_decode from "jwt-decode";
 import {map} from 'rxjs/operators';
 import {User} from "../_models/user";
 import {AccountService} from "./account.service";
+import {Router} from "@angular/router";
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
   serverURL = 'http://localhost:4000';
-  currentUser: User;
-  constructor(private httpClient: HttpClient, private authService: AuthenticationService, private accountService: AccountService) { }
+ // currentUser: User;
+  constructor(private httpClient: HttpClient, private authService: AuthenticationService, private accountService: AccountService, private router: Router) { }
   login(username: string, password: string) {
     let userTryingToLogin = {
       username: username,
@@ -48,11 +49,15 @@ export class AuthenticationService {
   private setCurrentUser(): void {
     // get current user's profile from back-end
     this.accountService.getPersonalProfile().subscribe(
-      (user:User) => {
-        let currentUser:User = user;
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.currentUser = user;
-        console.log(localStorage.getItem('currentUser'));
+      (userProfile:any) => {
+        if(!userProfile.hasOwnProperty('user')) {
+          console.log('Response for getPersonalProfile user doesn\'t have user property');
+        }
+        else {
+          let currentUser:User = userProfile.user;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          console.log(localStorage.getItem('currentUser'));
+        }
       },error1 => {
         console.log(error1);
       }
@@ -67,7 +72,9 @@ export class AuthenticationService {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
     localStorage.removeItem('expires_at');
+    this.router.navigate(['start-page']);
     console.log('Logged out!');
+
   }
   isLoggedIn() {
     return moment().isBefore(this.getExpiration());

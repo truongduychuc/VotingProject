@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {User} from '../_models/user';
 import {Observable} from 'rxjs';
 import {Role} from "../_models/role";
@@ -31,8 +31,8 @@ export class AccountService {
   getAllRoles(): Observable<Role[]> {
     return this.httpClient.get<Role[]>(this.serverURL + '/users/role');
   }
-  getPersonalProfile(): Observable<User> {
-    return this.httpClient.get<User>(this.serverURL + '/users/profile');
+  getPersonalProfile(): Observable<any> {
+    return this.httpClient.get(this.serverURL + '/users/profile');
   }
   updatePersonalProfile(updateInfo: Object) {
     return this.httpClient.put(this.serverURL + '/users/update_profile', updateInfo);

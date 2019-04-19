@@ -4,15 +4,15 @@ import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {ChangePasswordFormComponent} from "./change-password-form/change-password-form.component";
 import {RouterModule, Routes} from "@angular/router";
 import {CommonModule} from "@angular/common";
-import {DataTrackingComponent} from "./data-tracking/data-tracking.component";
-import {DashboardComponent} from "./dashboard.component";
+import {DashboardComponent} from "./dashboard/dashboard.component";
+import {HomeComponent} from "./home.component";
 import {PersonalInformationComponent} from "./personal-information/personal-information.component";
 import {VotingComponent} from "./voting/voting.component";
 
 const dashboardRoutes: Routes = [
-  { path: '', component: DashboardComponent, children: [
+  { path: '', component: HomeComponent, children: [
       {path: '', redirectTo: 'data-tracking', pathMatch: 'full'},
-      {path: 'data-tracking', component: DataTrackingComponent},
+      {path: 'data-tracking', component: DashboardComponent},
       {path: 'employee-list', component: EmployeeListComponent},
       {path: 'create-user', component: CreateUserFormComponent},
       {path: 'change-password', component: ChangePasswordFormComponent},
@@ -28,4 +28,4 @@ const dashboardRoutes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class DashboardRoutingModule { }
+export class HomeRoutingModule { }

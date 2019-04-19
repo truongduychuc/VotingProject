@@ -7,11 +7,11 @@ import {FooterComponent} from "./footer/footer.component";
 import {NavbarComponent} from "./navbar/navbar.component";
 import {SidebarComponent} from "./sidebar/sidebar.component";
 import {IconsModule} from "angular-bootstrap-md";
-import {DataTrackingComponent } from './data-tracking/data-tracking.component';
+import {DashboardComponent } from './dashboard/dashboard.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {DashboardRoutingModule} from "./dashboard-routing.module";
+import {HomeRoutingModule} from "./home-routing.module";
 import {RouterModule} from "@angular/router";
-import {DashboardComponent} from "./dashboard.component";
+import {HomeComponent} from "./home.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
@@ -24,8 +24,8 @@ import {VotingComponent } from './voting/voting.component';
     NavbarComponent,
     SidebarComponent,
     FooterComponent,
-    DataTrackingComponent,
     DashboardComponent,
+    HomeComponent,
     PersonalInformationComponent,
     VotingComponent
   ],
@@ -34,9 +34,9 @@ import {VotingComponent } from './voting/voting.component';
     ReactiveFormsModule,
     RouterModule,
     FormsModule,
-    DashboardRoutingModule,
+    HomeRoutingModule,
     IconsModule,
     NgbModule
   ]
 })
-export class DashboardModule { }
+export class HomeModule { }

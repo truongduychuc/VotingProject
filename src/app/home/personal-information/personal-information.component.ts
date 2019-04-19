@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from "../../_models/user";
 import {HttpErrorResponse} from "@angular/common/http";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {AccountService} from "../../_services/account.service";
-import {map, tap} from "rxjs/operators";
 import {Router} from "@angular/router";
 
 @Component({
@@ -15,6 +14,8 @@ export class PersonalInformationComponent implements OnInit {
   personalUpdating: FormGroup;
   editable: boolean = false;
   currentUserProfile: User;
+  directManager: any;
+  message;
   constructor(private accountService: AccountService, private formBuilder: FormBuilder, private router: Router) { }
 
   ngOnInit() {
@@ -50,11 +51,19 @@ export class PersonalInformationComponent implements OnInit {
     this.editable = !this.editable;
   }
   getUserInfo() {
-    this.accountService.getPersonalProfile().subscribe((userProfileRes:User) => {
-      this.currentUserProfile = userProfileRes;
-      console.log(this.currentUserProfile);
+    this.accountService.getPersonalProfile().subscribe((userProfileRes:any) => {
+      this.currentUserProfile = userProfileRes.user;
+      if(!userProfileRes.hasOwnProperty('directManager')) {
+        this.message = userProfileRes.message;
+        console.log(userProfileRes.message);
+      }
+      else {
+        console.log('Has direct manager!');
+        this.directManager = userProfileRes.directManager;
+        console.log(this.currentUserProfile);
+      }
     }, (err: HttpErrorResponse) => {
-      console.log(err + ' status: ' +err.status);
+      console.log(err);
     })
   }
 }
