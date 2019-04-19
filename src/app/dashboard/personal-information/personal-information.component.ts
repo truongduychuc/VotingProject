@@ -18,14 +18,14 @@ export class PersonalInformationComponent implements OnInit {
   constructor(private accountService: AccountService, private formBuilder: FormBuilder, private router: Router) { }
 
   ngOnInit() {
-    this.generateForm();
     this.getUserInfo();
+    this.generateForm();
   }
   generateForm(): void {
     this.personalUpdating = this.formBuilder.group({
-      phone: this.currentUserProfile.phone,
-      address: this.currentUserProfile.address,
-      other: this.currentUserProfile.other
+      phone: '',
+      address: '',
+      other: ''
     })
   }
   updateInfo() {
