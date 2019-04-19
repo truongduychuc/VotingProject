@@ -1,26 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-import { DashboardComponent } from './dashboard/dashboard.component';
-import {CreateUserFormComponent} from './create-user-form/create-user-form.component';
-import { LoginFormComponent} from './login-form/login-form.component';
-import {AuthenticationGuard} from "./_guards/authentication.guard";
-import {EmployeeListComponent} from "./employee-list/employee-list.component";
-import {ChangePasswordFormComponent} from "./change-password-form/change-password-form.component";
 import {DefaultComponent} from "./default/default.component";
+import {HomeModule} from "./home/home.module";
+import {AuthenticationGuard} from "./_guards/authentication.guard";
+import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: '/default', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthenticationGuard] },
-  { path: 'create-user', component: CreateUserFormComponent},
-  { path: 'login', component: LoginFormComponent},
-  { path: 'employee-list', component: EmployeeListComponent},
-  { path: 'change-password', component: ChangePasswordFormComponent},
-  { path: 'default', component: DefaultComponent}
+  {path: '', redirectTo: '/start-page', pathMatch: 'full'},
+  {path: 'start-page', component: DefaultComponent},
+  {path: 'home', loadChildren: () => HomeModule, canActivate: [AuthenticationGuard]},
+  {path: '**', component: PageNotFoundComponent}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, /*{useHash: true}*/)],  // useHash: turn prefix into # sign
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
