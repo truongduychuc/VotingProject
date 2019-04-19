@@ -190,24 +190,27 @@ router.get('/profile', authorize(), (req, res) => {
             if (!user) {
                 res.status(400).send({ message: 'User does not exist' });
             } else {
-                //console.log(user.team.id);
-                User.findOne({
-                        where: {
-                            id_team: user.team.id,
-                            id_role: 2
-                        },
-                        attributes: ['first_name', 'last_name', 'english_name'],
-                    })
-                    .then(directManager => {
-                        if (!directManager) {
-                            res.status(200).send({ user, directManager: 'This user has no direct manager' });
-                        } else {
-                            res.status(200).send({ user, directManager: directManager });
-                        }
-                    })
-                    .catch(err => {
-                        res.status(400).send({ message: err });
-                    });
+                if (user.team == null) {
+                    res.status(200).send({ user, message: 'User have not had a team yet' });
+                } else {
+                    User.findOne({
+                            where: {
+                                id_team: user.team.id,
+                                id_role: 2
+                            },
+                            attributes: ['first_name', 'last_name', 'english_name'],
+                        })
+                        .then(directManager => {
+                            if (!directManager) {
+                                res.status(200).send({ user, message: 'This user has no direct manager' });
+                            } else {
+                                res.status(200).send({ user, directManager: directManager });
+                            }
+                        })
+                        .catch(err => {
+                            res.status(400).send({ message: err });
+                        });
+                }
             }
         })
         .catch(err => {
@@ -229,35 +232,49 @@ router.get('/profile/:id', authorize(), (req, res) => {
         } else {
             User.findOne({
                     where: {
-                        id: req.params.id
-                    }
+                        id: req.decoded.id
+                    },
+                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'other',
+                        'ava_url'
+                    ],
+                    include: [{
+                        model: Role,
+                        //attributes: ['name']
+                    }, {
+                        model: Team,
+                        //attributes: ['name']
+                    }]
                 })
                 .then(user => {
                     if (!user) {
                         res.status(400).send({ message: 'User does not exist' });
                     } else {
-                        User.findOne({
-                                where: {
-                                    id_team: user.team.id,
-                                    id_role: 2
-                                },
-                                attributes: ['first_name', 'last_name', 'english_name'],
-                            })
-                            .then(directManager => {
-                                if (!directManager) {
-                                    res.status(200).send({ user, directManager: 'This user has no direct manager' });
-                                } else {
-                                    res.status(200).send({ user, directManager: directManager });
-                                }
-                            })
-                            .catch(err => {
-                                res.status(400).send({ message: err });
-                            });
+                        if (user.team == null) {
+                            res.status(200).send({ user, message: 'User have not had a team yet' });
+                        } else {
+                            User.findOne({
+                                    where: {
+                                        id_team: user.team.id,
+                                        id_role: 2
+                                    },
+                                    attributes: ['first_name', 'last_name', 'english_name'],
+                                })
+                                .then(directManager => {
+                                    if (!directManager) {
+                                        res.status(200).send({ user, message: 'This user has no direct manager' });
+                                    } else {
+                                        res.status(200).send({ user, directManager: directManager });
+                                    }
+                                })
+                                .catch(err => {
+                                    res.status(400).send({ message: err });
+                                });
+                        }
                     }
                 })
                 .catch(err => {
-                    res.status(400).send({ message1: err });
-                });
+                    res.status(400).send({ message: err });
+                })
         }
     }).catch(err => {
         res.status(400).send({ message2: err });
