@@ -1,9 +1,11 @@
 /* Modals */
 
 .modal{
+  font-family: Poppins;
   .modal-dialog{
     margin-top: calc(#{$navbar-height} + 30px);
     .modal-content{
+      background-color: #ffffff;
       .modal-header{
         padding: $modal-header-padding-y $modal-header-padding-x;
         .close{

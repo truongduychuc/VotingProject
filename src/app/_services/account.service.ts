@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {User} from '../_models/user';
 import {Observable} from 'rxjs';
-import {Role} from "../_models/role";
 
 
 @Injectable({
@@ -17,7 +16,7 @@ export class AccountService {
 
   registerNewUser(newUser: User):Observable<any> {
     // JSON.stringify: convert object to JSON string
-    return this.httpClient.post<User>(this.serverURL + '/users/register', newUser);
+    return this.httpClient.post<any>(this.serverURL + '/users/register', newUser);
   }
 
   changePassword(current_password: string, new_password: string) {
@@ -28,21 +27,21 @@ export class AccountService {
     console.log(changePasswordObj);
     return this.httpClient.put(this.serverURL + '/users/change_password', changePasswordObj);
   }
-  getAllRoles(): Observable<Role[]> {
-    return this.httpClient.get<Role[]>(this.serverURL + '/users/role');
+  getUserProfileById(id: number): Observable<any>{ // for role admin
+    return this.httpClient.get(this.serverURL + `/users/profile/${id}`);
   }
-  getPersonalProfile(): Observable<any> {
+  getPersonalProfile(): Observable<any> {  // for role Developer
     return this.httpClient.get(this.serverURL + '/users/profile');
   }
-  updatePersonalProfile(updateInfo: Object) {
+  updatePersonalProfile(updateInfo: Object) { // for role Developer
     return this.httpClient.put(this.serverURL + '/users/update_profile', updateInfo);
   }
-  getOtherProfile(id:number) {
-
+  updateProfileForId(updateInfo: Object, id: number) {
+    return this.httpClient.put(this.serverURL + `/users/update/${id}`, updateInfo);
   }
   getUsersList(params?: HttpParams): Observable<any> {
     console.log(params);
-      return this.httpClient.get(this.serverURL + '/users/list', {
+      return this.httpClient.get(this.serverURL + '/users/list/admin', {
         params
       });
   }

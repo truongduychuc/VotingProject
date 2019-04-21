@@ -9,10 +9,11 @@ import {HomeComponent} from "./home.component";
 import {PersonalInformationComponent} from "./personal-information/personal-information.component";
 import {VotingComponent} from "./voting/voting.component";
 
-const dashboardRoutes: Routes = [
+
+const homeRoutes: Routes = [
   { path: '', component: HomeComponent, children: [
-      {path: '', redirectTo: 'data-tracking', pathMatch: 'full'},
-      {path: 'data-tracking', component: DashboardComponent},
+      {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+      {path: 'dashboard', component: DashboardComponent},
       {path: 'employee-list', component: EmployeeListComponent},
       {path: 'create-user', component: CreateUserFormComponent},
       {path: 'change-password', component: ChangePasswordFormComponent},
@@ -24,7 +25,7 @@ const dashboardRoutes: Routes = [
   declarations: [],
   imports: [ // , if you have a residual comma here, or a double comma somewhere, you will receiver an undefined value of DashboardRouting
     CommonModule,
-    RouterModule.forChild(dashboardRoutes)
+    RouterModule.forChild(homeRoutes)
   ],
   exports: [RouterModule]
 })

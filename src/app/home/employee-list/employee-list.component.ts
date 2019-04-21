@@ -3,11 +3,14 @@ import {AccountService} from "../../_services/account.service";
 import {User} from "../../_models/user";
 import {HttpErrorResponse, HttpParams} from "@angular/common/http";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {EditingModalComponent} from "./editing-modal/editing-modal.component";
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
   styleUrls: ['./employee-list.component.scss']
+
 })
 export class EmployeeListComponent implements OnInit, OnDestroy {
   currentPage = 1;
@@ -21,7 +24,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   itemsPerPageArr = [2,5,10,15,20,25];
   error: any;
   usersList : User[];
-  constructor(private accountService: AccountService) { }
+  constructor(private accountService: AccountService, private modalService: NgbModal) { }
   ngOnInit() {
     this.reloadPreviousStatus();
   }
@@ -236,6 +239,10 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   // remove status as route to other component in routeLinks set
    removeStatus() {
    sessionStorage.removeItem('lastParams');
+  }
+  openEditingModal(id: number) {
+    const modalRef = this.modalService.open(EditingModalComponent, {centered: true});
+    modalRef.componentInstance.id = id;
   }
 
  ngOnDestroy(): void {

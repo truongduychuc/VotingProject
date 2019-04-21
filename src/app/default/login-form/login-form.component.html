@@ -1,39 +1,33 @@
-<div class="row shadow">
-  <div class="col-lg-6 col-md-6 col-sm-12">
-    <div class="card">
-      <div class="card-header">
-        <h6>Login</h6>
-      </div>
-      <div class="card-body">
-        <form (ngSubmit)="loginWithUserAndPass()" [formGroup]="loginForm">
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label">Username</label>
-            <div class="col-sm-9">
-              <input type="text" formControlName="username" class="form-control" placeholder="Enter username">
-            <!--Input validation, note: touched - after user click on the input the first time  -->
-              <small class="text-small text-danger" *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].errors?.required">
-                Username is required
-              </small>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label">Password</label>
-            <div class="col-sm-9">
-              <input type="password" formControlName="password" class="form-control" placeholder="Password">
-              <p class="text-small text-danger" *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].errors?.required">
-                Password is required
-              </p>
-              <small class="text-small text-danger text-left"
-                 *ngIf="loginForm.controls['password'].errors?.minlength != null">
-                Password's minimum length is 8
-              </small>
-            </div>
-          </div>
-          <div class="btn-container-center">
-              <input (keydown.enter)="loginWithUserAndPass()" type="submit" class="btn btn-success" value="Login"/>
-          </div>
-        </form>
+<div class="modal-header">
+  <h4 class="modal-title text-center" id="modal-basic-title">Login</h4>
+</div>
+<div class="modal-body">
+  <form (ngSubmit)="loginWithUserAndPass()" [formGroup]="loginForm">
+    <div class="form-group row">
+      <label class="col-sm-3 col-form-label">Username</label>
+      <div class="col-sm-9">
+        <input type="text" formControlName="username" class="form-control" placeholder="Enter username">
+        <!--Input validation, note: touched - after user click on the input the first time  -->
+        <small class="text-small text-danger" *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].errors?.required">
+          Username is required
+        </small>
       </div>
     </div>
-  </div>
+    <div class="form-group row">
+      <label class="col-sm-3 col-form-label">Password</label>
+      <div class="col-sm-9">
+        <input type="password" formControlName="password" class="form-control" placeholder="Password">
+        <p class="text-small text-danger" *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].errors?.required">
+          Password is required
+        </p>
+        <small class="text-small text-danger text-left"
+               *ngIf="loginForm.controls['password'].errors?.minlength != null">
+          Password's minimum length is 8
+        </small>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <input (keydown.enter)="loginWithUserAndPass()" type="submit" class="btn btn-success" value="Login"/>
+    </div>
+  </form>
 </div>

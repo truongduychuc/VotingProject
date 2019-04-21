@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { AuthenticationService} from "../../_services/authentication.service";
 import { Router } from "@angular/router";
 import {AccountService} from "../../_services/account.service";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
@@ -10,11 +11,11 @@ import {AccountService} from "../../_services/account.service";
 })
 export class LoginFormComponent implements OnInit {
   loginForm: FormGroup;
-  constructor(private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router, private accountService: AccountService) { }
+  constructor(public activeModal: NgbActiveModal,private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router, private accountService: AccountService) { }
 
   ngOnInit() {
     if(this.authService.isLoggedIn()) {
-      this.router.navigate(['dashboard']);
+      this.router.navigate(['home']);
     }
     this.generateForm();
   }
@@ -31,7 +32,8 @@ export class LoginFormComponent implements OnInit {
     const password = this.getControl.password.value;
     this.authService.login(username, password).subscribe(res => {
       // get current user after set token
-        this.router.navigate(['dashboard']);
+      this.activeModal.close('Login successfully!');
+        this.router.navigate(['home']);
     }, errorLogin => {
       console.log('Login form' + JSON.stringify(errorLogin));
     } );

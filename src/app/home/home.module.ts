@@ -6,15 +6,15 @@ import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {FooterComponent} from "./footer/footer.component";
 import {NavbarComponent} from "./navbar/navbar.component";
 import {SidebarComponent} from "./sidebar/sidebar.component";
-import {IconsModule} from "angular-bootstrap-md";
 import {DashboardComponent } from './dashboard/dashboard.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HomeRoutingModule} from "./home-routing.module";
 import {RouterModule} from "@angular/router";
 import {HomeComponent} from "./home.component";
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
+import { EditingModalComponent } from './employee-list/editing-modal/editing-modal.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +27,8 @@ import {VotingComponent } from './voting/voting.component';
     DashboardComponent,
     HomeComponent,
     PersonalInformationComponent,
-    VotingComponent
+    VotingComponent,
+    EditingModalComponent
   ],
   imports: [
     CommonModule,
@@ -35,8 +36,13 @@ import {VotingComponent } from './voting/voting.component';
     RouterModule,
     FormsModule,
     HomeRoutingModule,
-    IconsModule,
     NgbModule
+  ],
+  providers: [
+    NgbActiveModal
+  ],
+  entryComponents: [
+    EditingModalComponent
   ]
 })
 export class HomeModule { }
