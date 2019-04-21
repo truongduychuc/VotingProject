@@ -22,6 +22,28 @@ User.belongsTo(Role, { foreignKey: 'id_role', constraints: false });
 Team.hasMany(User, { foreignKey: 'id_team', constraints: false });
 User.belongsTo(Team, { foreignKey: 'id_team', constraints: false });
 
+/*
+API
+/users
+
+login: (post) /authenticate
+createUser(admin): (post) /register
+getRole: (get) /role
+getTeam: (get) /team
+getProfile: (get) /profile
+getProfileById: (get) /profile/:id
+listUser: (get) /list
+listUser(admin): (get) /list/admin
+changePassword: (put) /change_password
+resetPassword(admin): (put) /reset_password/:id
+updateProfile: (put) /update_profile
+updateProfile(admin): (put) /update/:id
+uploadAvatar: (post) /upload_avatar
+deleteUser(admin): (post) /delete/:id
+
+*/
+
+
 //REGISTER
 router.post('/register', (req, res) => {
     const today = new Date();
@@ -234,7 +256,7 @@ router.get('/profile/:id', authorize(), (req, res) => {
                     where: {
                         id: req.decoded.id
                     },
-                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'other',
+                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'is_active', 'address', 'other',
                         'ava_url'
                     ],
                     include: [{

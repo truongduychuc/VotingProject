@@ -31,6 +31,23 @@ Nominee.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name' });
 
 var moment = require('moment');
 
+/*
+API
+/awards
+
+createAward(admin): (post) /create
+listAward: (get) /list
+updateAward(admin): (put) /update/:id
+uploadLogo(admin): (post) /upload_logo/:id
+getAwardInfo: (get) /:id
+getPastWinner: (get) /past_winner/:id
+getRankingBreakdown: (get) /breakdown/:id
+
+deleteAward(admin): (post) /delete/:id (not done)
+
+*/
+
+
 
 
 //CREATE AN AWARD
