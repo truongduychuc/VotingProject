@@ -45,9 +45,6 @@ export class AccountService {
         params
       });
   }
-  getAllUsers(): Observable<any>{
-    return this.httpClient.get(this.serverURL + '/users/list');
-  }
   deleteUser(id: number) {
     return this.httpClient.post(this.serverURL + `/users/delete/${id}`, {});
   }

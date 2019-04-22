@@ -17,9 +17,8 @@
           <div class="form-group">
             <label class="col-form-label">Team</label>
             <select class="form-control" formControlName="id_team">
-              <option value="1">Admin</option>
-              <option value="5">Manager</option>
-              <option value="2">Fox</option>
+              <option [selected]="userProfile.team == null" [ngValue]="null">**No team**</option>
+              <option *ngFor="let team of teams" [ngValue]="team.id" [selected]="team.id == userProfile?.team?.id">{{team.name}}</option>
             </select>
           </div>
           <div class="form-group">

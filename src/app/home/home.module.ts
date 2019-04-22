@@ -1,7 +1,7 @@
 import {NgModule } from '@angular/core';
 import {CommonModule } from '@angular/common';
 import {ChangePasswordFormComponent} from "./change-password-form/change-password-form.component";
-import {CreateUserFormComponent} from "./create-user-form/create-user-form.component";
+import {CreateUserFormComponent} from "./employee-list/create-user-form/create-user-form.component";
 import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {FooterComponent} from "./footer/footer.component";
 import {NavbarComponent} from "./navbar/navbar.component";
@@ -42,7 +42,8 @@ import { EditingModalComponent } from './employee-list/editing-modal/editing-mod
     NgbActiveModal
   ],
   entryComponents: [
-    EditingModalComponent
+    EditingModalComponent,
+    CreateUserFormComponent
   ]
 })
 export class HomeModule { }

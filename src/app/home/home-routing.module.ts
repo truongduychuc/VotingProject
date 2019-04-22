@@ -1,5 +1,5 @@
 import {NgModule } from '@angular/core';
-import {CreateUserFormComponent} from "./create-user-form/create-user-form.component";
+import {CreateUserFormComponent} from "./employee-list/create-user-form/create-user-form.component";
 import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {ChangePasswordFormComponent} from "./change-password-form/change-password-form.component";
 import {RouterModule, Routes} from "@angular/router";
@@ -15,7 +15,6 @@ const homeRoutes: Routes = [
       {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
       {path: 'dashboard', component: DashboardComponent},
       {path: 'employee-list', component: EmployeeListComponent},
-      {path: 'create-user', component: CreateUserFormComponent},
       {path: 'change-password', component: ChangePasswordFormComponent},
       {path: 'vote', component: VotingComponent},
       {path: 'personal-info', component: PersonalInformationComponent}

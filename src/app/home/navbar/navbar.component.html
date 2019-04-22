@@ -7,10 +7,10 @@
   <div class="col-6 justify-content-end d-flex">
     <div class="navbar-menu-wrapper d-none d-sm-flex align-items-center">
       <ul class="navbar-nav navbar-nav-right">
-        <li class="nav-item dropdown d-inline-block" ngbDropdown>
+        <li *ngIf="currentUserProfile" class="nav-item dropdown d-inline-block" ngbDropdown>
           <a class="nav-link" id="UserDropdown">
-            <span class="profile-text">Hello, Richard V.Welsh !</span>
-            <img class="img-xs rounded-circle" src="assets/images/faces/face1.jpg" alt="Profile image">
+            <span class="profile-text">{{currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name}}</span>
+            <img class="img-xs rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
             <span class="dropdown-toggle" ngbDropdownToggle></span>
           </a>
           <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdown">
@@ -45,9 +45,9 @@
     </div>
     <div class="navbar-menu-wrapper d-flex d-sm-none align-items-center">
       <ul class="navbar-nav navbar-nav-right">
-        <li class="nav-item dropdown d-inline-block" ngbDropdown>
+        <li *ngIf="currentUserProfile" class="nav-item dropdown d-inline-block" ngbDropdown>
           <a class="nav-link row" id="UserDropdownMini">
-            <img class="border-strong img-xs rounded-circle" src="assets/images/faces/face1.jpg" alt="Profile image">
+            <img class="border-strong img-xs rounded-circle" [src]="currentUserProfile.ava_url?currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
             <span class="dropdown-toggle" ngbDropdownToggle></span>
           </a>
           <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">

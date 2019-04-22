@@ -11,7 +11,7 @@ import {DefaultComponent} from "./default/default.component";
 import {LoginFormComponent} from "./default/login-form/login-form.component";
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {ModalModule} from "ngx-bootstrap";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,8 +26,7 @@ import {ModalModule} from "ngx-bootstrap";
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModule,
-    ModalModule.forRoot()
+    NgbModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
@@ -35,9 +34,6 @@ import {ModalModule} from "ngx-bootstrap";
   ],
   entryComponents: [
     LoginFormComponent
-  ],
-  exports: [
-    ModalModule
   ],
   bootstrap: [AppComponent]
 })
