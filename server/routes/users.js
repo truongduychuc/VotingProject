@@ -254,7 +254,7 @@ router.get('/profile/:id', authorize(), (req, res) => {
         } else {
             User.findOne({
                     where: {
-                        id: req.decoded.id
+                        id: req.params.id
                     },
                     attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'is_active', 'address', 'other',
                         'ava_url'
@@ -375,7 +375,7 @@ router.get('/list', (req, res) => {
                                     },
                                     {
                                         model: Team,
-                                        required: true,
+                                        // required: true,
                                         //attributes: ['name']
                                     }
                                 ],
@@ -415,7 +415,7 @@ router.get('/list', (req, res) => {
                                         },
                                         {
                                             model: Team,
-                                            required: true,
+                                            // required: true,
                                             //attributes: ['name']
                                         }
                                     ],
@@ -490,7 +490,7 @@ router.get('/list', (req, res) => {
                                 },
                                 {
                                     model: Team,
-                                    required: true,
+                                    // required: true,
                                 }
                             ],
                         })
@@ -553,7 +553,7 @@ router.get('/list', (req, res) => {
                                                 },
                                                 {
                                                     model: Team,
-                                                    required: true,
+                                                    // required: true,
                                                 }
                                             ],
                                             order: [
@@ -623,7 +623,7 @@ router.get('/list', (req, res) => {
                                                     },
                                                     {
                                                         model: Team,
-                                                        required: true,
+                                                        // required: true,
                                                         //attributes: ['name']
                                                     }
                                                 ],
@@ -732,7 +732,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                     },
                                     {
                                         model: Team,
-                                        required: true,
+                                        //required: true,
                                         //attributes: ['name']
                                     }
                                 ],
@@ -772,7 +772,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                         },
                                         {
                                             model: Team,
-                                            required: true,
+                                            //required: true,
                                             //attributes: ['name']
                                         }
                                     ],
@@ -849,7 +849,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                 },
                                 {
                                     model: Team,
-                                    required: true,
+                                    //required: true,
                                     //attributes: ['name']
                                 }
                             ],
@@ -913,7 +913,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                                 },
                                                 {
                                                     model: Team,
-                                                    required: true,
+                                                    //required: true,
                                                     //attributes: ['name']
                                                 }
                                             ],
@@ -984,7 +984,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                                     },
                                                     {
                                                         model: Team,
-                                                        required: true,
+                                                        //required: true,
                                                         //attributes: ['name']
                                                     }
                                                 ],
@@ -1098,6 +1098,10 @@ router.put('/update/:id', authorize('admin'), (req, res) => {
         if (!user) {
             res.status(400).send({ message: 'User does not exist' });
         } else {
+            //console.log(req.body.id_team)
+            if (req.body.id_team == '') {
+                req.body.id_team = null
+            }
             User.update({
                 id_role: req.body.id_role,
                 id_team: req.body.id_team,
