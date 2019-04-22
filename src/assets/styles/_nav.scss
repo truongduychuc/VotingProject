@@ -109,6 +109,9 @@
           @extend .align-items-center;
           margin-bottom: 0;
           padding: 7px 25px;
+          @media (min-width: 768px) {
+            padding: 3px 10px;
+          }
 
           i {
             font-size: 17px;

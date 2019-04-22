@@ -32,7 +32,7 @@ export class EditingModalComponent implements OnInit {
   generateForm() {
     this.editingUser = this.fb.group({
       id_role: this.userProfile.role.id,
-      id_team: this.userProfile.team.id,
+      id_team: this.userProfile.team != null?this.userProfile.team.id:null,
       email: [this.userProfile.email,[Validators.email]],
       first_name: this.userProfile.first_name,
       last_name: this.userProfile.last_name,
