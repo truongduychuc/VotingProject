@@ -5,6 +5,7 @@ import {HttpErrorResponse, HttpParams} from "@angular/common/http";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditingModalComponent} from "./editing-modal/editing-modal.component";
+import {CreateUserFormComponent} from "./create-user-form/create-user-form.component";
 
 @Component({
   selector: 'app-employee-list',
@@ -24,6 +25,8 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   itemsPerPageArr = [2,5,10,15,20,25];
   error: any;
   usersList : User[];
+
+  previousSearchText: string;
   constructor(private accountService: AccountService, private modalService: NgbModal) { }
   ngOnInit() {
     this.reloadPreviousStatus();
@@ -184,8 +187,12 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
   // for search input
   searchOnText() {
+    if(this.currentSearchText == this.previousSearchText){
+      return;
+    }
     this.error = undefined;
     this.getUserListPerPage();
+    this.previousSearchText = this.currentSearchText;
   }
 
   // change sort direction
@@ -243,6 +250,19 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   openEditingModal(id: number) {
     const modalRef = this.modalService.open(EditingModalComponent, {centered: true});
     modalRef.componentInstance.id = id;
+    modalRef.result.then(value => {
+      this.getUserListPerPage();
+    }, reason => {
+      console.log(reason);
+    })
+  }
+  openCreatingModal() {
+    const modalRef = this.modalService.open(CreateUserFormComponent);
+    modalRef.result.then(value => {
+      this.getUserListPerPage();
+    }, reason => {
+      console.log(reason);
+    })
   }
 
  ngOnDestroy(): void {
