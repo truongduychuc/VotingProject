@@ -1,0 +1,76 @@
+<div class="grid-margin">
+  <div class="card">
+    <div class="card-body">
+      <h3>Edit personal profile</h3>
+      <form (ngSubmit)="updateInfo()" [formGroup]="personalUpdating">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label-lg">
+                Employee Name
+              </label>
+              <div class="col-sm-9">
+                <input disabled="disabled" [value]="currentUserProfile?.first_name + ' (' + currentUserProfile?.english_name+') ' + currentUserProfile?.last_name"
+                       type="text" class="form-control form-control-lg">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label-lg">
+                Email
+              </label>
+              <div class="col-sm-9">
+                <input disabled="disabled" [value]="currentUserProfile?.email" type="text" class="form-control form-control-lg">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label-lg">
+                Phone
+              </label>
+              <div class="col-sm-9">
+                <input formControlName="phone" [value]="currentUserProfile?.phone" [readOnly]="!editable" type="text" class="form-control form-control-lg">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label-lg">
+                Address
+              </label>
+              <div class="col-sm-9">
+                <input  formControlName="address" [value]="currentUserProfile?.address" [readOnly]="!editable" type="text" class="form-control form-control-lg">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label-lg">
+                Team
+              </label>
+              <div class="col-sm-9">
+                <input [value]="currentUserProfile?.team?.name" disabled="disabled" type="text" class="form-control form-control-lg">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label-lg">
+                Direct Manager
+              </label>
+              <div class="col-sm-9">
+                <input disabled="disabled" [value]="message?'':directManager?.first_name + ' (' + directManager?.english_name + ') ' + directManager?.last_name " type="text" class="form-control form-control-lg">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label-lg">
+                Other
+              </label>
+              <div class="col-sm-9">
+                <input formControlName="other" [readOnly]="!editable" [value]="currentUserProfile?.other" type="text" class="form-control form-control-lg">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center flex-wrap">
+          <button type="button" (click)="changeEditable()" class="btn btn-warning mr-md-4 ml-md-0 m-sm-2 m-1">Edit</button>
+          <input type="submit" class="btn btn-info ml-md-4 mr-md-0 m-sm-2 m-1" value="Save">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
