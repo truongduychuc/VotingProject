@@ -24,7 +24,7 @@
           <div class="col-sm-6 p-0">
             <div class="row d-flex justify-content-sm-end">
               <div class="p-3">
-                <button class="btn btn-primary pl-1 pr-1" title="Create new user"><i class="fas fa-user-plus"></i></button>
+                <button class="btn btn-primary pl-1 pr-1" (click)="openCreatingModal()" title="Create new user"><i class="fas fa-user-plus"></i></button>
               </div>
               <div class="form-group pl-3 pb-3 pt-3 m-0">
                 <input type="text" id="search" class="form-control" (keyup)="searchOnText()" [(ngModel)]="currentSearchText" placeholder="Search...">
