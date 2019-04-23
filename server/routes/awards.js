@@ -135,12 +135,21 @@ router.post('/create', (req, res) => {
                 awardData.year = year;
                 Award.create(awardData)
                     .then(award => {
+
                         //multichain.getInfo();
                         let stream_name = 'award_' + award.id;
+                        let asset_name = 'asset_' + award.id;
+                        let token_name = 'token_' + award.id;
                         console.log(stream_name);
+                        //Create new stream
                         multichain.createStream(stream_name);
+                        //Subscribe
+                        multichain.subscribe(stream_name);
+
+
                         voterData.id_award = award.id;
                         nomineeData.id_award = award.id;
+
                         //Find voter with role
                         const voter = req.body.id_role_voter;
                         if (voter.length == 0) {
@@ -156,16 +165,84 @@ router.post('/create', (req, res) => {
                                         if (users.length == 0) {
                                             res.status(400).send({ message: 'There is no user' });
                                         } else {
-                                            for (var i = 0; i < users.length; i++) {
-                                                voterData.id_user = users[i].id;
-                                                //Add voter
-                                                Voter.create(voterData)
-                                                    .then(() => {})
-                                                    .catch(err => {
-                                                        console.log('error0' + err)
-                                                        res.status(400).send({ error0: err })
-                                                    })
-                                            }
+
+
+                                            multichain.initiateMultichain().getNewAddress()
+                                                .then(address => {
+                                                    console.log('Get a new address for asset');
+                                                    //Grant permission for asset
+                                                    multichain.grant(address, 'receive,send');
+                                                    let asset_data = {
+                                                        id: 0,
+                                                        address: address
+                                                    }
+                                                    multichain.publish(stream_name, asset_name, asset_data);
+                                                    //Create new asset
+                                                    multichain.issue(address, token_name, users.length * 9);
+                                                })
+                                                .then(() => {
+                                                    for (var i = 0; i < users.length; i++) {
+                                                        voterData.id_user = users[i].id;
+                                                        let id = users[i].id;
+                                                        multichain.initiateMultichain().listStreamKeyItems({
+                                                                stream: stream_name,
+                                                                key: asset_name,
+                                                                verbose: true
+                                                            })
+                                                            .then(asset => {
+                                                                let asset_txid = asset[0].txid;
+                                                                console.log(asset_txid);
+                                                                multichain.initiateMultichain().getStreamItem({
+                                                                        stream: stream_name,
+                                                                        txid: asset_txid
+                                                                    })
+                                                                    .then(result => {
+                                                                        //Get address of asset
+                                                                        address1 = result.data.json.address;
+                                                                        //Get new address
+                                                                        multichain.initiateMultichain().getNewAddress()
+                                                                            .then(address2 => {
+                                                                                console.log('Get new address for voter ');
+                                                                                //Grant permission for voter
+                                                                                multichain.grant(address2, 'receive,send');
+                                                                                //Save data to stream
+                                                                                let key_name1 = 'voter';
+                                                                                let voter_data = {
+                                                                                    id: id,
+                                                                                    address: address2
+                                                                                }
+                                                                                multichain.publish(stream_name, key_name1, voter_data);
+                                                                                //Send token to voter
+                                                                                multichain.sendAssetFrom(address1, address2, token_name, 9);
+                                                                                //Revoke permission
+                                                                                multichain.revoke(address2, 'receive,send');
+                                                                            })
+                                                                            .catch(err => {
+                                                                                console.log('Error when send token ' + err);
+                                                                            })
+                                                                    })
+                                                                    .catch(err => {
+                                                                        console.log('Error when get stream item ' + err);
+                                                                    })
+                                                            })
+                                                            .catch(err => {
+                                                                console.log('Error when list asset address ' + err);
+                                                            })
+
+
+                                                        //Add voter
+                                                        Voter.create(voterData)
+                                                            .then(() => {})
+                                                            .catch(err => {
+                                                                console.log('error0' + err)
+                                                                res.status(400).send({ error0: err })
+                                                            })
+                                                    }
+
+                                                })
+                                                .catch(err => {
+                                                    console.log('Error when set new address ' + err);
+                                                })
                                         }
                                     })
                                     .catch(err => {
@@ -173,6 +250,7 @@ router.post('/create', (req, res) => {
                                     })
                             }
                         }
+
                         // Find nominee with id
                         const nominee = req.body.id_nominee;
                         if (nominee.length == 0) {
@@ -188,6 +266,9 @@ router.post('/create', (req, res) => {
                                         for (var i = 0; i < users.length; i++) {
                                             nomineeData.id_team = users[i].id_team;
                                             nomineeData.id_nominee = users[i].id;
+
+                                            multichain.setNominee(stream_name, users[i].id);
+
                                             //Add nominee
                                             Nominee.create(nomineeData)
                                                 .then(() => {})
@@ -829,4 +910,53 @@ router.get('/breakdown/:id', (req, res) => {
     //         res.status(400).send({ message: err });
     //     })
 })
+
+router.post('/voting_award', (req, res) => {
+    Award.findOne({
+            where: {
+                id: req.body.id
+            }
+        })
+        .then(award => {
+            if (!award) {
+                res.status(400).send({ message: 'There is no award' });
+            } else {
+                Voter.findOne({
+                        where: {
+                            id_award: req.body.id,
+                            id_user: req.decoded.id
+                        }
+                    })
+                    .then(voter => {
+                        if (!voter) {
+                            res.status(400).send({ message: 'You are not allowed to vote this award' });
+                        } else {
+                            if (voter.vote_status == 0) {
+                                res.status(400).send({ message: 'You voted this award already' });
+                            } else {
+                                if (!checkVoteValid()) {
+                                    res.status(400).send({ message: 'Your vote is invalid' });
+                                }
+                                voter.vote_status == 0;
+                            }
+                        }
+                    })
+                    .catch()
+            }
+        })
+        .catch()
+})
+
+function checkVoteValid() {
+    id_award = req.body.id;
+    first_vote = req.body.first_vote;
+    second_vote = req.body.second_vote;
+    third_vote = req.body.third_vote;
+    if (id_award == '' || first_vote == '' || second_vote == '' || third_vote == '') {
+        return false;
+    }
+    return true;
+}
+
+
 module.exports = router;
