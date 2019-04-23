@@ -1,4 +1,4 @@
-<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top flex-row">
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top flex-row shadow">
   <div class="col-6 justify-content-start d-flex">
     <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleOffcanvas()">
       <span class="mdi mdi-menu"></span>
@@ -47,7 +47,7 @@
       <ul class="navbar-nav navbar-nav-right">
         <li *ngIf="currentUserProfile" class="nav-item dropdown d-inline-block" ngbDropdown>
           <a class="nav-link row" id="UserDropdownMini">
-            <img class="border-strong img-xs rounded-circle" [src]="currentUserProfile.ava_url?currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+            <img class="border-strong img-xs rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
             <span class="dropdown-toggle" ngbDropdownToggle></span>
           </a>
           <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">

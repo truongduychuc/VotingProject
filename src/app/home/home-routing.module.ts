@@ -8,6 +8,7 @@ import {DashboardComponent} from "./dashboard/dashboard.component";
 import {HomeComponent} from "./home.component";
 import {PersonalInformationComponent} from "./personal-information/personal-information.component";
 import {VotingComponent} from "./voting/voting.component";
+import {AwardListComponent} from "./award-list/award-list.component";
 
 
 const homeRoutes: Routes = [
@@ -17,7 +18,8 @@ const homeRoutes: Routes = [
       {path: 'employee-list', component: EmployeeListComponent},
       {path: 'change-password', component: ChangePasswordFormComponent},
       {path: 'vote', component: VotingComponent},
-      {path: 'personal-info', component: PersonalInformationComponent}
+      {path: 'personal-info', component: PersonalInformationComponent},
+      {path: 'award-list', component:AwardListComponent}
     ]}
 ];
 @NgModule({

@@ -15,6 +15,7 @@ import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
 import { EditingModalComponent } from './employee-list/editing-modal/editing-modal.component';
+import { AwardListComponent } from './award-list/award-list.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { EditingModalComponent } from './employee-list/editing-modal/editing-mod
     HomeComponent,
     PersonalInformationComponent,
     VotingComponent,
-    EditingModalComponent
+    EditingModalComponent,
+    AwardListComponent
   ],
   imports: [
     CommonModule,

@@ -16,15 +16,32 @@
 }
 table{
   table-layout: auto;
-  th {
-    position: relative;
-    background-color: #9068be;
-    word-wrap: break-word;
-    padding: 13px 18px!important;
+  thead{
+    th {
+      position: relative;
+      background-color: #9068be;
+      word-wrap: break-word;
+      padding: 18px 20px!important;
+    }
   }
   td {
     word-wrap: break-word;
-    padding: 7px 15px!important;
+    padding: 12px 20px!important;
+    .delete {
+      color: #cc2127;
+    }
+    .edit {
+      color: #1da1f2;
+    }
+    .reset {
+      color: #424964;
+    }
+    .delete, .edit, .reset {
+      cursor: pointer;
+      &:hover {
+        color: black;
+      }
+    }
   }
   .btn {
     border: none;

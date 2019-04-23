@@ -1,0 +1,19 @@
+.row {
+  .card {
+    background-color:  #f2f2f2;
+    border-radius: 7px;
+    .card {
+      margin-top: 10px;
+      background-color: #dff0fa;
+      border-radius: 0;
+    }
+    .banner {
+      background-color: #9068be;
+      padding: 1rem 1.81rem;
+      color: #f2f2f2;
+      a {
+        color: #f2f2f2;
+      }
+    }
+  }
+}
