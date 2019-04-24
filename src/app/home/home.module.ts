@@ -16,6 +16,8 @@ import {PersonalInformationComponent } from './personal-information/personal-inf
 import {VotingComponent } from './voting/voting.component';
 import { EditingModalComponent } from './employee-list/editing-modal/editing-modal.component';
 import { AwardListComponent } from './award-list/award-list.component';
+import { AwardAsYearComponent } from './award-list/award-as-year/award-as-year.component';
+import { AwardComponent } from './award-list/award/award.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { AwardListComponent } from './award-list/award-list.component';
     PersonalInformationComponent,
     VotingComponent,
     EditingModalComponent,
-    AwardListComponent
+    AwardListComponent,
+    AwardAsYearComponent,
+    AwardComponent
   ],
   imports: [
     CommonModule,

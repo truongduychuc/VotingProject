@@ -6,7 +6,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./award-list.component.scss']
 })
 export class AwardListComponent implements OnInit {
-  isCollapsed: false;
   constructor() { }
 
   ngOnInit() {

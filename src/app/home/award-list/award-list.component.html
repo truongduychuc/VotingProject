@@ -9,7 +9,10 @@
       </div>
       <div class="col-sm-6 d-flex justify-content-sm-end">
         <div class="form-group">
-          <select class="form-control">
+          <button class="btn btn-add-award"><i class="fas fa-plus-circle fa-2x"></i></button>
+        </div>
+        <div class="form-group">
+          <select class="form-control" style="margin-top: 0.56rem">
             <option hidden >Find an award</option>
             <option>text 1</option>
             <option>text 2</option>
@@ -21,35 +24,8 @@
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-              <li class="nav-item">
-                <a class="nav-link active" href="#">Active</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Disabled</a>
-              </li>
-            </ul>
-          </div>
           <div class="card-body overflow-auto" style="max-height: 450px">
-            <div class="card shadow">
-              <div class="card-body d-flex justify-content-between banner">
-                <strong>2018</strong>
-                <a [attr.aria-expanded]="isCollapsed" aria-controls="collapseExample" (click)="isCollapsed = !isCollapsed">
-                  Expand
-                </a>
-              </div>
-            </div>
-            <div id="collapseExample" [ngbCollapse]="isCollapsed">
-              <div class="card">
-                <div class="card-body">
-                  You can collapse this card by clicking Toggle
-                </div>
-              </div>
-            </div>
+            <app-award-as-year></app-award-as-year>
           </div>
         </div>
       </div>
