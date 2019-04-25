@@ -1,0 +1,96 @@
+<div class="modal-header">
+<h4 class="modal-title">Add an award</h4>
+  <button (click)="activeModal.dismiss('Dismiss!')" type="button" class="close" aria-label="Close" >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form">
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label class="col-form-label">Name</label>
+          <select class="form-control">
+            <option hidden>Award name</option>
+            <option value="1">Employee of the year</option>
+            <option value="2">Rookie of the year</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div  class="form-group">
+          <label class="col-form-label">Other name</label>
+          <input type="text" class="form-control">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label class="col-form-label">Year</label>
+          <select class="form-control">
+            <option hidden>Year</option>
+            <option *ngFor="let year of years" [ngValue]="year">{{year}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label class="col-form-label">Date start</label>
+          <div class="input-group">
+            <input class="form-control" placeholder="yyyy-mm-dd" ngbDatepicker #datePickerStart = "ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" type="button" (click)="datePickerStart.toggle()">
+                <i class="fas fa-calendar-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-form-label">Date end</label>
+          <div class="input-group">
+            <input class="form-control" placeholder="yyyy-mm-dd" ngbDatepicker #datePickerEnd = "ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" type="button" (click)="datePickerEnd.toggle()">
+                <i class="fas fa-calendar-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="col-form-label">Total prize (in cash)</label>
+          <input type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="col-form-label">Who can be nominated?</label>
+          <ng-select class="form-control">
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="col-form-label">Item</label>
+          <input type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="col-form-label">Who can vote?</label>
+          <select class="form-control">
+            <option hidden>Who?</option>
+            <option value="1">Manager</option>
+            <option value="2">All employees</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="col-form-label">Description</label>
+          <textarea class="form-control" rows="5"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center flex-wrap">
+      <button type="submit" class="btn btn-success btn-rounded mr-md-4 ml-md-0 m-sm-2 m-1">Add</button>
+      <button type="button" (click)="activeModal.dismiss('Dismiss by cancel button')" class="btn btn-dark btn-rounded ml-md-4 mr-md-0 m-sm-2 m-1">Cancel</button>
+    </div>
+  </div>
+</div>
+

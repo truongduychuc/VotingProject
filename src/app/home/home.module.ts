@@ -18,6 +18,8 @@ import { EditingModalComponent } from './employee-list/editing-modal/editing-mod
 import { AwardListComponent } from './award-list/award-list.component';
 import { AwardAsYearComponent } from './award-list/award-as-year/award-as-year.component';
 import { AwardComponent } from './award-list/award/award.component';
+import { AddAwardComponent } from './award-list/add-award/add-award.component';
+import {NgSelectModule} from "@ng-select/ng-select";
 
 @NgModule({
   declarations: [
@@ -34,7 +36,8 @@ import { AwardComponent } from './award-list/award/award.component';
     EditingModalComponent,
     AwardListComponent,
     AwardAsYearComponent,
-    AwardComponent
+    AwardComponent,
+    AddAwardComponent
   ],
   imports: [
     CommonModule,
@@ -42,14 +45,16 @@ import { AwardComponent } from './award-list/award/award.component';
     RouterModule,
     FormsModule,
     HomeRoutingModule,
-    NgbModule
+    NgbModule,
+    NgSelectModule
   ],
   providers: [
     NgbActiveModal
   ],
   entryComponents: [
     EditingModalComponent,
-    CreateUserFormComponent
+    CreateUserFormComponent,
+    AddAwardComponent
   ]
 })
 export class HomeModule { }
