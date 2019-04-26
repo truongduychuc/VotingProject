@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AccountService} from "../../_services/account.service";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-change-password-form',
@@ -9,7 +10,7 @@ import {AccountService} from "../../_services/account.service";
 })
 export class ChangePasswordFormComponent implements OnInit {
   changingPasswordForm: FormGroup;
-  constructor(private formBuilder: FormBuilder, private accountService: AccountService) { }
+  constructor(private formBuilder: FormBuilder, private accountService: AccountService, public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
     this.generateForm();

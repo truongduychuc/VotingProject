@@ -60,6 +60,9 @@ export class AccountService {
         params
       });
   }
+  resetPassword(id: number) {
+    return this.httpClient.put(this.serverURL + `/users/reset_password/${id}`, {});
+  }
   deleteUser(id: number) {
     return this.httpClient.post(this.serverURL + `/users/delete/${id}`, {});
   }

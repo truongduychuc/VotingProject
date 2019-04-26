@@ -54,7 +54,8 @@ import {NgSelectModule} from "@ng-select/ng-select";
   entryComponents: [
     EditingModalComponent,
     CreateUserFormComponent,
-    AddAwardComponent
+    AddAwardComponent,
+    ChangePasswordFormComponent
   ]
 })
 export class HomeModule { }

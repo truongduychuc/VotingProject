@@ -20,7 +20,7 @@
           <img class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
         </a>
         <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdown">
-          <a routerLink="change-password" class="dropdown-item">
+          <a (click)="openChangingPasswordModal()" class="dropdown-item">
             Change Password
           </a>
           <a (click)="logout()" class="dropdown-item">
@@ -41,7 +41,7 @@
               currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
             }}
           </a>
-          <a routerLink="change-password" class="dropdown-item">
+          <a (click)="openChangingPasswordModal()" class="dropdown-item">
             Change Password
           </a>
           <a (click)="logout()" class="dropdown-item">

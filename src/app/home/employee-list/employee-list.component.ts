@@ -51,6 +51,16 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       }
     );
   }
+  resetPassword(id:number) {
+    this.accountService.resetPassword(id).subscribe(
+      (res:any) => {
+        alert(res.message);
+        this.getUserListPerPage();
+      }, err => {
+        console.log(err);
+      }
+    )
+  }
   reloadPreviousStatus() {
     // get params at the last times getting user list
     let lastParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}

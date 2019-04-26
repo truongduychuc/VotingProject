@@ -16,7 +16,6 @@ const homeRoutes: Routes = [
       {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
       {path: 'dashboard', component: DashboardComponent},
       {path: 'employee-list', component: EmployeeListComponent},
-      {path: 'change-password', component: ChangePasswordFormComponent},
       {path: 'vote', component: VotingComponent, canActivate: [ManagerDevRoleGuard]},
       {path: 'personal-info', component: PersonalInformationComponent, canActivate: [ManagerDevRoleGuard]},
       {path: 'award-list', component:AwardListComponent}
