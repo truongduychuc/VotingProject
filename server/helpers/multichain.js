@@ -16,6 +16,7 @@ module.exports = {
     createStream,
     subscribe,
     publish,
+    publishEmployee,
     //getNewAddress,
     grant,
     revoke,
@@ -25,7 +26,9 @@ module.exports = {
     listAssets,
     setAsset,
     sendTokenToVoter,
-    setNominee
+    setNominee,
+    setNomineeVote,
+    addNomineeVote
 };
 
 function getInfo() {
@@ -73,6 +76,28 @@ function publish(stream_name, key_name, data) {
         data: {
             "json": {
                 "id": data.id,
+                "address": data.address
+            }
+        }
+    }, (err, info) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('Input data to stream successfully');
+        }
+    })
+}
+
+function publishEmployee(stream_name, key_name, data) {
+    multichain.publish({
+        stream: stream_name,
+        key: key_name,
+        data: {
+            "json": {
+                "id": data.id,
+                "first_name": data.first_name,
+                "last_name": data.last_name,
+                "english_name": data.english_name,
                 "address": data.address
             }
         }
@@ -152,7 +177,7 @@ function sendTokenToVoter(stream_name, asset_name, token_name, id) {
         })
 }
 
-function setNominee(stream_name, id) {
+function setNominee(stream_name, data) {
     multichain.getNewAddress()
         .then(address => {
             console.log('Get new address for nominee ');
@@ -160,15 +185,120 @@ function setNominee(stream_name, id) {
             grant(address, 'receive');
             let key_name2 = 'nominee';
             let nominee_data = {
-                id: id,
+                id: data.id,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                english_name: data.english_name,
                 address: address
             }
-            publish(stream_name, key_name2, nominee_data);
+            publishEmployee(stream_name, key_name2, nominee_data);
         })
         .catch(err => {
             console.log('Error when set nominee ' + err);
         })
 }
+
+function setNomineeVote(stream_name, data) {
+    let key_name = 'nominee_' + data.id
+    multichain.publish({
+        stream: stream_name,
+        key: key_name,
+        data: {
+            "json": {
+                "first_vote": 0,
+                "second_vote": 0,
+                "third_vote": 0,
+            }
+        }
+    }, (err, info) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('Set nominee vote successfully');
+        }
+    })
+}
+
+function a() {
+    multichain.listStreamKeyItems({
+            stream: 'award_150',
+            key: 'voter'
+        })
+        .then(result => {
+            //id = result.data;
+            console.log(result);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+//a()
+
+function addNomineeVote(stream_name, key_name, position, data) {
+    type = position + '_vote';
+    multichain.listStreamKeyItems({
+            stream: stream_name,
+            key: 'voter'
+        })
+        .then(voters => {
+            for (var i = 0; i < voters.length; i++) {
+                let txid = voters[i].txid;
+                multichain.getStreamItem({
+                        stream: stream_name,
+                        txid: txid
+                    })
+                    .then(voter => {
+                        let id_voter = voter.data.json.id;
+                        if (data.id_voter == id_voter) {
+                            let address1 = voter.data.json.address;
+
+                            multichain.listStreamKeyItems({
+                                    stream: stream_name,
+                                    key: 'nominee'
+                                })
+                                .then(nominees => {
+                                    for (var i = 0; i < nominees.length; i++) {
+                                        let txid = nominees[i].txid;
+                                        multichain.getStreamItem({
+                                                stream: stream_name,
+                                                txid: txid
+                                            })
+                                            .then(nominee => {
+                                                let id_nominee = nominee.data.json.id;
+                                                if (data.id_voter == id_nominee) {
+                                                    let address2 = nominee.data.json.address;
+                                                    sendAssetFrom(address1, address2)
+
+                                                }
+                                            })
+                                    }
+                                })
+                        }
+                    })
+                    .catch()
+            }
+        })
+        .catch()
+    sendAssetFrom(address1, address2, token_name, amount);
+    multichain.listStreamKeyItems({
+            stream: stream_name,
+            key: key_name
+        })
+        .then(votes => {
+            let voteChange = votes.data.json.type + 1;
+            multichain.publish({
+                stream: stream_name,
+                key: key_name,
+                data: {
+                    "json": {
+                        type: voteChange,
+                    }
+                }
+            })
+        })
+}
+
 let stream_name = 'award_984';
 let asset_name = 'asset_984';
 let token_name = 'token_984';

@@ -63,8 +63,8 @@ router.post('/create', (req, res) => {
         date_end: req.body.date_end,
         prize: req.body.prize,
         item: req.body.item,
-        create_at: today,
-        update_at: today
+        created_at: today,
+        updated_at: today
     }
     const voterData = {
         id_award: null,
@@ -114,6 +114,14 @@ router.post('/create', (req, res) => {
     //     }
     // }
 
+    //Check year and name for award
+
+    // multichain.initiateMultichain().listStreamKeyItems({
+    //     stream: "award_150",
+    //     key: "nominee_1",
+    //     verbose: true
+    // })
+
     // if ((req.body.year < (year - 1)) || (req.body.year > year)) {
     //     console.log(today);
     //     res.status(400).send({ message: 'Wrong year input' });
@@ -125,6 +133,7 @@ router.post('/create', (req, res) => {
             where: {
                 name: req.body.name,
                 year: 2000
+                    //year: req.body.year
             }
         })
         .then(awards => {
@@ -133,6 +142,7 @@ router.post('/create', (req, res) => {
             } else {
                 //Create award
                 awardData.year = year;
+                //awardData.year = req.body.year;
                 Award.create(awardData)
                     .then(award => {
 
@@ -145,7 +155,28 @@ router.post('/create', (req, res) => {
                         multichain.createStream(stream_name);
                         //Subscribe
                         multichain.subscribe(stream_name);
-
+                        //Add infomation
+                        multichain.initiateMultichain().publish({
+                            stream: stream_name,
+                            key: 'information',
+                            data: {
+                                "json": {
+                                    "id": awardData.id,
+                                    "name": awardData.name,
+                                    "year": awardData.year,
+                                    "date_start": awardData.date_start,
+                                    "date_end": awardData.date_end,
+                                    "created_at": awardData.created_at,
+                                    "updated_at": awardData.updated_at
+                                }
+                            }
+                        }, (err, info) => {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log('Input infomation of award to stream successfully');
+                            }
+                        });
 
                         voterData.id_award = award.id;
                         nomineeData.id_award = award.id;
@@ -207,18 +238,31 @@ router.post('/create', (req, res) => {
                                                                                 multichain.grant(address2, 'receive,send');
                                                                                 //Save data to stream
                                                                                 let key_name1 = 'voter';
-                                                                                let voter_data = {
-                                                                                    id: id,
-                                                                                    address: address2
-                                                                                }
-                                                                                multichain.publish(stream_name, key_name1, voter_data);
-                                                                                //Send token to voter
-                                                                                multichain.sendAssetFrom(address1, address2, token_name, 9);
-                                                                                //Revoke permission
-                                                                                multichain.revoke(address2, 'receive,send');
+                                                                                User.findOne({
+                                                                                        where: {
+                                                                                            id: id
+                                                                                        }
+                                                                                    })
+                                                                                    .then(user => {
+                                                                                        let voter_data = {
+                                                                                            id: user.id,
+                                                                                            first_name: user.first_name,
+                                                                                            last_name: user.last_name,
+                                                                                            english_name: user.english_name,
+                                                                                            address: address2
+                                                                                        }
+                                                                                        multichain.publishEmployee(stream_name, key_name1, voter_data);
+                                                                                        //Send token to voter
+                                                                                        multichain.sendAssetFrom(address1, address2, token_name, 9);
+                                                                                        //Revoke permission
+                                                                                        multichain.revoke(address2, 'receive,send');
+                                                                                    })
+                                                                                    .catch(err => {
+                                                                                        console.log('Error when send token ' + err);
+                                                                                    })
                                                                             })
                                                                             .catch(err => {
-                                                                                console.log('Error when send token ' + err);
+                                                                                console.log('Error when get new address ' + err);
                                                                             })
                                                                     })
                                                                     .catch(err => {
@@ -263,19 +307,29 @@ router.post('/create', (req, res) => {
                                         }
                                     })
                                     .then(users => {
-                                        for (var i = 0; i < users.length; i++) {
-                                            nomineeData.id_team = users[i].id_team;
-                                            nomineeData.id_nominee = users[i].id;
+                                        if (users.length == 0) {
+                                            res.status(400).send({ message: 'User does not exist' })
+                                        } else {
+                                            for (var i = 0; i < users.length; i++) {
+                                                nomineeData.id_team = users[i].id_team;
+                                                nomineeData.id_nominee = users[i].id;
+                                                let nominee_data = {
+                                                    id: users[i].id,
+                                                    first_name: users[i].first_name,
+                                                    last_name: users[i].last_name,
+                                                    english_name: users[i].english_name
+                                                }
+                                                multichain.setNominee(stream_name, nominee_data);
+                                                multichain.setNomineeVote(stream_name, nominee_data);
 
-                                            multichain.setNominee(stream_name, users[i].id);
-
-                                            //Add nominee
-                                            Nominee.create(nomineeData)
-                                                .then(() => {})
-                                                .catch(err => {
-                                                    console.log('error0' + err)
-                                                    res.status(400).send({ error5: err })
-                                                })
+                                                //Add nominee
+                                                Nominee.create(nomineeData)
+                                                    .then(() => {})
+                                                    .catch(err => {
+                                                        console.log('error0' + err)
+                                                        res.status(400).send({ error5: err })
+                                                    })
+                                            }
                                         }
                                     })
                                     .catch(err => {
@@ -938,6 +992,13 @@ router.post('/voting_award', (req, res) => {
                                     res.status(400).send({ message: 'Your vote is invalid' });
                                 }
                                 voter.vote_status == 0;
+                                let stream_name = 'award_' + req.body.id;
+                                let key_name1 = 'nominee_' + req.body.first;
+                                let key_name2 = 'nominee_' + req.body.second;
+                                let key_name3 = 'nominee_' + req.body.third;
+                                addNomineeVote(stream_name, key_name1, 'first');
+                                addNomineeVote(stream_name, key_name1, 'second');
+                                addNomineeVote(stream_name, key_name1, 'third');
                             }
                         }
                     })
@@ -946,6 +1007,10 @@ router.post('/voting_award', (req, res) => {
         })
         .catch()
 })
+
+
+
+
 
 function checkVoteValid() {
     id_award = req.body.id;
@@ -958,5 +1023,45 @@ function checkVoteValid() {
     return true;
 }
 
+router.get('/get/123', (req, res) => {
+    multichain.initiateMultichain().getStreamKeySummary({
+        stream: "award_150",
+        key: "nominee_1",
+        mode: "jsonobjectmerge"
+    }, (err, info) => {
+        console.log('Response: ' + JSON.stringify(info));
 
+        res.header("Content-Type", 'application/json');
+
+        res.json({ liststream: info });
+    })
+})
+
+router.get('/get/getliststreamkey', (req, res) => {
+    multichain.initiateMultichain().listStreamKeys({
+        stream: "award_150",
+        //key: "nominee_1",
+        verbose: true
+    }, (err, info) => {
+        console.log('Response: ' + JSON.stringify(info));
+
+        res.header("Content-Type", 'application/json');
+
+        res.json({ liststream: info });
+    })
+})
+
+router.get('/get/getliststreamkeyitem', (req, res) => {
+    multichain.initiateMultichain().listStreamKeyItems({
+        stream: "award_150",
+        key: "nominee_1",
+        verbose: true
+    }, (err, info) => {
+        console.log('Response: ' + JSON.stringify(info));
+
+        res.header("Content-Type", 'application/json');
+
+        res.json({ liststream: info });
+    })
+})
 module.exports = router;
