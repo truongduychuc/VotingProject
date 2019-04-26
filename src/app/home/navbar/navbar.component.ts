@@ -15,7 +15,7 @@ export class NavbarComponent implements OnInit {
   currentUserProfile: User;
   public sidebarOpened = false;
   constructor(private authService: AuthenticationService, private accountService: AccountService, private router: Router, config: NgbDropdownConfig) {
-    config.placement = 'bottom-right';
+    config.placement = 'bottom';
   }
   toggleOffcanvas() {
     this.sidebarOpened = !this.sidebarOpened;

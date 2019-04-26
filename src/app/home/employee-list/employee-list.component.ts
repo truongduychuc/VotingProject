@@ -2,7 +2,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AccountService} from "../../_services/account.service";
 import {User} from "../../_models/user";
 import {HttpErrorResponse, HttpParams} from "@angular/common/http";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditingModalComponent} from "./editing-modal/editing-modal.component";
 import {CreateUserFormComponent} from "./create-user-form/create-user-form.component";
@@ -26,8 +25,17 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   error: any;
   usersList : User[];
 
+  currentUser: User;
   previousSearchText: string;
-  constructor(private accountService: AccountService, private modalService: NgbModal) { }
+  constructor(private accountService: AccountService, private modalService: NgbModal) {
+    this.accountService.currentUser.subscribe((user: User) => {
+      this.currentUser = user;
+    })
+  }
+  get isAdmin() {
+    console.log(this.currentUser && this.currentUser.role.id === 1);
+    return this.currentUser && this.currentUser.role.id === 1;
+  }
   ngOnInit() {
     this.reloadPreviousStatus();
   }

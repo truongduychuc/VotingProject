@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {Award} from "../../../_models/award";
 
 @Component({
   selector: 'app-award-as-year',
@@ -7,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AwardAsYearComponent implements OnInit {
   isCollapsed: false;
+  arrAwardListOfYear: Award[] = [];
   constructor() { }
 
   ngOnInit() {

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {User} from '../_models/user';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
+
 
 
 @Injectable({
@@ -10,15 +11,20 @@ import {Observable} from 'rxjs';
 export class AccountService {
   // url of backend
   serverURL = 'http://localhost:4000';
+  private currentUserSubject: BehaviorSubject<User>;
+  public currentUser: Observable<User>;
 
   constructor(private httpClient: HttpClient) {
+    this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
+    this.currentUser = this.currentUserSubject.asObservable();
   }
-
+  public get currentUserValue() : User {
+    return this.currentUserSubject.value;
+  }
   registerNewUser(newUser: User):Observable<any> {
     // JSON.stringify: convert object to JSON string
     return this.httpClient.post<any>(this.serverURL + '/users/register', newUser);
   }
-
   changePassword(current_password: string, new_password: string) {
     let changePasswordObj = {
       old_password: current_password,
@@ -40,8 +46,17 @@ export class AccountService {
     return this.httpClient.put(this.serverURL + `/users/update/${id}`, updateInfo);
   }
   getUsersList(params?: HttpParams): Observable<any> {
-    console.log(params);
-      return this.httpClient.get(this.serverURL + '/users/list/admin', {
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    // passed
+      console.log(params);
+      let apiURL: string;
+      if(currentUser.role.id === 1) {
+        apiURL = '/users/list/admin';
+      }
+      else {
+        apiURL = '/users/list/';
+      }
+      return this.httpClient.get(this.serverURL + apiURL, {
         params
       });
   }

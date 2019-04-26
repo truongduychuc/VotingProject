@@ -13,6 +13,7 @@ export class AuthenticationGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     if(this.authService.isLoggedOut()) {
+      alert('Your session is expired, please log in again!');
       this.router.navigate(['start-page']);
       return false;
     }
