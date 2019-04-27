@@ -19,7 +19,7 @@ import { AwardListComponent } from './award-list/award-list.component';
 import { AwardAsYearComponent } from './award-list/award-as-year/award-as-year.component';
 import { AwardComponent } from './award-list/award/award.component';
 import { AddAwardComponent } from './award-list/add-award/add-award.component';
-import {NgSelectModule} from "@ng-select/ng-select";
+import {NgSelectModule} from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [

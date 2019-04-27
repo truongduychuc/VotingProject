@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {User} from "../../_models/user";
-import {AccountService} from "../../_services/account.service";
+import {User} from '../../_models/user';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 
 @Component({
@@ -9,26 +9,26 @@ import {AccountService} from "../../_services/account.service";
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  public samplePagesCollapsed = true;
+
   currentUser: User;
-  constructor(private accountService: AccountService) {
+  constructor(private authService: AuthenticationService) {
+   this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+   console.log(this.currentUser);
   }
   get isEmployeeOrManager() {
-    if(this.currentUser) {
-      if(this.currentUser.role.id === 1){
+    if (!this.currentUser) {
+      return false;
+    } else {
+      if (!(this.currentUser.position.toUpperCase() === 'ADMIN')) {
+        return true;
+      } else {
         return false;
       }
-      if(this.currentUser.role.id === 2 ||this.currentUser.role.id === 3){
-        return true;
-      }
-    } else {
-      return false;
     }
   }
 
   ngOnInit() {
-    this.accountService.currentUser.subscribe((user:User) => this.currentUser = user);
-    console.log(this.currentUser);
+
   }
 
 }
