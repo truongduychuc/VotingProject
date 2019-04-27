@@ -15,6 +15,7 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit() {
     if(this.authService.isLoggedIn()) {
+      this.activeModal.close();
       this.router.navigate(['home']);
     }
     this.generateForm();
