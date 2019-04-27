@@ -965,10 +965,16 @@ router.get('/breakdown/:id', (req, res) => {
     //     })
 })
 
-router.post('/voting_award', (req, res) => {
+router.post('/voting_award', authorize(), (req, res) => {
+    let today = new Date();
+    let id_award = req.body.id;
+    let first_vote = req.body.first_vote;
+    let second_vote = req.body.second_vote;
+    let third_vote = req.body.third_vote;
+
     Award.findOne({
             where: {
-                id: req.body.id
+                id: id_award
             }
         })
         .then(award => {
@@ -977,7 +983,7 @@ router.post('/voting_award', (req, res) => {
             } else {
                 Voter.findOne({
                         where: {
-                            id_award: req.body.id,
+                            id_award: id_award,
                             id_user: req.decoded.id
                         }
                     })
@@ -988,35 +994,58 @@ router.post('/voting_award', (req, res) => {
                             if (voter.vote_status == 0) {
                                 res.status(400).send({ message: 'You voted this award already' });
                             } else {
-                                if (!checkVoteValid()) {
+                                if (!checkVoteValid(id_award, first_vote, second_vote, third_vote)) {
                                     res.status(400).send({ message: 'Your vote is invalid' });
+                                } else {
+                                    let award_data = {
+                                        id: id_award,
+                                        id_voter: req.decoded.id,
+                                        id_nominee_first: first_vote,
+                                        id_nominee_second: second_vote,
+                                        id_nominee_third: third_vote,
+                                    }
+
+                                    multichain.addNomineeVote(award_data, 'first')
+                                    multichain.addNomineeVote(award_data, 'second')
+                                    multichain.addNomineeVote(award_data, 'third')
+
+                                    res.status(200).send({ message: 'Your vote is successfully' });
+                                    // Voter.update({
+                                    //         vote_status: 0,
+                                    //         updated_at: today
+                                    //     }, {
+                                    //         where: {
+                                    //             id_award: id_award,
+                                    //             id_user: req.decoded.id
+                                    //         }
+                                    //     })
+                                    //     .then(() => {
+                                    //         res.status(200).send({ message: 'Your vote is successfully' });
+                                    //     })
+                                    //     .catch(err => {
+                                    //         res.status(400).send({ message1: 'Error when update vote status', err });
+                                    //     })
                                 }
-                                voter.vote_status == 0;
-                                let stream_name = 'award_' + req.body.id;
-                                let key_name1 = 'nominee_' + req.body.first;
-                                let key_name2 = 'nominee_' + req.body.second;
-                                let key_name3 = 'nominee_' + req.body.third;
-                                addNomineeVote(stream_name, key_name1, 'first');
-                                addNomineeVote(stream_name, key_name1, 'second');
-                                addNomineeVote(stream_name, key_name1, 'third');
                             }
                         }
                     })
-                    .catch()
+                    .catch(err => {
+                        res.status(400).send({ message1: err });
+                    })
             }
         })
-        .catch()
+        .catch(err => {
+            res.status(400).send({ message2: err });
+        })
 })
 
 
 
-
-
-function checkVoteValid() {
-    id_award = req.body.id;
-    first_vote = req.body.first_vote;
-    second_vote = req.body.second_vote;
-    third_vote = req.body.third_vote;
+function checkVoteValid(id, first_vote, second_vote, third_vote) {
+    id_award = id;
+    first_vote = first_vote;
+    second_vote = second_vote;
+    third_vote = third_vote;
     if (id_award == '' || first_vote == '' || second_vote == '' || third_vote == '') {
         return false;
     }

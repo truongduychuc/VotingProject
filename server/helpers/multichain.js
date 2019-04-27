@@ -205,9 +205,9 @@ function setNomineeVote(stream_name, data) {
         key: key_name,
         data: {
             "json": {
-                "first_vote": 0,
-                "second_vote": 0,
-                "third_vote": 0,
+                "first_votes": 0,
+                "second_votes": 0,
+                "third_votes": 0,
             }
         }
     }, (err, info) => {
@@ -219,31 +219,85 @@ function setNomineeVote(stream_name, data) {
     })
 }
 
-function a() {
-    multichain.listStreamKeyItems({
-            stream: 'award_150',
-            key: 'voter'
-        })
-        .then(result => {
-            //id = result.data;
-            console.log(result);
-        })
-        .catch(err => {
-            console.log(err);
-        })
+let data = {
+    id: 175,
+    id_voter: 9
 }
 
-//a()
+function test() {
+    console.log(getVoterInfo(data));
+    if (getVoterInfo(data)) {
+        console.log('true');
+    } else {
+        console.log('false');
+    }
+}
+//test();
 
-function addNomineeVote(stream_name, key_name, position, data) {
-    type = position + '_vote';
+function getVoterInfo(data) {
+    let stream_name = 'award_' + data.id;
     multichain.listStreamKeyItems({
             stream: stream_name,
             key: 'voter'
         })
         .then(voters => {
+            console.log('Get list voter successfully');
             for (var i = 0; i < voters.length; i++) {
+                //Get txid
                 let txid = voters[i].txid;
+                //Check id voter
+                multichain.getStreamItem({
+                        stream: stream_name,
+                        txid: txid
+                    })
+                    .then(voter => {
+                        let id_voter = voter.data.json.id;
+                        if (data.id_voter == id_voter) {
+                            let address = voter.data.json.address;
+                            multichain.getAddressBalances({
+                                    address: address
+                                })
+                                .then(data => {
+                                    console.log(data)
+                                    if (!data) {
+                                        return false;
+                                    } else {
+                                        return true;
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log('Error when get info voter ' + err);
+                                })
+                        }
+                    })
+                    .catch(err => {
+                        console.log('Error when get info voter ' + err);
+                    })
+            }
+        })
+        .catch(err => {
+            console.log('Error when get list voter ' + err);
+        })
+}
+
+function addNomineeVote(data, position) {
+    //type = position + '_vote';
+    let token_name = 'token_' + data.id;
+    let stream_name = 'award_' + data.id;
+    let key_name1 = 'nominee_' + data.id_nominee_first;
+    let key_name2 = 'nominee_' + data.id_nominee_second;
+    let key_name3 = 'nominee_' + data.id_nominee_third;
+    //List voter
+    multichain.listStreamKeyItems({
+            stream: stream_name,
+            key: 'voter'
+        })
+        .then(voters => {
+            console.log('Get list voter successfully');
+            for (var i = 0; i < voters.length; i++) {
+                //Get txid
+                let txid = voters[i].txid;
+                //Check id voter
                 multichain.getStreamItem({
                         stream: stream_name,
                         txid: txid
@@ -252,51 +306,176 @@ function addNomineeVote(stream_name, key_name, position, data) {
                         let id_voter = voter.data.json.id;
                         if (data.id_voter == id_voter) {
                             let address1 = voter.data.json.address;
-
+                            grant(address1, 'receive,send');
+                            console.log('Get info voter successfully', address1);
                             multichain.listStreamKeyItems({
                                     stream: stream_name,
                                     key: 'nominee'
                                 })
                                 .then(nominees => {
+                                    console.log('Get list nominee successfully');
                                     for (var i = 0; i < nominees.length; i++) {
-                                        let txid = nominees[i].txid;
+                                        let txid1 = nominees[i].txid;
                                         multichain.getStreamItem({
                                                 stream: stream_name,
-                                                txid: txid
+                                                txid: txid1
                                             })
                                             .then(nominee => {
+                                                console.log('Get info nominee successfully');
                                                 let id_nominee = nominee.data.json.id;
-                                                if (data.id_voter == id_nominee) {
-                                                    let address2 = nominee.data.json.address;
-                                                    sendAssetFrom(address1, address2)
-
+                                                let address2 = nominee.data.json.address;
+                                                if (position == 'first') {
+                                                    if (data.id_nominee_first == id_nominee) {
+                                                        amount = 5;
+                                                        console.log('Determined first_vote user');
+                                                        multichain.sendAssetFrom({
+                                                                from: address1,
+                                                                to: address2,
+                                                                asset: token_name,
+                                                                qty: amount
+                                                            })
+                                                            .then(() => {
+                                                                console.log('Send token to first_vote user successfully');
+                                                                multichain.getStreamKeySummary({
+                                                                        stream: stream_name,
+                                                                        key: key_name1,
+                                                                        mode: 'jsonobjectmerge'
+                                                                    })
+                                                                    .then(votes => {
+                                                                        let voteChange = votes.json.first_votes + 1;
+                                                                        multichain.publish({
+                                                                            stream: stream_name,
+                                                                            key: key_name1,
+                                                                            data: {
+                                                                                "json": {
+                                                                                    "first_votes": voteChange,
+                                                                                }
+                                                                            }
+                                                                        }, (err) => {
+                                                                            if (err) {
+                                                                                console.log('Error when update first_vote user');
+                                                                            } else {
+                                                                                console.log('Update vote for first_vote user successfully');
+                                                                            }
+                                                                        })
+                                                                    })
+                                                                    .catch(err => {
+                                                                        console.log('Error when merge votes ' + err);
+                                                                    })
+                                                            })
+                                                            .catch(err => {
+                                                                console.log('Error when send token ' + err);
+                                                            })
+                                                    }
                                                 }
+                                                if (position == 'second') {
+                                                    if (data.id_nominee_second == id_nominee) {
+                                                        amount = 3;
+                                                        console.log('Determined second_vote user');
+                                                        multichain.sendAssetFrom({
+                                                                from: address1,
+                                                                to: address2,
+                                                                asset: token_name,
+                                                                qty: amount
+                                                            })
+                                                            .then(() => {
+                                                                console.log('Send token to second_vote user successfully');
+                                                                multichain.getStreamKeySummary({
+                                                                        stream: stream_name,
+                                                                        key: key_name2,
+                                                                        mode: 'jsonobjectmerge'
+                                                                    })
+                                                                    .then(votes => {
+                                                                        let voteChange = votes.json.second_votes + 1;
+                                                                        multichain.publish({
+                                                                            stream: stream_name,
+                                                                            key: key_name2,
+                                                                            data: {
+                                                                                "json": {
+                                                                                    "second_votes": voteChange,
+                                                                                }
+                                                                            }
+                                                                        }, (err) => {
+                                                                            if (err) {
+                                                                                console.log('Error when update second_vote user');
+                                                                            } else {
+                                                                                console.log('Update vote for second_vote user successfully');
+                                                                            }
+                                                                        })
+                                                                    })
+                                                                    .catch(err => {
+                                                                        console.log('Error when merge votes ' + err);
+                                                                    })
+                                                            })
+                                                            .catch(err => {
+                                                                console.log('Error when send token ' + err);
+                                                            })
+                                                    }
+                                                }
+                                                if (position == 'third') {
+                                                    if (data.id_nominee_third == id_nominee) {
+                                                        amount = 1;
+                                                        console.log('Determined third_vote user');
+                                                        multichain.sendAssetFrom({
+                                                                from: address1,
+                                                                to: address2,
+                                                                asset: token_name,
+                                                                qty: amount
+                                                            })
+                                                            .then(() => {
+                                                                console.log('Send token to third_vote user successfully');
+                                                                multichain.getStreamKeySummary({
+                                                                        stream: stream_name,
+                                                                        key: key_name3,
+                                                                        mode: 'jsonobjectmerge'
+                                                                    })
+                                                                    .then(votes => {
+                                                                        let voteChange = votes.json.third_votes + 1;
+                                                                        multichain.publish({
+                                                                            stream: stream_name,
+                                                                            key: key_name3,
+                                                                            data: {
+                                                                                "json": {
+                                                                                    "third_votes": voteChange,
+                                                                                }
+                                                                            }
+                                                                        }, (err) => {
+                                                                            if (err) {
+                                                                                console.log('Error when update third_vote user');
+                                                                            } else {
+                                                                                console.log('Update vote for third_vote user successfully');
+                                                                            }
+                                                                        })
+                                                                    })
+                                                                    .catch(err => {
+                                                                        console.log('Error when merge votes ' + err);
+                                                                    })
+                                                            })
+                                                            .catch(err => {
+                                                                console.log('Error when send token ' + err);
+                                                            })
+                                                    }
+                                                }
+                                            })
+                                            .catch(err => {
+                                                console.log('Error when get info nominee ' + err);
                                             })
                                     }
                                 })
+                                .catch(err => {
+                                    console.log('Error when get list nominee ' + err);
+                                })
                         }
                     })
-                    .catch()
+                    .catch(err => {
+                        console.log('Error when get info voter ' + err);
+                    })
             }
         })
-        .catch()
-    sendAssetFrom(address1, address2, token_name, amount);
-    multichain.listStreamKeyItems({
-            stream: stream_name,
-            key: key_name
+        .catch(err => {
+            console.log('Error when get list voter ' + err);
         })
-        .then(votes => {
-            let voteChange = votes.data.json.type + 1;
-            multichain.publish({
-                stream: stream_name,
-                key: key_name,
-                data: {
-                    "json": {
-                        type: voteChange,
-                    }
-                }
-            })
-        })
+
 }
 
 let stream_name = 'award_984';
