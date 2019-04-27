@@ -63,9 +63,6 @@ export class AuthenticationService {
       }
     );
   }
-  getCurrentUser(): User {
-    return JSON.parse(localStorage.getItem('currentUser'));
-  }
 
 
   logout() {

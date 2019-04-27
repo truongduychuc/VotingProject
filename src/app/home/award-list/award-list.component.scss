@@ -1,0 +1,14 @@
+.row {
+  .card-body {
+    background-color:  #f2f2f2;
+    border-radius: 7px;
+  }
+}
+.btn {
+  &:hover {
+    i {
+      color: #404852;
+    }
+  }
+}
+

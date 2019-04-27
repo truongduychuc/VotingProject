@@ -6,13 +6,13 @@
         <span class="menu-title">Dashboard</span>
       </a>
     </li>
-    <li class="nav-item">
+    <li *ngIf="isEmployeeOrManager" class="nav-item">
       <a class="nav-link" routerLink="personal-info" routerLinkActive="active">
         <i class="menu-icon mdi mdi-information-outline"></i>
         <span class="menu-title">Personal Information</span>
       </a>
     </li>
-    <li class="nav-item">
+    <li *ngIf="isEmployeeOrManager" class="nav-item">
       <a class="nav-link" routerLink="vote" routerLinkActive="active">
         <i class="menu-icon mdi mdi-checkbox-marked-outline" routerLinkActive="active"></i>
         <span class="menu-title">Voting</span>
@@ -25,7 +25,7 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLinkActive="active">
+      <a class="nav-link" routerLink="award-list" routerLinkActive="active">
         <i class="menu-icon mdi mdi-trophy-outline"></i>
         <span class="menu-title">Awards</span>
       </a>

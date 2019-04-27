@@ -1,5 +1,4 @@
 import {NgModule } from '@angular/core';
-import {CreateUserFormComponent} from "./employee-list/create-user-form/create-user-form.component";
 import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {ChangePasswordFormComponent} from "./change-password-form/change-password-form.component";
 import {RouterModule, Routes} from "@angular/router";
@@ -8,6 +7,8 @@ import {DashboardComponent} from "./dashboard/dashboard.component";
 import {HomeComponent} from "./home.component";
 import {PersonalInformationComponent} from "./personal-information/personal-information.component";
 import {VotingComponent} from "./voting/voting.component";
+import {AwardListComponent} from "./award-list/award-list.component";
+import {ManagerDevRoleGuard} from "../_guards/manager-dev-role.guard";
 
 
 const homeRoutes: Routes = [
@@ -15,9 +16,9 @@ const homeRoutes: Routes = [
       {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
       {path: 'dashboard', component: DashboardComponent},
       {path: 'employee-list', component: EmployeeListComponent},
-      {path: 'change-password', component: ChangePasswordFormComponent},
-      {path: 'vote', component: VotingComponent},
-      {path: 'personal-info', component: PersonalInformationComponent}
+      {path: 'vote', component: VotingComponent, canActivate: [ManagerDevRoleGuard]},
+      {path: 'personal-info', component: PersonalInformationComponent, canActivate: [ManagerDevRoleGuard]},
+      {path: 'award-list', component:AwardListComponent}
     ]}
 ];
 @NgModule({

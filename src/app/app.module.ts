@@ -11,13 +11,15 @@ import {DefaultComponent} from "./default/default.component";
 import {LoginFormComponent} from "./default/login-form/login-form.component";
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import { GroupByPipe } from './_pipes/group-by.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     DefaultComponent,
     LoginFormComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    GroupByPipe
   ],
   imports: [
     BrowserModule,

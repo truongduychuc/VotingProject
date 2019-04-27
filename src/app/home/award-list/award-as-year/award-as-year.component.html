@@ -1,0 +1,16 @@
+<div [title]="isCollapsed?'Click expand to expand':'Click collapse to collapse'" class="card">
+  <div class="card-body shadow d-flex justify-content-between banner">
+    <strong>2018</strong>
+    <a [title]="isCollapsed?'Click to expand':'Click to collapse'" [attr.aria-expanded]="isCollapsed" aria-controls="collapseExample" (click)="isCollapsed = !isCollapsed">
+      {{isCollapsed? 'Expand':'Collapse'}}
+    </a>
+  </div>
+</div>
+<div id="collapseExample" [ngbCollapse]="isCollapsed">
+  <app-award></app-award>
+  <app-award></app-award>
+  <app-award></app-award>
+  <app-award></app-award>
+  <app-award></app-award>
+  <app-award></app-award>
+</div>

@@ -15,6 +15,11 @@ import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
 import { EditingModalComponent } from './employee-list/editing-modal/editing-modal.component';
+import { AwardListComponent } from './award-list/award-list.component';
+import { AwardAsYearComponent } from './award-list/award-as-year/award-as-year.component';
+import { AwardComponent } from './award-list/award/award.component';
+import { AddAwardComponent } from './award-list/add-award/add-award.component';
+import {NgSelectModule} from "@ng-select/ng-select";
 
 @NgModule({
   declarations: [
@@ -28,7 +33,11 @@ import { EditingModalComponent } from './employee-list/editing-modal/editing-mod
     HomeComponent,
     PersonalInformationComponent,
     VotingComponent,
-    EditingModalComponent
+    EditingModalComponent,
+    AwardListComponent,
+    AwardAsYearComponent,
+    AwardComponent,
+    AddAwardComponent
   ],
   imports: [
     CommonModule,
@@ -36,14 +45,17 @@ import { EditingModalComponent } from './employee-list/editing-modal/editing-mod
     RouterModule,
     FormsModule,
     HomeRoutingModule,
-    NgbModule
+    NgbModule,
+    NgSelectModule
   ],
   providers: [
     NgbActiveModal
   ],
   entryComponents: [
     EditingModalComponent,
-    CreateUserFormComponent
+    CreateUserFormComponent,
+    AddAwardComponent,
+    ChangePasswordFormComponent
   ]
 })
 export class HomeModule { }
