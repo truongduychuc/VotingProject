@@ -22,7 +22,7 @@
           <div class="col-sm-6 p-0">
             <div class="row d-flex justify-content-sm-end">
               <div class="p-3">
-                <button class="btn pl-1 pr-1" (click)="openCreatingModal()" title="Create new user"><i class="fas fa-user-plus"></i></button>
+                <button class="btn pl-1 pr-1" *ngIf="isAdmin" (click)="openCreatingModal()" title="Create new user"><i class="fas fa-user-plus"></i></button>
               </div>
               <div class="form-group pl-3 pb-3 pt-3 m-0">
                 <input type="text" id="search" class="form-control" (keyup)="searchOnText()" [(ngModel)]="currentSearchText" placeholder="Search...">
@@ -52,7 +52,7 @@
                   <th (click)="sortOnColumn('english_name','user')" class="hand-cursor" title="Click column's name to change sort direction" class="text-center" align="center" scope="col">English name
                     <i class="sort-icon" [hidden]="!(currentSortedColumn == 'english_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
-                  <th class="text-center" align="center" scope="col">Tool</th>
+                  <th *ngIf="isAdmin" class="text-center" align="center" scope="col">Tool</th>
                 </tr>
                 </thead>
                 <tbody *ngIf="!error"> <!--There's result from search operator-->
@@ -63,10 +63,10 @@
                   <td align="center">{{user.team?.name}}</td>
                   <td>{{user.email}}</td>
                   <td align="center">{{user.english_name}}</td>
-                  <td align="center">
+                  <td align="center" *ngIf="isAdmin">
                     <a (click)="openEditingModal(user.id)" title="Edit this user" class="btn edit"><i class="fas fa-user-edit"></i></a>
                     <a (click)="deleteUser(user.id)" title="Delete this user" class="btn delete"><i class="fas fa-trash"></i></a>
-                    <a title="Reset password" class="btn reset"><i class="fas fa-undo"></i></a>
+                    <a (click)="resetPassword(user.id)" title="Reset password" class="btn reset"><i class="fas fa-undo"></i></a>
                   </td>
                 </tr>
                 </tbody>

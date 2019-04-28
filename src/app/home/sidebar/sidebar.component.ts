@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {User} from '../../_models/user';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 
 @Component({
@@ -7,11 +9,26 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  public samplePagesCollapsed = true;
-  constructor() {
+
+  currentUser: User;
+  constructor(private authService: AuthenticationService) {
+   this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+   console.log(this.currentUser);
+  }
+  get isEmployeeOrManager() {
+    if (!this.currentUser) {
+      return false;
+    } else {
+      if (!(this.currentUser.position.toUpperCase() === 'ADMIN')) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
   ngOnInit() {
+
   }
 
 }

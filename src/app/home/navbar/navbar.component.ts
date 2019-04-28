@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
+import {NgbDropdownConfig, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AccountService} from "../../_services/account.service";
 import {Router} from "@angular/router";
 import {AuthenticationService} from "../../_services/authentication.service";
 import {User} from "../../_models/user";
+import {ChangePasswordFormComponent} from "../change-password-form/change-password-form.component";
 
 @Component({
   selector: 'app-navbar',
@@ -14,8 +15,8 @@ import {User} from "../../_models/user";
 export class NavbarComponent implements OnInit {
   currentUserProfile: User;
   public sidebarOpened = false;
-  constructor(private authService: AuthenticationService, private accountService: AccountService, private router: Router, config: NgbDropdownConfig) {
-    config.placement = 'bottom-right';
+  constructor(private authService: AuthenticationService, private accountService: AccountService, private router: Router, config: NgbDropdownConfig, private modalService: NgbModal) {
+    config.placement = 'bottom';
   }
   toggleOffcanvas() {
     this.sidebarOpened = !this.sidebarOpened;
@@ -38,6 +39,9 @@ export class NavbarComponent implements OnInit {
         console.log(error1);
       }
     );
+  }
+  openChangingPasswordModal() {
+    this.modalService.open(ChangePasswordFormComponent);
   }
   logout() {
     this.authService.logout();
