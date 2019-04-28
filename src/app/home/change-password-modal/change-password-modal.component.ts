@@ -5,10 +5,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-change-password-form',
-  templateUrl: './change-password-form.component.html',
-  styleUrls: ['./change-password-form.component.scss']
+  templateUrl: './change-password-modal.component.html',
+  styleUrls: ['./change-password-modal.component.scss']
 })
-export class ChangePasswordFormComponent implements OnInit {
+export class ChangePasswordModalComponent implements OnInit {
   changingPasswordForm: FormGroup;
   constructor(private formBuilder: FormBuilder, private accountService: AccountService, public activeModal: NgbActiveModal) { }
 

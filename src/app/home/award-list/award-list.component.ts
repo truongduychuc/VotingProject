@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {AddAwardComponent} from "./add-award/add-award.component";
+import {AddAwardModalComponent} from "./add-award-modal/add-award-modal.component";
 
 @Component({
   selector: 'app-award-list',
@@ -13,7 +13,7 @@ export class AwardListComponent implements OnInit {
   ngOnInit() {
   }
   openAddingAward() {
-    this.modalService.open(AddAwardComponent, {windowClass: 'myCustomModalClass'});
+    this.modalService.open(AddAwardModalComponent, {windowClass: 'myCustomModalClass'});
   }
 
 }

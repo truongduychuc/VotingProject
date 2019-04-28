@@ -1,7 +1,7 @@
 import {NgModule } from '@angular/core';
 import {CommonModule } from '@angular/common';
-import {ChangePasswordFormComponent} from "./change-password-form/change-password-form.component";
-import {CreateUserFormComponent} from "./employee-list/create-user-form/create-user-form.component";
+import {ChangePasswordModalComponent} from "./change-password-modal/change-password-modal.component";
+import {CreateUserModalComponent} from "./employee-list/create-user-modal/create-user-modal.component";
 import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {FooterComponent} from "./footer/footer.component";
 import {NavbarComponent} from "./navbar/navbar.component";
@@ -18,13 +18,14 @@ import { EditingModalComponent } from './employee-list/editing-modal/editing-mod
 import { AwardListComponent } from './award-list/award-list.component';
 import { AwardAsYearComponent } from './award-list/award-as-year/award-as-year.component';
 import { AwardComponent } from './award-list/award/award.component';
-import { AddAwardComponent } from './award-list/add-award/add-award.component';
+import { AddAwardModalComponent } from './award-list/add-award-modal/add-award-modal.component';
 import {NgSelectModule} from '@ng-select/ng-select';
+import { UploadAvatarComponent } from './upload-avatar/upload-avatar.component';
 
 @NgModule({
   declarations: [
-    ChangePasswordFormComponent,
-    CreateUserFormComponent,
+    ChangePasswordModalComponent,
+    CreateUserModalComponent,
     EmployeeListComponent,
     NavbarComponent,
     SidebarComponent,
@@ -37,7 +38,8 @@ import {NgSelectModule} from '@ng-select/ng-select';
     AwardListComponent,
     AwardAsYearComponent,
     AwardComponent,
-    AddAwardComponent
+    AddAwardModalComponent,
+    UploadAvatarComponent
   ],
   imports: [
     CommonModule,
@@ -53,9 +55,10 @@ import {NgSelectModule} from '@ng-select/ng-select';
   ],
   entryComponents: [
     EditingModalComponent,
-    CreateUserFormComponent,
-    AddAwardComponent,
-    ChangePasswordFormComponent
+    CreateUserModalComponent,
+    AddAwardModalComponent,
+    ChangePasswordModalComponent,
+    UploadAvatarComponent
   ]
 })
 export class HomeModule { }

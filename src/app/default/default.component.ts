@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LoginFormComponent} from "./login-form/login-form.component";
+import {LoginModalComponent} from "./login-modal/login-modal.component";
 
 @Component({
   selector: 'app-default',
@@ -16,7 +16,7 @@ export class DefaultComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.modalService.open(LoginFormComponent, {centered: true, backdrop: "static"});
+      this.modalService.open(LoginModalComponent, {centered: true, backdrop: "static"});
     });
   }
 

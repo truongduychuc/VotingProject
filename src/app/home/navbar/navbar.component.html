@@ -17,7 +17,7 @@
               currentUserProfile.first_name.toUpperCase() == 'ADMIN' || currentUserProfile.last_name.toUpperCase() == 'ADMIN' || currentUserProfile.english_name.toUpperCase() == 'ADMIN'? 'Admin':
                 currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
               }}</span>
-          <img class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+          <img (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
         </a>
         <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdown">
           <a (click)="openChangingPasswordModal()" class="dropdown-item">
@@ -31,7 +31,7 @@
       <!--Display with xs screen-->
       <li *ngIf="currentUserProfile" class="nav-item dropdown d-block d-sm-none" ngbDropdown>
         <a class="nav-link" id="UserDropdownMini">
-          <img class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+          <img (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
           <span class="profile-text dropdown-toggle" ngbDropdownToggle></span>
         </a>
         <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">

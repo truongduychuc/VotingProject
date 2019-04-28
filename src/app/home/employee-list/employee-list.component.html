@@ -64,9 +64,9 @@
                   <td>{{user.email}}</td>
                   <td align="center">{{user.english_name}}</td>
                   <td align="center" *ngIf="isAdmin">
-                    <a (click)="openEditingModal(user.id)" title="Edit this user" class="btn edit"><i class="fas fa-user-edit"></i></a>
-                    <a (click)="deleteUser(user.id)" title="Delete this user" class="btn delete"><i class="fas fa-trash"></i></a>
-                    <a (click)="resetPassword(user.id)" title="Reset password" class="btn reset"><i class="fas fa-undo"></i></a>
+                    <a (click)="openEditingModal(user.id)" title="Edit this user" class="btn btn-sm edit"><i class="fas fa-user-edit"></i></a>
+                    <a (click)="deleteUser(user.id)" title="Delete this user" class="btn btn-sm delete"><i class="fas fa-trash"></i></a>
+                    <a (click)="resetPassword(user.id)" title="Reset password" class="btn btn-sm reset"><i class="fas fa-undo"></i></a>
                   </td>
                 </tr>
                 </tbody>

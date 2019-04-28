@@ -7,10 +7,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-create-user-form',
-  templateUrl: './create-user-form.component.html',
-  styleUrls: ['./create-user-form.component.scss']
+  templateUrl: './create-user-modal.component.html',
+  styleUrls: ['./create-user-modal.component.scss']
 })
-export class CreateUserFormComponent implements OnInit {
+export class CreateUserModalComponent implements OnInit {
   createUser: FormGroup;
   constructor(private formBuilder: FormBuilder, private accountService: AccountService, private router: Router,
               public activeModal: NgbActiveModal) {

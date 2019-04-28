@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddAwardModalComponent } from './add-award-modal.component';
+import { UploadAvatarComponent } from './upload-avatar.component';
 
-describe('AddAwardModalComponent', () => {
-  let component: AddAwardModalComponent;
-  let fixture: ComponentFixture<AddAwardModalComponent>;
+describe('UploadAvatarComponent', () => {
+  let component: UploadAvatarComponent;
+  let fixture: ComponentFixture<UploadAvatarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddAwardModalComponent ]
+      declarations: [ UploadAvatarComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddAwardModalComponent);
+    fixture = TestBed.createComponent(UploadAvatarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

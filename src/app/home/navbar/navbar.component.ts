@@ -4,7 +4,8 @@ import {AccountService} from "../../_services/account.service";
 import {Router} from "@angular/router";
 import {AuthenticationService} from "../../_services/authentication.service";
 import {User} from "../../_models/user";
-import {ChangePasswordFormComponent} from "../change-password-form/change-password-form.component";
+import {ChangePasswordModalComponent} from "../change-password-modal/change-password-modal.component";
+import {UploadAvatarComponent} from "../upload-avatar/upload-avatar.component";
 
 @Component({
   selector: 'app-navbar',
@@ -41,7 +42,10 @@ export class NavbarComponent implements OnInit {
     );
   }
   openChangingPasswordModal() {
-    this.modalService.open(ChangePasswordFormComponent);
+    this.modalService.open(ChangePasswordModalComponent);
+  }
+  openUploadingAvatarModal() {
+    this.modalService.open(UploadAvatarComponent);
   }
   logout() {
     this.authService.logout();

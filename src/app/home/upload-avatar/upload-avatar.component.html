@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <h6 class="modal-title">Upload avatar</h6>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Uploading form was called off!')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-sm-4">
+      <p>{{description}}</p>
+    </div>
+    <div class="col-sm-8">
+      <form [formGroup]="uploadAvatar">
+        <div class="row">
+          <div class="col-12 image-container justify-content-center">
+            <img id="tempDisplaying" [src]="tempDisplaying" alt="Avatar image">
+          </div>
+          <div class="col-12 justify-content-center">
+            <input id="gettingFileInput" accept="image/jpeg, image/png" type="file" class="d-none">
+            <button class="btn btn-success" (click)="selectFile()">Upload new image</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

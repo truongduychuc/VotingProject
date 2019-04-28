@@ -4,7 +4,7 @@ import {User} from '../../_models/user';
 import {HttpErrorResponse, HttpParams} from '@angular/common/http';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditingModalComponent} from './editing-modal/editing-modal.component';
-import {CreateUserFormComponent} from './create-user-form/create-user-form.component';
+import {CreateUserModalComponent} from './create-user-modal/create-user-modal.component';
 import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
@@ -32,7 +32,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   get isAdmin() {
-    console.log(this.currentUser.position);
     return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
   }
   ngOnInit() {
@@ -274,7 +273,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     })
   }
   openCreatingModal() {
-    const modalRef = this.modalService.open(CreateUserFormComponent);
+    const modalRef = this.modalService.open(CreateUserModalComponent);
     modalRef.result.then(value => {
       this.getUserListPerPage();
     }, reason => {

@@ -3,10 +3,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-add-award',
-  templateUrl: './add-award.component.html',
-  styleUrls: ['./add-award.component.scss']
+  templateUrl: './add-award-modal.component.html',
+  styleUrls: ['./add-award-modal.component.scss']
 })
-export class AddAwardComponent implements OnInit {
+export class AddAwardModalComponent implements OnInit {
   years: number[] = [];
   constructor(public activeModal: NgbActiveModal) { }
 
