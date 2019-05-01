@@ -21,6 +21,8 @@ import { AwardComponent } from './award-list/award/award.component';
 import { AddAwardModalComponent } from './award-list/add-award-modal/add-award-modal.component';
 import {NgSelectModule} from '@ng-select/ng-select';
 import { UploadAvatarComponent } from './upload-avatar/upload-avatar.component';
+import {GroupByPipe} from "../_pipes/group-by.pipe";
+import { AwardDetailComponent } from './award-list/award-detail/award-detail.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { UploadAvatarComponent } from './upload-avatar/upload-avatar.component';
     AwardAsYearComponent,
     AwardComponent,
     AddAwardModalComponent,
-    UploadAvatarComponent
+    UploadAvatarComponent,
+    GroupByPipe,
+    AwardDetailComponent
   ],
   imports: [
     CommonModule,

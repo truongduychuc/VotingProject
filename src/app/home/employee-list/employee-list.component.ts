@@ -26,6 +26,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   error: any;
   usersList: User[];
 
+  // for determining whether the current user is admin
   currentUser: User;
   previousSearchText: string;
   constructor(private accountService: AccountService, private authService: AuthenticationService, private modalService: NgbModal) {

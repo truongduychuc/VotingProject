@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Award} from "../../../_models/award";
 
 @Component({
@@ -8,7 +8,8 @@ import {Award} from "../../../_models/award";
 })
 export class AwardAsYearComponent implements OnInit {
   isCollapsed: false;
-  arrAwardListOfYear: Award[] = [];
+  @Input() year: number;
+  @Input() awardListOfYear: Award[] = [];
   constructor() { }
 
   ngOnInit() {

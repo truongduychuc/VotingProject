@@ -1,6 +1,7 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {ImageService} from "../../_services/image.service";
 
 @Component({
   selector: 'app-upload-avatar',
@@ -8,15 +9,23 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./upload-avatar.component.scss']
 })
 export class UploadAvatarComponent implements OnInit {
-  @Input() id: number;
   @Input() current_avt_url: string;
-  description: string = 'Current avatar:';
+  description: string;
   uploadAvatar: FormGroup;
-  tempDisplaying:any = 'http://localhost:4000/' + this.current_avt_url;
-  constructor(private formBuilder: FormBuilder, public activeModal: NgbActiveModal, private changeDetector: ChangeDetectorRef) { }
+  tempDisplaying:any;
+  constructor(private formBuilder: FormBuilder, public activeModal: NgbActiveModal, private changeDetector: ChangeDetectorRef,
+              private imageService: ImageService) { }
 
   ngOnInit() {
+    this.displayAvatarInitially();
     this.generateForm();
+  }
+  displayAvatarInitially() {
+    if(!this.current_avt_url) {
+      this.description = 'You don\'t have avatar!';
+    } else {
+      this.tempDisplaying = 'http://localhost:4000/' + this.current_avt_url;
+    }
   }
   selectFile() {
     const inputGetFile = document.getElementById('gettingFileInput');
@@ -25,9 +34,9 @@ export class UploadAvatarComponent implements OnInit {
   onFileChange(event) {
     const reader = new FileReader();
     if(event.target.files && event.target.files.length) {
-      const [file] = event.target.files;
+      this.description = 'New image';
+      const file:File = event.target.files[0];
       reader.readAsDataURL(file);
-
       reader.onload = () => {
         this.uploadAvatar.patchValue({
           file: reader.result
@@ -35,11 +44,28 @@ export class UploadAvatarComponent implements OnInit {
         this.tempDisplaying = reader.result;
         this.changeDetector.markForCheck();
       };
+      if(this.uploadAvatar.controls['file'].value) {
+        this.description = 'New avatar';
+      }
+      console.log(this.uploadAvatar);
     }
+
+  }
+  onSubmit() {
+    if(this.uploadAvatar.invalid) {
+      console.log('Invalid form!');
+      return;
+    }
+    this.imageService.uploadAvatar(this.uploadAvatar.controls['file'].value)
+      .subscribe( resForUploadingAvt => {
+        alert(resForUploadingAvt.message);
+      }, errUploading => {
+        console.log(errUploading);
+      })
   }
   generateForm() {
     this.uploadAvatar = this.formBuilder.group({
-      file: [null, Validators.required]
+      file: ['', Validators.required]
     });
   }
 }

@@ -6,18 +6,23 @@
 </div>
 <div class="modal-body">
   <div class="row">
-    <div class="col-sm-4">
-      <p>{{description}}</p>
+    <div class="col-12 d-flex justify-content-center">
+      <p>{{description?description:'Current avatar'}}</p>
     </div>
-    <div class="col-sm-8">
-      <form [formGroup]="uploadAvatar">
+    <div class="col-12">
+      <form (ngSubmit)="onSubmit()" [formGroup]="uploadAvatar">
         <div class="row">
-          <div class="col-12 image-container justify-content-center">
-            <img id="tempDisplaying" [src]="tempDisplaying" alt="Avatar image">
+          <div class="col-12 image-container d-flex justify-content-center">
+            <img style="max-width: 300px; height: auto" *ngIf="tempDisplaying" class="img-thumbnail" [src]="tempDisplaying" alt="Avatar image">
           </div>
-          <div class="col-12 justify-content-center">
-            <input id="gettingFileInput" accept="image/jpeg, image/png" type="file" class="d-none">
-            <button class="btn btn-success" (click)="selectFile()">Upload new image</button>
+          <div class="col-12 justify-content-center d-flex m-2">
+            <input (change)="onFileChange($event)" id="gettingFileInput" accept="image/jpeg, image/png" type="file" class="d-none">
+            <button type="button" class="btn btn-success" *ngIf="!uploadAvatar.controls['file'].value" (click)="selectFile()">Upload new avatar</button>
+          </div>
+          <!--If there was an image uploaded, show these buttons and hide button 'Upload new avatar'-->
+          <div *ngIf="uploadAvatar.controls['file'].value" class="col-12 flex-wrap justify-content-center d-flex m-2">
+            <button type="submit" [disabled]="uploadAvatar.invalid" class="btn btn-info m-2">Upload</button>
+            <button type="button" class="btn btn-success m-2" (click)="selectFile()">Select other</button>
           </div>
         </div>
       </form>

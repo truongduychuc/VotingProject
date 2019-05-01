@@ -1,0 +1,14 @@
+.custom {
+  width: 100%;
+  .award-description {
+    border: 1px solid blueviolet;
+    height: 150px;
+    padding: 1rem;
+    overflow: auto;
+  }
+}
+.table-responsive {
+  overflow-y: auto;
+  max-height: 400px;
+}
+

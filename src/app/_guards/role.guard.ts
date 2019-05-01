@@ -12,7 +12,7 @@ import {AuthenticationService} from '../_services/authentication.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AdminRoleGuard implements CanActivate  {
+export class RoleGuard implements CanActivate  {
   constructor(private authService: AuthenticationService, private router: Router) {
 
   }

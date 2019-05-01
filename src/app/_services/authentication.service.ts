@@ -13,7 +13,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
   providedIn: 'root'
 })
 export class AuthenticationService {
-  serverURL = 'http://localhost:4000';
+  serverURL = 'http://localhost:4000/';
   constructor(private httpClient: HttpClient, private authService: AuthenticationService,
               private accountService: AccountService, private router: Router) {
   }
@@ -22,7 +22,7 @@ export class AuthenticationService {
       username: username,
       password: password
     };
-    return this.httpClient.post<any>(this.serverURL + '/users/authenticate', userTryingToLogin).pipe(map(
+    return this.httpClient.post<any>(this.serverURL + 'users/authenticate', userTryingToLogin).pipe(map(
       res => {
         this.setSession(res);
         console.log('Authentication result: ' + JSON.stringify(res));

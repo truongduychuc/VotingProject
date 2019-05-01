@@ -7,10 +7,10 @@ import {Team} from "../_models/team";
   providedIn: 'root'
 })
 export class TeamService {
-  private serverURL = 'http://localhost:4000';
+  private serverURL = 'http://localhost:4000/';
   constructor(private httpClient: HttpClient) { }
 
   getAllTeams(): Observable<Team[]> {
-    return this.httpClient.get<Team[]>(this.serverURL + '/users/team');
+    return this.httpClient.get<Team[]>(this.serverURL + 'users/team');
   }
 }

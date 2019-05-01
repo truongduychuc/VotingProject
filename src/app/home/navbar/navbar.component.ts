@@ -45,7 +45,13 @@ export class NavbarComponent implements OnInit {
     this.modalService.open(ChangePasswordModalComponent);
   }
   openUploadingAvatarModal() {
-    this.modalService.open(UploadAvatarComponent);
+    const modalRef = this.modalService.open(UploadAvatarComponent);
+    modalRef.componentInstance.current_ava_url = this.currentUserProfile.ava_url;
+    modalRef.result.then(finished => {
+      this.getCurrentUserProfile();
+    }, reason => {
+      console.log('reason');
+    })
   }
   logout() {
     this.authService.logout();

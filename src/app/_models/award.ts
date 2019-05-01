@@ -1,4 +1,5 @@
 import {Nominee} from "./nominee";
+import {Winner} from "./winner";
 
 export interface Award {
   id: number;
@@ -13,6 +14,7 @@ export interface Award {
   logo_url: string;
   created_at: Date;
   updated_at: Date;
-  nominee: Nominee;
+  nominee: Nominee[];
+  winner: Winner;
 }
 

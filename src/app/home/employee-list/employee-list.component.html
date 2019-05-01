@@ -40,6 +40,7 @@
                   <th (click)="sortOnColumn('first_name','user')" class="hand-cursor" scope="col" title="Click column's name to change sort direction">Name
                     <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon by sort direction-->
                   </th>
+                  <th *ngIf="isAdmin" class="text-center" align="center" scope="col">Is Active</th>
                   <th (click)="sortOnColumn('name','role')" class="hand-cursor" title="Click column's name to change sort direction" scope="col">Position
                     <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'role')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
@@ -59,7 +60,8 @@
                 <tr *ngFor="let user of usersList">
                   <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
                   <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
-                  <td  >{{user.role?.name}}</td>
+                  <td *ngIf="isAdmin">{{user?.is_active}}</td>
+                  <td>{{user.role?.name}}</td>
                   <td align="center">{{user.team?.name}}</td>
                   <td>{{user.email}}</td>
                   <td align="center">{{user.english_name}}</td>

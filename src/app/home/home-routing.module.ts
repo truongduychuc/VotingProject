@@ -7,8 +7,9 @@ import {HomeComponent} from './home.component';
 import {PersonalInformationComponent} from './personal-information/personal-information.component';
 import {VotingComponent} from './voting/voting.component';
 import {AwardListComponent} from './award-list/award-list.component';
-import {AdminRoleGuard} from '../_guards/admin-role.guard';
+import {RoleGuard} from '../_guards/role.guard';
 import {Role} from '../_enums/role';
+import {AwardDetailComponent} from "./award-list/award-detail/award-detail.component";
 
 
 const homeRoutes: Routes = [
@@ -18,18 +19,19 @@ const homeRoutes: Routes = [
       {path: 'employee-list', component: EmployeeListComponent},
       {path: 'vote',
         component: VotingComponent,
-        canActivate: [AdminRoleGuard],
+        canActivate: [RoleGuard],
         data: {
         roles: [Role.MANAGER, Role.DEVELOPER]}
         },
       {path: 'personal-info',
         component: PersonalInformationComponent,
-        canActivate: [AdminRoleGuard],
+        canActivate: [RoleGuard],
         data: {
         roles: [Role.MANAGER, Role.DEVELOPER]
       }
       },
-      {path: 'award-list', component: AwardListComponent, canActivate: [AdminRoleGuard], data: {roles: [Role.ADMIN]}}
+      {path: 'award-list',component: AwardListComponent},
+      {path: 'award-detail/:id', component: AwardDetailComponent}
     ]}
 ];
 @NgModule({
