@@ -28,6 +28,9 @@ const Breakdown = db.sequelize.define(
         },
         total_points: {
             type: Sequelize.INTEGER
+        },
+        updated_at: {
+            type: Sequelize.DATE
         }
     }, {
         timestamps: false

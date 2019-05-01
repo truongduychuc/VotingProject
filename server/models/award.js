@@ -8,8 +8,8 @@ const Award = db.sequelize.define(
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
-            type: Sequelize.STRING
+        type: {
+            type: Sequelize.INTEGER
         },
         year: {
             type: Sequelize.INTEGER

@@ -28,7 +28,8 @@ module.exports = {
     sendTokenToVoter,
     setNominee,
     setNomineeVote,
-    addNomineeVote
+    addNomineeVote,
+    grantC
 };
 
 function getInfo() {
@@ -527,7 +528,12 @@ let token_name = 'token_984';
 //     return add;
 // }
 
-
+function grantC(address, permission) {
+    multichain.grant({
+        addresses: address,
+        permissions: permission
+    })
+}
 
 
 function grant(address, permission) {

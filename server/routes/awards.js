@@ -14,6 +14,7 @@ const User = require('../models/user');
 const Nominee = require('../models/nominee');
 const Winner = require('../models/winner');
 const Breakdown = require('../models/breakdown');
+const Award_type = require('../models/award_type');
 const multichain = require('../helpers/multichain');
 
 router.use(cors());
@@ -29,6 +30,9 @@ Breakdown.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name' });
 Award.hasOne(Nominee, { foreignKey: 'id_award' });
 Nominee.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name' });
 
+Award_type.hasMany(Award, { foreignKey: 'id', constraints: false });
+Award.belongsTo(Award_type, { foreignKey: 'type', constraints: false });
+
 var moment = require('moment');
 
 /*
@@ -39,9 +43,13 @@ createAward(admin): (post) /create
 listAward: (get) /list
 updateAward(admin): (put) /update/:id
 uploadLogo(admin): (post) /upload_logo/:id
-getAwardInfo: (get) /:id
+getAwardInfo: (get) /info/:id
 getPastWinner: (get) /past_winner/:id
 getRankingBreakdown: (get) /breakdown/:id
+getTypeOfAward: (get) /award_type
+findAnAward: (get) /find_an_ward
+voting: (post) /voting_award
+
 
 deleteAward(admin): (post) /delete/:id (not done)
 
@@ -55,9 +63,9 @@ router.post('/create', (req, res) => {
     const today = new Date();
     const year = today.getFullYear();
     const awardData = {
-        name: req.body.name,
+        type: req.body.type,
         description: null,
-        year: null,
+        year: req.body.year,
         status: 1,
         date_start: req.body.date_start,
         date_end: req.body.date_end,
@@ -69,7 +77,6 @@ router.post('/create', (req, res) => {
     const voterData = {
         id_award: null,
         id_user: null,
-        vote_ability: 1,
         vote_status: 1,
         updated_at: today
     }
@@ -77,6 +84,18 @@ router.post('/create', (req, res) => {
         id_award: null,
         id_team: null,
         id_nominee: null,
+        updated_at: today
+    }
+
+    const nomineeVotes = {
+        id_award: null,
+        rank: 1,
+        id_nominee: null,
+        first_votes: 0,
+        second_votes: 0,
+        third_votes: 0,
+        percent: 0,
+        total_points: 0,
         updated_at: today
     }
 
@@ -131,7 +150,7 @@ router.post('/create', (req, res) => {
     // } else {
     Award.findAll({
             where: {
-                name: req.body.name,
+                type: req.body.type,
                 year: 2000
                     //year: req.body.year
             }
@@ -141,8 +160,21 @@ router.post('/create', (req, res) => {
                 res.status(400).send({ message: 'Award already exists.' });
             } else {
                 //Create award
-                awardData.year = year;
+
+                //awardData.year = year;
                 //awardData.year = req.body.year;
+                if (req.body.type == 0 || req.body.type == '' || req.body.type == null) {
+                    Award_type.create({ name: req.body.name });
+                    Award_type.findOne({
+                            where: {
+                                name: req.body.name
+                            }
+                        })
+                        .then(award => {
+                            awardData.type = award.id;
+                        })
+                }
+
                 Award.create(awardData)
                     .then(award => {
 
@@ -180,6 +212,7 @@ router.post('/create', (req, res) => {
 
                         voterData.id_award = award.id;
                         nomineeData.id_award = award.id;
+                        nomineeVotes.id_award = award.id;
 
                         //Find voter with role
                         const voter = req.body.id_role_voter;
@@ -313,6 +346,7 @@ router.post('/create', (req, res) => {
                                             for (var i = 0; i < users.length; i++) {
                                                 nomineeData.id_team = users[i].id_team;
                                                 nomineeData.id_nominee = users[i].id;
+                                                nomineeVotes.id_nominee = users[i].id;
                                                 let nominee_data = {
                                                     id: users[i].id,
                                                     first_name: users[i].first_name,
@@ -329,6 +363,15 @@ router.post('/create', (req, res) => {
                                                         console.log('error0' + err)
                                                         res.status(400).send({ error5: err })
                                                     })
+
+                                                //Add nominee default votes
+                                                Breakdown.create(nomineeVotes)
+                                                    .then(() => {})
+                                                    .catch(err => {
+                                                        console.log('error0' + err)
+                                                        res.status(400).send({ error6: err })
+                                                    })
+
                                             }
                                         }
                                     })
@@ -358,7 +401,7 @@ router.get('/list', (req, res) => {
     Award.findAll({
             where: {
                 status: 0,
-                id: 30,
+                //id: 30,
             },
             include: [{
                 model: Nominee,
@@ -460,7 +503,7 @@ router.post('/upload_logo/:id', upload.single('logo'), (req, res, next) => {
 })
 
 //DISPLAY AWARD
-router.get('/:id', (req, res) => {
+router.get('/info/:id', (req, res) => {
     Award.findOne({
             where: {
                 id: req.params.id
@@ -518,7 +561,7 @@ router.get('/past_winner/:id', (req, res) => {
                     if (table == 'awardDetail') {
                         Award.findAll({
                                 where: {
-                                    name: award.name,
+                                    type: award.type,
                                     year: {
                                         [Op.lte]: award.year
                                     }
@@ -553,7 +596,7 @@ router.get('/past_winner/:id', (req, res) => {
                         if (table == 'winner') {
                             Award.findAll({
                                     where: {
-                                        name: award.name,
+                                        type: award.type,
                                         year: {
                                             [Op.lte]: award.year
                                         }
@@ -587,7 +630,7 @@ router.get('/past_winner/:id', (req, res) => {
                             if (table == 'winner_name') {
                                 Award.findAll({
                                         where: {
-                                            name: award.name,
+                                            type: award.type,
                                             year: {
                                                 [Op.lte]: award.year
                                             }
@@ -943,26 +986,10 @@ router.get('/breakdown/:id', (req, res) => {
         .catch(err => {
             res.status(400).send({ message: err });
         })
-        // Breakdown.findAll({
-        //         where: {
-        //             id_award: req.params.id
-        //         },
-        //         include: [{
-        //             model: User,
-        //             as: 'nominee_name',
-        //             attributes: ['first_name', 'last_name', 'english_name']
-        //         }],
-        //         order: [
-        //             ['rank', 'ASC']
-        //         ]
-        //     }).then(data => {
-        //         res.status(200).send(data);
-        //     })
-        //     .catch(err => {
-        //         res.status(400).send({ message: err });
-        //     })
 })
 
+
+//Voting
 router.post('/voting_award', authorize(), (req, res) => {
     let today = new Date();
     let id_award = req.body.id;
@@ -1215,11 +1242,161 @@ router.post('/voting_award', authorize(), (req, res) => {
         })
 })
 
-// router.get('award_name', (req, res) => {
-//     Award.findAll({
+//Get type of award
+router.get('/award_type', (req, res) => {
+    Award_type.findAll()
+        .then(types => {
+            res.status(200).send({ types: types });
+        })
+        .catch(err => {
+            res.status(400).send({ message: 'Error when get type of award', err });
+        })
+})
 
-//     })
-// })
+//Find an award
+router.get('/find_an_ward', (req, res) => {
+    Award.findAll({
+            where: {
+                type: req.body.type
+            },
+            order: ['year', 'DESC']
+        })
+        .then(awards => {
+            const data = awards[0];
+            res.status(200).send({ award: data });
+        })
+        .catch(err => {
+            res.status(400).send({ message: err });
+        })
+})
+
+//Get award for vote
+
+router.get('/get_award', (req, res) => {
+    const today = new Date();
+    Award.findAll({
+            where: {
+                status: 1
+            }
+        })
+        .then(awards => {
+            if (awards.length == 0) {
+                res.status(200).send('There is no award for voting');
+            } else {
+                for (var i = 0; i < awards.length; i++) {
+                    if (awards[i].date_end >= today) {
+                        Award.update({
+                            status: 0
+                        }, {
+                            where: {
+                                id: awards[i].id
+                            }
+                        })
+                    }
+                }
+                Award.findAll({
+                        where: {
+                            status: 1
+                        },
+                        attributes: ['id'],
+                        include: [{
+                            model: Award_type,
+                            attributes: ['name'],
+                        }]
+                    })
+                    .then(results => {
+                        if (results.length == 0) {
+                            res.status(200).send('There is no award for voting');
+                        } else {
+                            res.status(200).send({ data: results });
+                        }
+                    })
+            }
+
+        })
+        .catch(err => {
+            res.status(400).send('Error when get award for vote', err);
+        })
+})
+
+//Update result
+router.put('/update_result', (req, res) => {
+    const today = new Date();
+    const id_award = req.body.id;
+    const stream_name = 'award_' + id_award;
+    Breakdown.findAll({
+            where: {
+                id: id_award
+            }
+        })
+        .then(nominees => {
+            for (var i = 0; i < nominees.length; i++) {
+                let id_nominee = nominees[i].id;
+                let key_name = 'nominee_' + id_nominee;
+                multichain.initiateMultichain().getStreamKeySummary({
+                        stream: stream_name,
+                        key: key_name,
+                        mode: 'jsonobjectmerge'
+                    })
+                    .then(result => {
+                        let sum = result.json.first_votes + result.json.second_votes + result.json.third_votes;
+                        Breakdown.update({
+                            first_votes: result.json.first_votes,
+                            second_votes: result.json.second_votes,
+                            third_votes: result.json.third_votes,
+                            total_points: sum,
+                            updated_at: today
+                        }, {
+                            where: {
+                                id: id_award,
+                                id_nominee: id_nominee
+                            }
+                        })
+                    })
+
+            }
+            res.status(200).send({ message: 'Update successfully' });
+        })
+        .catch(err => {
+            res.status(400).send({ err: err })
+        })
+
+})
+
+function calculate() {
+
+}
+
+function count_num_voter() {
+    const award_id = req.body.id;
+    const stream_name = 'award_' + award_id;
+    let count = 0;
+    multichain.initiateMultichain().listStreamKeyItems({
+            stream: stream_name,
+            key: 'voter'
+        })
+        .then(voters => {
+            for (var i = 0; i < voters.length; i++) {
+                let voter_txid = voters[i].txid;
+                multichain.initiateMultichain().getStreamItem({
+                        stream: stream_name,
+                        txid: voter_txid
+                    })
+                    .then(result => {
+                        let address = result.data.json.address;
+                        multichain.initiateMultichain().getAddressBalances({
+                                address: address
+                            })
+                            .then(qty => {
+                                if (qty.length != 0) {
+                                    count = count + 1;
+                                }
+                            })
+                    })
+            }
+        })
+    return count;
+}
 
 function checkVoteValid(id, first_vote, second_vote, third_vote) {
     id_award = id;
@@ -1230,6 +1407,88 @@ function checkVoteValid(id, first_vote, second_vote, third_vote) {
         return false;
     }
     return true;
+}
+
+function chooseWinner() {
+    id_award = req.body.id;
+    Breakdown.findOne({
+            where: {
+                id_award: id_award,
+                rank: 1
+            }
+        })
+        .then(result => {
+            const winner_data = {
+                id_award: id_award,
+                id_winner: result.id_nominee,
+                percent: percent
+            }
+            Winner.create(winner_data);
+            console.log('Choose winner successfully');
+        })
+        .catch(err => {
+            console.log('Err' + err)
+        })
+}
+
+function finishAward() {
+    let today = new Date();
+    const award_id = req.body.id;
+    Award.update({
+            status: 0,
+            updated_at: today,
+        }, {
+            where: {
+                id: award_id
+            }
+        })
+        .then(() => {
+            const stream_name = 'award_' + award_id;
+            const asset_name = 'asset_' + award_id;
+            const token_name = 'token_' + award_id;
+            multichain.initiateMultichain().listStreamKeyItems({
+                    stream: stream_name,
+                    key: asset_name
+                })
+                .then(asset => {
+                    let asset_txid = asset[0].txid;
+                    console.log(asset_txid);
+                    multichain.initiateMultichain().getStreamItem({
+                            stream: stream_name,
+                            txid: asset_txid
+                        })
+                        .then(result => {
+                            //Get address of asset
+                            let address1 = result.data.json.address;
+                            multichain.initiateMultichain().listStreamKeyItems({
+                                    stream: stream_name,
+                                    key: 'voter',
+                                })
+                                .then(voters => {
+                                    for (var i = 0; i < voters.length; i++) {
+                                        let voter_txid = voters[i].txid;
+                                        multichain.initiateMultichain().getStreamItem({
+                                                stream: stream_name,
+                                                txid: voter_txid
+                                            })
+                                            .then(result1 => {
+                                                let address2 = result1.data.json.address;
+                                                grantC(address2, 'receive,send')
+                                                    .then(() => {
+                                                        sendAssetFrom(address2, address1, token_name, 9);
+                                                        console.log('Successfully');
+                                                    })
+
+                                            })
+                                    }
+                                })
+                        })
+
+                })
+        })
+        .catch(err => {
+            console.log('Err' + err);
+        })
 }
 
 router.get('/get/123', (req, res) => {
@@ -1246,31 +1505,5 @@ router.get('/get/123', (req, res) => {
     })
 })
 
-router.get('/get/getliststreamkey', (req, res) => {
-    multichain.initiateMultichain().listStreamKeys({
-        stream: "award_150",
-        //key: "nominee_1",
-        verbose: true
-    }, (err, info) => {
-        console.log('Response: ' + JSON.stringify(info));
 
-        res.header("Content-Type", 'application/json');
-
-        res.json({ liststream: info });
-    })
-})
-
-router.get('/get/getliststreamkeyitem', (req, res) => {
-    multichain.initiateMultichain().listStreamKeyItems({
-        stream: "award_150",
-        key: "nominee_1",
-        verbose: true
-    }, (err, info) => {
-        console.log('Response: ' + JSON.stringify(info));
-
-        res.header("Content-Type", 'application/json');
-
-        res.json({ liststream: info });
-    })
-})
 module.exports = router;

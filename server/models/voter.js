@@ -11,9 +11,6 @@ const Voter = db.sequelize.define(
             type: Sequelize.INTEGER,
             primaryKey: true
         },
-        vote_ability: {
-            type: Sequelize.TINYINT,
-        },
         vote_status: {
             type: Sequelize.TINYINT
         },
