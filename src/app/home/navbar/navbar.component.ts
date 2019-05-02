@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {NgbDropdownConfig, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AccountService} from "../../_services/account.service";
-import {Router} from "@angular/router";
-import {AuthenticationService} from "../../_services/authentication.service";
-import {User} from "../../_models/user";
-import {ChangePasswordModalComponent} from "../change-password-modal/change-password-modal.component";
-import {UploadAvatarComponent} from "../upload-avatar/upload-avatar.component";
+import {AccountService} from '../../_services/account.service';
+import {Router} from '@angular/router';
+import {AuthenticationService} from '../../_services/authentication.service';
+import {User} from '../../_models/user';
+import {ChangePasswordModalComponent} from '../change-password-modal/change-password-modal.component';
+import {UploadAvatarComponent} from '../upload-avatar/upload-avatar.component';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +16,8 @@ import {UploadAvatarComponent} from "../upload-avatar/upload-avatar.component";
 export class NavbarComponent implements OnInit {
   currentUserProfile: User;
   public sidebarOpened = false;
-  constructor(private authService: AuthenticationService, private accountService: AccountService, private router: Router, config: NgbDropdownConfig, private modalService: NgbModal) {
+  constructor(private authService: AuthenticationService, private accountService: AccountService,
+              private router: Router, config: NgbDropdownConfig, private modalService: NgbModal) {
     config.placement = 'bottom';
   }
   toggleOffcanvas() {
@@ -46,12 +47,12 @@ export class NavbarComponent implements OnInit {
   }
   openUploadingAvatarModal() {
     const modalRef = this.modalService.open(UploadAvatarComponent);
-    modalRef.componentInstance.current_ava_url = this.currentUserProfile.ava_url;
+    modalRef.componentInstance.current_avt_url = this.currentUserProfile.ava_url;
     modalRef.result.then(finished => {
       this.getCurrentUserProfile();
     }, reason => {
-      console.log('reason');
-    })
+      console.log(reason);
+    });
   }
   logout() {
     this.authService.logout();

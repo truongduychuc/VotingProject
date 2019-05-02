@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {ImageService} from "../../_services/image.service";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {ImageService} from '../../_services/image.service';
 
 @Component({
   selector: 'app-upload-avatar',
@@ -12,17 +12,18 @@ export class UploadAvatarComponent implements OnInit {
   @Input() current_avt_url: string;
   description: string;
   uploadAvatar: FormGroup;
-  tempDisplaying:any;
+  tempDisplaying: any;
   constructor(private formBuilder: FormBuilder, public activeModal: NgbActiveModal, private changeDetector: ChangeDetectorRef,
               private imageService: ImageService) { }
 
   ngOnInit() {
     this.displayAvatarInitially();
     this.generateForm();
+    console.log(this.current_avt_url);
   }
   displayAvatarInitially() {
-    if(!this.current_avt_url) {
-      this.description = 'You don\'t have avatar!';
+    if (!this.current_avt_url) {
+      this.description = 'You have no avatar!';
     } else {
       this.tempDisplaying = 'http://localhost:4000/' + this.current_avt_url;
     }
@@ -35,33 +36,31 @@ export class UploadAvatarComponent implements OnInit {
     const reader = new FileReader();
     if(event.target.files && event.target.files.length) {
       this.description = 'New image';
-      const file:File = event.target.files[0];
+      const file: File = event.target.files[0];
       reader.readAsDataURL(file);
       reader.onload = () => {
-        this.uploadAvatar.patchValue({
-          file: reader.result
-        });
+       this.uploadAvatar.controls['file'].setValue(file); // note
         this.tempDisplaying = reader.result;
         this.changeDetector.markForCheck();
       };
       if(this.uploadAvatar.controls['file'].value) {
         this.description = 'New avatar';
       }
-      console.log(this.uploadAvatar);
     }
 
   }
   onSubmit() {
-    if(this.uploadAvatar.invalid) {
+    if (this.uploadAvatar.invalid) {
       console.log('Invalid form!');
       return;
     }
     this.imageService.uploadAvatar(this.uploadAvatar.controls['file'].value)
-      .subscribe( resForUploadingAvt => {
+      .subscribe( (resForUploadingAvt: any) => {
         alert(resForUploadingAvt.message);
+        this.activeModal.close('Updated avatar successfully!');
       }, errUploading => {
         console.log(errUploading);
-      })
+      });
   }
   generateForm() {
     this.uploadAvatar = this.formBuilder.group({

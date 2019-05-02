@@ -77,22 +77,22 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
         this.currentSortedColumn = lastCol; // recover component to last status, such as previous select box's value
       }
       let lastType = lastParams.type;
-      if(lastType){
+      if (lastType) {
         reloadedParams = reloadedParams.append('type', lastParams.type);
         this.currentSortedType = lastType;
       }
       let lastTable = lastParams.table;
-      if(lastTable) {
+      if (lastTable) {
         reloadedParams = reloadedParams.append('table', lastParams.table);
         this.currentSortedTable = lastTable;
       }
       let lastSearch = lastParams.search;
-      if(lastSearch) {
+      if (lastSearch) {
         reloadedParams = reloadedParams.append('search', lastParams.search);
         this.currentSearchText = lastSearch;
       }
       let lastCount = lastParams.count;
-      if(lastCount) {
+      if (lastCount) {
         reloadedParams = reloadedParams.append('count', lastParams.count);
         this.currentPageSize = lastCount;
       }
@@ -271,7 +271,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       this.getUserListPerPage();
     }, reason => {
       console.log(reason);
-    })
+    });
   }
   openCreatingModal() {
     const modalRef = this.modalService.open(CreateUserModalComponent);
@@ -279,7 +279,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       this.getUserListPerPage();
     }, reason => {
       console.log(reason);
-    })
+    });
   }
 
  ngOnDestroy(): void {
