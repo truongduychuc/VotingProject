@@ -49,8 +49,8 @@ getRankingBreakdown: (get) /breakdown/:id
 getTypeOfAward: (get) /award_type
 findAnAward: (get) /find_an_ward
 voting: (post) /voting_award
-//Update result
-router.put('/update_result'
+updateResult: (put) /update_result
+
 
 deleteAward(admin): (post) /delete/:id (not done)
 
@@ -237,7 +237,8 @@ router.post('/create', (req, res) => {
                             for (var j = 0; j < voter.length; j++) {
                                 User.findAll({
                                         where: {
-                                            id_role: voter[j]
+                                            id_role: voter[j],
+                                            is_active: 1
                                         }
                                     })
                                     .then(users => {
@@ -349,7 +350,8 @@ router.post('/create', (req, res) => {
                             for (var k = 0; k < nominee.length; k++) {
                                 User.findAll({
                                         where: {
-                                            id: nominee[k]
+                                            id: nominee[k],
+                                            is_active: 1
                                         }
                                     })
                                     .then(users => {
@@ -1271,7 +1273,9 @@ router.get('/find_an_ward', (req, res) => {
             where: {
                 type: req.body.type
             },
-            order: ['year', 'DESC']
+            order: [
+                ['year', 'DESC']
+            ]
         })
         .then(awards => {
             const data = awards[0];
@@ -1397,7 +1401,9 @@ function calculate() {
             for (var i = 1; i < data.length; i++) {
                 for (var j = i + 1; j <= data.length; j++) {
                     if (data[i].total_points > data[j].total_points) {
-                        updateRank(i, data[i].id_nominee);
+                        if (1) {
+                            updateRank(i, data[i].id_nominee);
+                        }
                     }
                     if (data[i].total_points = data[j].total_points) {
                         if (data[i].first_votes != data[j].first_votes) {

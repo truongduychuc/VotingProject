@@ -39,6 +39,7 @@ resetPassword(admin): (put) /reset_password/:id
 updateProfile: (put) /update_profile
 updateProfile(admin): (put) /update/:id
 uploadAvatar: (post) /upload_avatar
+listForNominating: (get) /list_for_nominating
 deleteUser(admin): (post) /delete/:id
 
 */
@@ -47,7 +48,9 @@ deleteUser(admin): (post) /delete/:id
 //REGISTER
 router.post('/register', (req, res) => {
     const today = new Date();
-
+    if (req.body.id_team == '') {
+        req.body.id_team = 99;
+    }
     const userData = {
         id_role: req.body.id_role,
         id_team: req.body.id_team,
@@ -725,7 +728,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                 //         [Op.gte]: [1]
                                 //     }
                                 // },
-                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
                                 include: [{
                                         model: Role,
                                         required: true,
@@ -765,7 +768,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                     //         [Op.gte]: [1]
                                     //     }
                                     // },
-                                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                    attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
                                     include: [{
                                             model: Role,
                                             required: true,
@@ -906,7 +909,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                                     }
                                                 ]
                                             },
-                                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                            attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
                                             include: [{
                                                     model: Role,
                                                     required: true,
@@ -977,7 +980,7 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                                         }
                                                     ]
                                                 },
-                                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                                attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
                                                 include: [{
                                                         model: Role,
                                                         required: true,
@@ -1101,7 +1104,7 @@ router.put('/update/:id', authorize('admin'), (req, res) => {
         } else {
             //console.log(req.body.id_team)
             if (req.body.id_team == '') {
-                req.body.id_team = null
+                req.body.id_team = 99
             }
             User.update({
                 id_role: req.body.id_role,
@@ -1194,6 +1197,33 @@ router.post('/upload_avatar', authorize(), upload.single('avatar'), (req, res, n
     }
 
 })
+
+//LIST USER FOR NOMINATING
+router.get('/list_for_nominating', (req, res) => {
+    Team.findAll({
+            order: [
+                ['name']
+            ],
+            include: [{
+                model: User,
+                where: {
+                    is_active: 1
+                },
+                attributes: ['id', 'english_name'],
+            }]
+        })
+        .then(data => {
+            if (data.length == 0) {
+                res.status(200).send({ message: 'There is no nominee' });
+            } else {
+                res.status(200).send({ data: data });
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ message: 'Error when get list', err });
+        })
+})
+
 
 //DELETE
 router.post('/delete/:id', (req, res) => {
