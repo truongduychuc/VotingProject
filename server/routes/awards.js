@@ -90,7 +90,7 @@ router.post('/create', (req, res) => {
 
     const nomineeVotes = {
         id_award: null,
-        rank: 1,
+        rank: null,
         id_nominee: null,
         first_votes: 0,
         second_votes: 0,
@@ -362,6 +362,7 @@ router.post('/create', (req, res) => {
                                                 nomineeData.id_team = users[i].id_team;
                                                 nomineeData.id_nominee = users[i].id;
                                                 nomineeVotes.id_nominee = users[i].id;
+                                                nomineeVotes.rank = i + 1;
                                                 let nominee_data = {
                                                     id: users[i].id,
                                                     first_name: users[i].first_name,
@@ -1357,17 +1358,23 @@ router.put('/update_result', (req, res) => {
                     .then(result => {
                         let sum = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
                         Breakdown.update({
-                            first_votes: result.json.first_votes,
-                            second_votes: result.json.second_votes,
-                            third_votes: result.json.third_votes,
-                            total_points: sum,
-                            updated_at: today
-                        }, {
-                            where: {
-                                id_award: id_award,
-                                id_nominee: id_nominee
-                            }
-                        })
+                                first_votes: result.json.first_votes,
+                                second_votes: result.json.second_votes,
+                                third_votes: result.json.third_votes,
+                                total_points: sum,
+                                updated_at: today
+                            }, {
+                                where: {
+                                    id_award: id_award,
+                                    id_nominee: id_nominee
+                                }
+                            })
+                            .then(() => {
+                                calculate(id_award);
+                            })
+                            .catch(err => {
+                                res.status(400).send({ err: err })
+                            })
                     })
 
             }
@@ -1389,39 +1396,71 @@ function updateRank(i, id_nominee) {
     })
 }
 
-function calculate() {
-    const award_id = req.body.id;
+function calculate(id) {
+    const award_id = id;
     Breakdown.findAll({
             where: {
-                id: award_id
+                id_award: award_id
             },
-            order: ['total_points', 'DESC']
+            order: [
+                ['total_points', 'DESC']
+            ]
         })
         .then(data => {
-            for (var i = 1; i < data.length; i++) {
-                for (var j = i + 1; j <= data.length; j++) {
-                    if (data[i].total_points > data[j].total_points) {
-                        if (1) {
-                            updateRank(i, data[i].id_nominee);
-                        }
-                    }
-                    if (data[i].total_points = data[j].total_points) {
-                        if (data[i].first_votes != data[j].first_votes) {
-                            if (data[i].first_votes > data[j].first_votes) {
-                                updateRank(i, data[i].id_nominee);
+
+            for (var i = 0; i < data.length; i++) {
+
+                for (var j = i + 1; j < data.length; j++) {
+
+                    //Check total point
+                    if (data[i].total_points == data[j].total_points) {
+                        //Check first vote
+                        if (data[i].first_votes < data[j].first_votes) {
+                            let tam = data[i];
+                            data[i] = data[j];
+                            data[j] = tam;
+
+                        } else {
+                            // = first vote
+                            if (data[i].first_votes = data[j].first_votes) {
+
+                                if (data[i].second_votes < data[j].second_votes) {
+                                    let tam1 = data[i];
+                                    data[i] = data[j];
+                                    data[j] = tam1;
+                                } else {
+                                    // = second vote
+                                    if (data[i].second_votes = data[j].second_votes) {
+
+                                        if (data[i].third_votes < data[j].third_votes) {
+                                            let tam2 = data[i];
+                                            data[i] = data[j];
+                                            data[j] = tam2;
+                                        } else {
+                                            // = third vote
+                                            if (data[i].third_votes = data[j].third_votes) {
+                                                let tam3 = data[i + 1];
+                                                data[i + 1] = data[j];
+                                                data[j] = tam3;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                updateRank(i + 1, data[i].id_nominee);
             }
+            console.log('OK')
         })
         .catch(err => {
-            res.status(400).send({ err: err })
+            console.log('err', err)
         })
 }
 
-function count_num_voter() {
-    const award_id = req.body.id;
+function count_num_voter(id) {
+    const award_id = id;
     const stream_name = 'award_' + award_id;
     let count = 0;
     multichain.initiateMultichain().listStreamKeyItems({
@@ -1441,15 +1480,20 @@ function count_num_voter() {
                                 address: address
                             })
                             .then(qty => {
-                                if (qty.length != 0) {
+                                if (qty.length == 0) {
                                     count = count + 1;
+                                    console.log('1', count);
                                 }
                             })
                     })
             }
+            console.log('2', count);
         })
     return count;
 }
+// count_num_voter(4);
+// console.log(count_num_voter(4));
+
 
 function checkVoteValid(id, first_vote, second_vote, third_vote) {
     id_award = id;
