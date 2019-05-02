@@ -23,6 +23,7 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import { UploadAvatarComponent } from './upload-avatar/upload-avatar.component';
 import {GroupByPipe} from "../_pipes/group-by.pipe";
 import { AwardDetailComponent } from './award-list/award-detail/award-detail.component';
+import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { AwardDetailComponent } from './award-list/award-detail/award-detail.com
     AddAwardModalComponent,
     UploadAvatarComponent,
     GroupByPipe,
-    AwardDetailComponent
+    AwardDetailComponent,
+    UploadLogoComponent
   ],
   imports: [
     CommonModule,
@@ -62,7 +64,8 @@ import { AwardDetailComponent } from './award-list/award-detail/award-detail.com
     CreateUserModalComponent,
     AddAwardModalComponent,
     ChangePasswordModalComponent,
-    UploadAvatarComponent
+    UploadAvatarComponent,
+    UploadLogoComponent
   ]
 })
 export class HomeModule { }

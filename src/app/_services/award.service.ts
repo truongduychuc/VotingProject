@@ -24,7 +24,7 @@ export class AwardService {
   }
 
   getAwardDetail(id: number): Observable<Award> {
-    return this.httpClient.get<Award>(this.serverURL + `${id}`);
+    return this.httpClient.get<Award>(this.serverURL + `info/${id}`);
   }
   getPastWinner(id: number, params?: HttpParams): Observable<PastWinner> {
     return this.httpClient.get<PastWinner>(this.serverURL + `past_winner/${id}`, {params: params});

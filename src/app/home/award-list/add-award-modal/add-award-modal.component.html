@@ -1,6 +1,6 @@
 <div class="modal-header">
 <h4 class="modal-title">Add an award</h4>
-  <button (click)="activeModal.dismiss('Dismiss!')" type="button" class="close" aria-label="Close" >
+  <button (click)="activeModal.dismiss('Called off adding new award!')" type="button" class="close" aria-label="Close" >
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -64,7 +64,11 @@
         </div>
         <div class="form-group">
           <label class="col-form-label">Who can be nominated?</label>
-          <ng-select class="form-control">
+          <ng-select
+                     [items]="nominees"
+                     bindLabel="name"
+                     bindValue="id"
+          [multiple]="true">
           </ng-select>
         </div>
       </div>
@@ -89,7 +93,7 @@
     </div>
     <div class="d-flex justify-content-center flex-wrap">
       <button type="submit" class="btn btn-success btn-rounded mr-md-4 ml-md-0 m-sm-2 m-1">Add</button>
-      <button type="button" (click)="activeModal.dismiss('Dismiss by cancel button')" class="btn btn-dark btn-rounded ml-md-4 mr-md-0 m-sm-2 m-1">Cancel</button>
+      <button type="button" (click)="activeModal.dismiss('Called off adding new award!')" class="btn btn-dark btn-rounded ml-md-4 mr-md-0 m-sm-2 m-1">Cancel</button>
     </div>
   </div>
 </div>

@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Route, Router} from "@angular/router";
-import {AwardService} from "../../../_services/award.service";
-import {Award} from "../../../_models/award";
-import {PastWinner} from "../../../_models/past-winner";
-import {User} from "../../../_models/user";
+import {ActivatedRoute, Route, Router} from '@angular/router';
+import {AwardService} from '../../../_services/award.service';
+import {Award} from '../../../_models/award';
+import {PastWinner} from '../../../_models/past-winner';
 
 @Component({
   selector: 'app-award-detail',
@@ -34,7 +33,6 @@ export class AwardDetailComponent implements OnInit {
   getPastWinner() {
     this.awardService.getPastWinner(this.id).subscribe((pastWinner: PastWinner) => {
       this.pastWinnerList = pastWinner;
-      console.log(this.pastWinnerList);
     });
   }
 
