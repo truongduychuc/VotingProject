@@ -49,7 +49,8 @@ getRankingBreakdown: (get) /breakdown/:id
 getTypeOfAward: (get) /award_type
 findAnAward: (get) /find_an_ward
 voting: (post) /voting_award
-
+//Update result
+router.put('/update_result'
 
 deleteAward(admin): (post) /delete/:id (not done)
 
@@ -151,7 +152,7 @@ router.post('/create', (req, res) => {
     Award.findAll({
             where: {
                 type: req.body.type,
-                year: 2000
+                year: 2001
                     //year: req.body.year
             }
         })
@@ -164,20 +165,34 @@ router.post('/create', (req, res) => {
                 //awardData.year = year;
                 //awardData.year = req.body.year;
                 if (req.body.type == 0 || req.body.type == '' || req.body.type == null) {
-                    Award_type.create({ name: req.body.name });
-                    Award_type.findOne({
+                    Award_type.findAll({
                             where: {
                                 name: req.body.name
                             }
                         })
-                        .then(award => {
-                            awardData.type = award.id;
+                        .then(result => {
+                            if (result.length != 0) {
+                                res.status(400).send({ message: 'New award name is already exist' });
+                            } else {
+                                Award_type.create({ name: req.body.name });
+                                Award_type.findOne({
+                                        where: {
+                                            name: req.body.name
+                                        }
+                                    })
+                                    .then(award => {
+                                        awardData.type = award.id;
+                                    })
+                            }
                         })
+                        .catch(err => {
+                            res.status(400).send({ message: 'Error when check new award name', err });
+                        })
+
                 }
 
                 Award.create(awardData)
                     .then(award => {
-
                         //multichain.getInfo();
                         let stream_name = 'award_' + award.id;
                         let asset_name = 'asset_' + award.id;
@@ -229,8 +244,6 @@ router.post('/create', (req, res) => {
                                         if (users.length == 0) {
                                             res.status(400).send({ message: 'There is no user' });
                                         } else {
-
-
                                             multichain.initiateMultichain().getNewAddress()
                                                 .then(address => {
                                                     console.log('Get a new address for asset');
@@ -371,7 +384,6 @@ router.post('/create', (req, res) => {
                                                         console.log('error0' + err)
                                                         res.status(400).send({ error6: err })
                                                     })
-
                                             }
                                         }
                                     })
@@ -1326,12 +1338,12 @@ router.put('/update_result', (req, res) => {
     const stream_name = 'award_' + id_award;
     Breakdown.findAll({
             where: {
-                id: id_award
+                id_award: id_award
             }
         })
         .then(nominees => {
             for (var i = 0; i < nominees.length; i++) {
-                let id_nominee = nominees[i].id;
+                let id_nominee = nominees[i].id_nominee;
                 let key_name = 'nominee_' + id_nominee;
                 multichain.initiateMultichain().getStreamKeySummary({
                         stream: stream_name,
@@ -1339,7 +1351,7 @@ router.put('/update_result', (req, res) => {
                         mode: 'jsonobjectmerge'
                     })
                     .then(result => {
-                        let sum = result.json.first_votes + result.json.second_votes + result.json.third_votes;
+                        let sum = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
                         Breakdown.update({
                             first_votes: result.json.first_votes,
                             second_votes: result.json.second_votes,
@@ -1348,7 +1360,7 @@ router.put('/update_result', (req, res) => {
                             updated_at: today
                         }, {
                             where: {
-                                id: id_award,
+                                id_award: id_award,
                                 id_nominee: id_nominee
                             }
                         })
@@ -1363,8 +1375,43 @@ router.put('/update_result', (req, res) => {
 
 })
 
-function calculate() {
+function updateRank(i, id_nominee) {
+    Breakdown.update({
+        rank: i
+    }, {
+        where: {
+            id_nominee: id_nominee
+        }
+    })
+}
 
+function calculate() {
+    const award_id = req.body.id;
+    Breakdown.findAll({
+            where: {
+                id: award_id
+            },
+            order: ['total_points', 'DESC']
+        })
+        .then(data => {
+            for (var i = 1; i < data.length; i++) {
+                for (var j = i + 1; j <= data.length; j++) {
+                    if (data[i].total_points > data[j].total_points) {
+                        updateRank(i, data[i].id_nominee);
+                    }
+                    if (data[i].total_points = data[j].total_points) {
+                        if (data[i].first_votes != data[j].first_votes) {
+                            if (data[i].first_votes > data[j].first_votes) {
+                                updateRank(i, data[i].id_nominee);
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ err: err })
+        })
 }
 
 function count_num_voter() {
@@ -1410,7 +1457,7 @@ function checkVoteValid(id, first_vote, second_vote, third_vote) {
 }
 
 function chooseWinner() {
-    id_award = req.body.id;
+    const id_award = req.body.id;
     Breakdown.findOne({
             where: {
                 id_award: id_award,
@@ -1423,13 +1470,32 @@ function chooseWinner() {
                 id_winner: result.id_nominee,
                 percent: percent
             }
-            Winner.create(winner_data);
+            Winner.findOne({
+                    where: {
+                        id_award: id_award
+                    }
+                })
+                .then(data => {
+                    if (!data) {
+                        Winner.create(winner_data);
+                    } else {
+                        Winner.update({
+                            id_winner: winner_data.id_winner,
+                            percent: winner_data.id_winner
+                        }, {
+                            where: {
+                                id_award: id_award
+                            }
+                        })
+                    }
+                })
             console.log('Choose winner successfully');
         })
         .catch(err => {
             console.log('Err' + err)
         })
 }
+
 
 function finishAward() {
     let today = new Date();

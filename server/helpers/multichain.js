@@ -1,9 +1,9 @@
 initiateMultichain = function() {
     let multichain = require("multichain-node")({
-        port: 9240,
+        port: 9736,
         host: '127.0.0.1',
         user: "multichainrpc",
-        pass: "5sD9KgwjeyBWqyYsxVqh1b7Rmb2UfCaDkbtv3FcgLQ5g"
+        pass: "GLn6pJfAu2aFQrdJVh9XmtFFng9NHw7WukCLyGSqZSgQ"
     });
     return multichain;
 }
