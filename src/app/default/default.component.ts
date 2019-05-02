@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LoginModalComponent} from "./login-modal/login-modal.component";
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {LoginModalComponent} from './login-modal/login-modal.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-default',
@@ -9,14 +10,20 @@ import {LoginModalComponent} from "./login-modal/login-modal.component";
 })
 export class DefaultComponent implements OnInit, AfterViewInit {
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal, private router: Router) {
+  }
 
   ngOnInit() {
 
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.modalService.open(LoginModalComponent, {centered: true, backdrop: "static"});
+      const modalRef = this.modalService.open(LoginModalComponent, {backdrop: 'static'});
+      modalRef.result.then( close => {
+        this.router.navigate(['home']);
+      }, dismiss => {
+        console.log(dismiss);
+      });
     });
   }
 

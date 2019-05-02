@@ -14,9 +14,8 @@ export class LoginModalComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal,private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router, private accountService: AccountService) { }
 
   ngOnInit() {
-    if(this.authService.isLoggedIn()) {
-      this.activeModal.close();
-      this.router.navigate(['home']);
+    if (this.authService.isLoggedIn()) {
+      this.activeModal.close('Login successfully');
     } else {
       this.generateForm();
     }
@@ -35,9 +34,8 @@ export class LoginModalComponent implements OnInit {
     this.authService.login(username, password).subscribe(res => {
       // get current user after set token
       this.activeModal.close('Login successfully!');
-        this.router.navigate(['home']);
     }, errorLogin => {
-      console.log('Login form' + JSON.stringify(errorLogin));
+      console.log('Login form: ' + JSON.stringify(errorLogin));
     } );
   }
 
