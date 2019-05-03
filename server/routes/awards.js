@@ -1341,6 +1341,7 @@ router.put('/update_result', (req, res) => {
     const today = new Date();
     const id_award = req.body.id;
     const stream_name = 'award_' + id_award;
+    let sum = 0;
     Breakdown.findAll({
             where: {
                 id_award: id_award
@@ -1356,12 +1357,12 @@ router.put('/update_result', (req, res) => {
                         mode: 'jsonobjectmerge'
                     })
                     .then(result => {
-                        let sum = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
+                        let total_points = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
                         Breakdown.update({
                                 first_votes: result.json.first_votes,
                                 second_votes: result.json.second_votes,
                                 third_votes: result.json.third_votes,
-                                total_points: sum,
+                                total_points: total_points,
                                 updated_at: today
                             }, {
                                 where: {
@@ -1378,6 +1379,34 @@ router.put('/update_result', (req, res) => {
                     })
 
             }
+            // res.status(200).send({ message: 'Update successfully' });
+        })
+        .then(() => {
+            Breakdown.findAll({
+                    where: {
+                        id_award: id_award
+                    }
+                })
+                .then(nominees => {
+                    for (var i = 0; i < nominees.length; i++) {
+                        sum = sum + nominees[i].total_points;
+                    }
+                    for (var i = 0; i < nominees.length; i++) {
+                        let id_nominee = nominees[i].id_nominee;
+                        let num = nominees[i].total_points / sum * 100;
+                        let percent = Math.round(num * 100) / 100;
+                        Breakdown.update({
+                            percent: percent,
+                            updated_at: today
+                        }, {
+                            where: {
+                                id_award: id_award,
+                                id_nominee: id_nominee
+                            }
+                        })
+
+                    }
+                })
             res.status(200).send({ message: 'Update successfully' });
         })
         .catch(err => {
@@ -1452,47 +1481,11 @@ function calculate(id) {
                 }
                 updateRank(i + 1, data[i].id_nominee);
             }
-            console.log('OK')
         })
         .catch(err => {
             console.log('err', err)
         })
 }
-
-function count_num_voter(id) {
-    const award_id = id;
-    const stream_name = 'award_' + award_id;
-    let count = 0;
-    multichain.initiateMultichain().listStreamKeyItems({
-            stream: stream_name,
-            key: 'voter'
-        })
-        .then(voters => {
-            for (var i = 0; i < voters.length; i++) {
-                let voter_txid = voters[i].txid;
-                multichain.initiateMultichain().getStreamItem({
-                        stream: stream_name,
-                        txid: voter_txid
-                    })
-                    .then(result => {
-                        let address = result.data.json.address;
-                        multichain.initiateMultichain().getAddressBalances({
-                                address: address
-                            })
-                            .then(qty => {
-                                if (qty.length == 0) {
-                                    count = count + 1;
-                                    console.log('1', count);
-                                }
-                            })
-                    })
-            }
-            console.log('2', count);
-        })
-    return count;
-}
-// count_num_voter(4);
-// console.log(count_num_voter(4));
 
 
 function checkVoteValid(id, first_vote, second_vote, third_vote) {
@@ -1506,8 +1499,8 @@ function checkVoteValid(id, first_vote, second_vote, third_vote) {
     return true;
 }
 
-function chooseWinner() {
-    const id_award = req.body.id;
+function chooseWinner(id) {
+    const id_award = id;
     Breakdown.findOne({
             where: {
                 id_award: id_award,
@@ -1518,7 +1511,7 @@ function chooseWinner() {
             const winner_data = {
                 id_award: id_award,
                 id_winner: result.id_nominee,
-                percent: percent
+                percent: result.percent
             }
             Winner.findOne({
                     where: {
