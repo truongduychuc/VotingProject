@@ -29,7 +29,9 @@ module.exports = {
     setNominee,
     setNomineeVote,
     addNomineeVote,
-    grantC
+    grantC,
+    publishC,
+    issueC
 };
 
 function getInfo() {
@@ -58,14 +60,27 @@ function createStream(stream_name) {
 }
 
 function subscribe(stream_name) {
-    stream_name = stream_name.toString();
+    //stream_name = stream_name.toString();
     multichain.subscribe({
         stream: stream_name
-    }, (err, info) => {
+    }, (err) => {
         if (err) {
             console.log(err);
         } else {
             console.log('Subscribe stream successfully');
+        }
+    })
+}
+
+function publishC(stream_name, key_name, data) {
+    multichain.publish({
+        stream: stream_name,
+        key: key_name,
+        data: {
+            "json": {
+                "id": data.id,
+                "address": data.address
+            }
         }
     })
 }
@@ -559,6 +574,18 @@ function revoke(address, permission) {
         } else {
             console.log('Revoke permission successfully');
         }
+    })
+}
+
+function issueC(address, token_name, qty) {
+    multichain.issue({
+        address: address,
+        asset: {
+            name: token_name,
+            open: true
+        },
+        qty: qty,
+        units: 0.1
     })
 }
 

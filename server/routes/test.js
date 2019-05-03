@@ -1,276 +1,338 @@
-router.post('/voting_award', authorize(), (req, res) => {
-    let today = new Date();
-    let id_award = req.body.id;
-    let first_vote = req.body.first_vote;
-    let second_vote = req.body.second_vote;
-    let third_vote = req.body.third_vote;
+router.post('/create', (req, res) => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const awardData = {
+        type: req.body.type,
+        description: null,
+        year: req.body.year,
+        status: 1,
+        date_start: req.body.date_start,
+        date_end: req.body.date_end,
+        prize: req.body.prize,
+        item: req.body.item,
+        created_at: today,
+        updated_at: today
+    }
+    const voterData = {
+        id_award: null,
+        id_user: null,
+        vote_status: 1,
+        updated_at: today
+    }
+    const nomineeData = {
+        id_award: null,
+        id_team: null,
+        id_nominee: null,
+        updated_at: today
+    }
 
-    Award.findOne({
+    const nomineeVotes = {
+        id_award: null,
+        rank: null,
+        id_nominee: null,
+        first_votes: 0,
+        second_votes: 0,
+        third_votes: 0,
+        percent: 0,
+        total_points: 0,
+        updated_at: today
+    }
+
+    // function checkDateinput() {
+    //     if (req.body.date_start > req.body.date_end) {
+    //         res.status(400).send({ message: 'Date end must be greater than date start' });
+    //         return false;
+    //     } else {
+    //         var con = moment(req.body.date_start).isBefore(today);
+    //         if (con) {
+    //             res.status(400).send({ message: 'Date start must be greater than today' });
+    //             return false;
+    //         } else {
+    //             return true;
+    //         }
+    //     }
+    // }
+
+    //Check year and name for award
+
+    // multichain.initiateMultichain().listStreamKeyItems({
+    //     stream: "award_150",
+    //     key: "nominee_1",
+    //     verbose: true
+    // })
+
+    // if ((req.body.year < (year - 1)) || (req.body.year > year)) {
+    //     console.log(today);
+    //     res.status(400).send({ message: 'Wrong year input' });
+    // } else {
+    // if (!checkDateinput()) {
+    //     console.log('Date input wrong');
+    // } else {
+    Award.findAll({
             where: {
-                id: id_award
+                type: req.body.type,
+                year: 2001
+                    //year: req.body.year
             }
         })
-        .then(award => {
-            if (!award) {
-                res.status(400).send({ message: 'There is no award' });
+        .then(awards => {
+            if (awards.length != 0) {
+                res.status(400).send({ message: 'Award already exists.' });
             } else {
-                Voter.findOne({
-                        where: {
-                            id_award: id_award,
-                            id_user: req.decoded.id
-                        }
-                    })
-                    .then(voter => {
-                        if (!voter) {
-                            res.status(400).send({ message: 'You are not allowed to vote this award' });
-                        } else {
-                            let data = {
-                                id: id_award,
-                                id_voter: req.decoded.id,
-                                id_nominee_first: first_vote,
-                                id_nominee_second: second_vote,
-                                id_nominee_third: third_vote,
+                //Create award
+
+                //awardData.year = year;
+                //awardData.year = req.body.year;
+                if (req.body.type == 0 || req.body.type == '' || req.body.type == null) {
+                    Award_type.findAll({
+                            where: {
+                                name: req.body.name
                             }
+                        })
+                        .then(result => {
+                            if (result.length != 0) {
+                                res.status(400).send({ message: 'New award name is already exist' });
+                            } else {
+                                Award_type.create({ name: req.body.name });
+                                Award_type.findOne({
+                                        where: {
+                                            name: req.body.name
+                                        }
+                                    })
+                                    .then(award => {
+                                        awardData.type = award.id;
+                                    })
+                            }
+                        })
+                        .catch(err => {
+                            res.status(400).send({ message: 'Error when check new award name', err });
+                        })
 
-                            let token_name = 'token_' + data.id;
-                            let stream_name = 'award_' + data.id;
-                            let key_name1 = 'nominee_' + data.id_nominee_first;
-                            let key_name2 = 'nominee_' + data.id_nominee_second;
-                            let key_name3 = 'nominee_' + data.id_nominee_third;
-                            //List voter
-                            multichain.initiateMultichain().listStreamKeyItems({
-                                    stream: stream_name,
-                                    key: 'voter'
-                                })
-                                .then(voters => {
-                                    console.log('Get list voter successfully');
-                                    for (var i = 0; i < voters.length; i++) {
-                                        //Get txid
-                                        let txid = voters[i].txid;
-                                        //Check id voter
-                                        multichain.initiateMultichain().getStreamItem({
-                                                stream: stream_name,
-                                                txid: txid
-                                            })
-                                            .then(voter => {
-                                                let id_voter = voter.data.json.id;
-                                                if (data.id_voter == id_voter) {
-                                                    let address1 = voter.data.json.address;
-                                                    multichain.initiateMultichain().getAddressBalances({
-                                                        address: address1
-                                                    }).then(qty => {
-                                                        console.log('123', qty)
-                                                        console.log('987', data.id_nominee_first)
-                                                        if (qty.length == 0) {
-                                                            Voter.update({
-                                                                vote_status: 0,
-                                                                updated_at: today
-                                                            }, {
-                                                                where: {
-                                                                    id_award: id_award,
-                                                                    id_user: req.decoded.id
-                                                                }
-                                                            })
-                                                        } else {
-                                                            if (!checkVoteValid(id_award, first_vote, second_vote, third_vote)) {
-                                                                res.status(400).send({ message: 'Your vote is invalid' });
-                                                            } else {
-                                                                multichain.grant(address1, 'receive,send');
-                                                                console.log('Get info voter successfully', address1);
-                                                                multichain.initiateMultichain().listStreamKeyItems({
-                                                                        stream: stream_name,
-                                                                        key: 'nominee'
-                                                                    })
-                                                                    .then(nominees => {
-                                                                        console.log('Get list nominee successfully');
-                                                                        for (var i = 0; i <= nominees.length; i++) {
-                                                                            let txid1 = nominees[i].txid;
-                                                                            multichain.initiateMultichain().getStreamItem({
-                                                                                    stream: stream_name,
-                                                                                    txid: txid1
-                                                                                })
-                                                                                .then(nominee => {
-                                                                                    console.log('Get info nominee successfully');
-                                                                                    let id_nominee = nominee.data.json.id;
-                                                                                    let address2 = nominee.data.json.address;
-                                                                                    console.log('1234', data.id_nominee_first, id_nominee)
-                                                                                        //First vote
-                                                                                    if (data.id_nominee_first == id_nominee) {
+                }
 
-                                                                                        amount = 5;
-                                                                                        console.log('Determined first_vote user');
-                                                                                        // console.log(address1, address2, token_name, amount);
-                                                                                        multichain.initiateMultichain().sendAssetFrom({
-                                                                                                from: address1,
-                                                                                                to: address2,
-                                                                                                asset: token_name,
-                                                                                                qty: amount
+                Award.create(awardData)
+                    .then(award => {
+                        //multichain.getInfo();
+                        let stream_name = 'award_' + award.id;
+                        let asset_name = 'asset_' + award.id;
+                        let token_name = 'token_' + award.id;
+                        console.log(stream_name);
+                        //Create new stream
+                        multichain.createStream(stream_name);
+                        //Subscribe
+                        multichain.subscribe(stream_name);
+                        //Add infomation
+                        multichain.initiateMultichain().publish({
+                            stream: stream_name,
+                            key: 'information',
+                            data: {
+                                "json": {
+                                    "id": awardData.id,
+                                    "name": awardData.name,
+                                    "year": awardData.year,
+                                    "date_start": awardData.date_start,
+                                    "date_end": awardData.date_end,
+                                    "created_at": awardData.created_at,
+                                    "updated_at": awardData.updated_at
+                                }
+                            }
+                        }, (err, info) => {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log('Input infomation of award to stream successfully');
+                            }
+                        });
+
+                        voterData.id_award = award.id;
+                        nomineeData.id_award = award.id;
+                        nomineeVotes.id_award = award.id;
+
+                        //Find voter with role
+                        const voter = req.body.id_role_voter;
+                        if (voter.length == 0) {
+                            res.status(400).send({ message: 'There is no voter' });
+                        } else {
+                            for (var j = 0; j < voter.length; j++) {
+                                User.findAll({
+                                        where: {
+                                            id_role: voter[j],
+                                            is_active: 1
+                                        }
+                                    })
+                                    .then(users => {
+                                        if (users.length == 0) {
+                                            res.status(400).send({ message: 'There is no user' });
+                                        } else {
+                                            multichain.initiateMultichain().getNewAddress()
+                                                .then(address => {
+                                                    console.log('Get a new address for asset');
+                                                    //Grant permission for asset
+                                                    multichain.grantC(address, 'receive,send')
+                                                        .then(() => {
+                                                            console.log('Grant permission successfully');
+                                                            let asset_data = {
+                                                                id: 0,
+                                                                address: address
+                                                            }
+                                                            multichain.publishC(stream_name, asset_name, asset_data)
+                                                                .then(() => {
+                                                                    //Create new asset
+                                                                    multichain.issueC(address, token_name, users.length * 9)
+                                                                        .then(() => {
+                                                                            for (var i = 0; i < users.length; i++) {
+                                                                                voterData.id_user = users[i].id;
+                                                                                let id = users[i].id;
+                                                                                multichain.initiateMultichain().listStreamKeyItems({
+                                                                                        stream: stream_name,
+                                                                                        key: asset_name,
+                                                                                        //verbose: true
+                                                                                    })
+                                                                                    .then(asset => {
+                                                                                        let asset_txid = asset[0].txid;
+                                                                                        console.log(asset_txid);
+                                                                                        multichain.initiateMultichain().getStreamItem({
+                                                                                                stream: stream_name,
+                                                                                                txid: asset_txid
                                                                                             })
-                                                                                            .then(() => {
-                                                                                                console.log('Send token to first_vote user successfully');
-
-                                                                                                multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                        stream: stream_name,
-                                                                                                        key: key_name1,
-                                                                                                        mode: 'jsonobjectmerge'
-                                                                                                    })
-                                                                                                    .then(votes => {
-                                                                                                        let voteChange = votes.json.first_votes + 1;
-                                                                                                        multichain.initiateMultichain().publish({
-                                                                                                                stream: stream_name,
-                                                                                                                key: key_name1,
-                                                                                                                data: {
-                                                                                                                    "json": {
-                                                                                                                        "first_votes": voteChange,
-                                                                                                                    }
+                                                                                            .then(result => {
+                                                                                                //Get address of asset
+                                                                                                address1 = result.data.json.address;
+                                                                                                //Get new address
+                                                                                                multichain.initiateMultichain().getNewAddress()
+                                                                                                    .then(address2 => {
+                                                                                                        console.log('Get new address for voter ');
+                                                                                                        //Grant permission for voter
+                                                                                                        multichain.grant(address2, 'receive,send');
+                                                                                                        //Save data to stream
+                                                                                                        let key_name1 = 'voter';
+                                                                                                        User.findOne({
+                                                                                                                where: {
+                                                                                                                    id: id
                                                                                                                 }
                                                                                                             })
-                                                                                                            // , (err) => {
-                                                                                                            //     if (err) {
-                                                                                                            //         console.log('Error when update first_vote user');
-                                                                                                            //     } else {
-                                                                                                            //         console.log('Update vote for first_vote user successfully');
-                                                                                                            //     }
-                                                                                                            //}
-                                                                                                    })
-                                                                                                    .catch(err => {
-                                                                                                        console.log('Error when merge votes ' + err);
-                                                                                                    })
-                                                                                            })
-                                                                                            .catch(err => {
-                                                                                                console.log('Error when send token ' + err);
-                                                                                            })
-                                                                                    }
-
-                                                                                    //Second vote
-                                                                                    if (data.id_nominee_second == id_nominee) {
-                                                                                        amount = 3;
-                                                                                        console.log('Determined second_vote user');
-                                                                                        multichain.initiateMultichain().sendAssetFrom({
-                                                                                                from: address1,
-                                                                                                to: address2,
-                                                                                                asset: token_name,
-                                                                                                qty: amount
-                                                                                            })
-                                                                                            .then(() => {
-                                                                                                console.log('Send token to second_vote user successfully');
-
-                                                                                                multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                        stream: stream_name,
-                                                                                                        key: key_name2,
-                                                                                                        mode: 'jsonobjectmerge'
-                                                                                                    })
-                                                                                                    .then(votes => {
-                                                                                                        let voteChange = votes.json.second_votes + 1;
-                                                                                                        multichain.initiateMultichain().publish({
-                                                                                                                stream: stream_name,
-                                                                                                                key: key_name2,
-                                                                                                                data: {
-                                                                                                                    "json": {
-                                                                                                                        "second_votes": voteChange,
-                                                                                                                    }
+                                                                                                            .then(user => {
+                                                                                                                let voter_data = {
+                                                                                                                    id: user.id,
+                                                                                                                    first_name: user.first_name,
+                                                                                                                    last_name: user.last_name,
+                                                                                                                    english_name: user.english_name,
+                                                                                                                    address: address2
                                                                                                                 }
-                                                                                                            }
-
-                                                                                                        )
+                                                                                                                multichain.publishEmployee(stream_name, key_name1, voter_data);
+                                                                                                                //Send token to voter
+                                                                                                                multichain.sendAssetFrom(address1, address2, token_name, 9);
+                                                                                                                //Revoke permission
+                                                                                                                multichain.revoke(address2, 'receive,send');
+                                                                                                            })
+                                                                                                            .catch(err => {
+                                                                                                                console.log('Error when send token ' + err);
+                                                                                                            })
                                                                                                     })
                                                                                                     .catch(err => {
-                                                                                                        console.log('Error when merge votes ' + err);
-                                                                                                        // res.status(400).send({ message: 'Error when merge token ' });
+                                                                                                        console.log('Error when get new address ' + err);
                                                                                                     })
                                                                                             })
                                                                                             .catch(err => {
-                                                                                                console.log('Error when send token ' + err);
-                                                                                                //res.status(400).send({ message: 'Error when send token ' });
+                                                                                                console.log('Error when get stream item ' + err);
                                                                                             })
-                                                                                    }
-
-                                                                                    // Third_vote
-                                                                                    if (data.id_nominee_third == id_nominee) {
-                                                                                        amount = 1;
-                                                                                        console.log('Determined third_vote user');
-                                                                                        multichain.initiateMultichain().sendAssetFrom({
-                                                                                                from: address1,
-                                                                                                to: address2,
-                                                                                                asset: token_name,
-                                                                                                qty: amount
-                                                                                            })
-                                                                                            .then(() => {
-                                                                                                console.log('Send token to third_vote user successfully');
-
-                                                                                                multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                        stream: stream_name,
-                                                                                                        key: key_name3,
-                                                                                                        mode: 'jsonobjectmerge'
-                                                                                                    })
-                                                                                                    .then(votes => {
-                                                                                                        let voteChange = votes.json.third_votes + 1;
-                                                                                                        multichain.initiateMultichain().publish({
-                                                                                                                stream: stream_name,
-                                                                                                                key: key_name3,
-                                                                                                                data: {
-                                                                                                                    "json": {
-                                                                                                                        "third_votes": voteChange,
-                                                                                                                    }
-                                                                                                                }
-                                                                                                            }
-                                                                                                            // , (err) => {
-                                                                                                            //     if (err) {
-                                                                                                            //         console.log('Error when update third_vote user');
-                                                                                                            //     } else {
-                                                                                                            //         console.log('Update vote for third_vote user successfully');
-                                                                                                            //     }
-                                                                                                            // }
-                                                                                                        )
-                                                                                                    })
-                                                                                                    .catch(err => {
-                                                                                                        console.log('Error when merge votes ' + err);
-
-                                                                                                    })
-                                                                                            })
-                                                                                            .catch(err => {
-                                                                                                console.log('Error when send token ' + err);
-                                                                                                res.status(400).send({ message: 'Error when send token ' });
-                                                                                            })
-                                                                                    }
+                                                                                    })
+                                                                                    .catch(err => {
+                                                                                        console.log('Error when list asset address ' + err);
+                                                                                    })
 
 
+                                                                                //Add voter
+                                                                                Voter.create(voterData)
+                                                                                    .then(() => {})
+                                                                                    .catch(err => {
+                                                                                        console.log('error0' + err)
+                                                                                        res.status(400).send({ error0: err })
+                                                                                    })
+                                                                            }
 
-                                                                                })
-                                                                                .catch(err => {
-                                                                                    console.log('Error when get info nominee ' + err);
-                                                                                    res.status(400).send({ message: 'Error when get info nominee ' });
-                                                                                })
-                                                                        }
-                                                                    })
-                                                                    .catch(err => {
-                                                                        console.log('Error when get list nominee ' + err);
-                                                                        res.status(400).send({ message: 'Error when get list nominee ' });
-                                                                    })
-                                                            }
-                                                        }
-                                                    })
-                                                }
-                                            })
+                                                                        })
+                                                                })
+
+                                                        })
+
+                                                })
+
                                             .catch(err => {
-
-                                                console.log('Error when get info voter ' + err);
-                                                res.status(400).send({ message: 'Error when get info voter ' });
+                                                console.log('Error when set new address ' + err);
                                             })
-                                    }
-                                })
-                                .catch(err => {
-                                    console.log('Error when get list voter ' + err);
-                                    res.status(400).send({ message: 'Error when get list voter ' });
-                                })
+                                        }
+                                    })
+                                    .catch(err => {
+                                        res.status(400).send({ error1: err })
+                                    })
+                            }
                         }
+
+                        // Find nominee with id
+                        const nominee = req.body.id_nominee;
+                        if (nominee.length == 0) {
+                            res.status(400).send({ message: 'There is no nominee' });
+                        } else {
+                            for (var k = 0; k < nominee.length; k++) {
+                                User.findAll({
+                                        where: {
+                                            id: nominee[k],
+                                            is_active: 1
+                                        }
+                                    })
+                                    .then(users => {
+                                        if (users.length == 0) {
+                                            //res.status(400).send({ message: 'User does not exist' })
+                                        } else {
+                                            for (var i = 0; i < users.length; i++) {
+                                                nomineeData.id_team = users[i].id_team;
+                                                nomineeData.id_nominee = users[i].id;
+                                                nomineeVotes.id_nominee = users[i].id;
+                                                nomineeVotes.rank = i + 1;
+                                                let nominee_data = {
+                                                    id: users[i].id,
+                                                    first_name: users[i].first_name,
+                                                    last_name: users[i].last_name,
+                                                    english_name: users[i].english_name
+                                                }
+                                                multichain.setNominee(stream_name, nominee_data);
+                                                multichain.setNomineeVote(stream_name, nominee_data);
+
+                                                //Add nominee
+                                                Nominee.create(nomineeData)
+                                                    .then(() => {})
+                                                    .catch(err => {
+                                                        console.log('error0' + err)
+                                                        res.status(400).send({ error5: err })
+                                                    })
+
+                                                //Add nominee default votes
+                                                Breakdown.create(nomineeVotes)
+                                                    .then(() => {})
+                                                    .catch(err => {
+                                                        console.log('error0' + err)
+                                                        res.status(400).send({ error6: err })
+                                                    })
+                                            }
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                        // res.status(400).send({ error4: err })
+                                    })
+                            }
+                        }
+                        res.status(200).send({ message: 'Create award successfully.' });
                     })
                     .catch(err => {
-                        res.status(400).send({ message1: err });
+                        res.status(400).send({ error2: err })
                     })
             }
         })
         .catch(err => {
-            res.status(400).send({ message: err });
+            res.status(400).send({ error3: err })
         })
+        // }
+        // }
 })
