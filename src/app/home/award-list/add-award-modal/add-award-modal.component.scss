@@ -10,6 +10,48 @@ $btn-padding-y: 0.56rem;
   .ng-select-container {
     border: 1px solid $border-color;
     border-radius: 2px;
+    .ng-value-container {
+      padding-top: 0;
+      padding-left: 0.75rem;
+    }
+  }
+  &.ng-has-value {
+
+  }
+  &.ng-select-opened {
+    > .ng-select-container {
+      border-color: #80bdff;
+      &:hover {
+        box-shadow: none;
+      }
+    }
+    > .ng-dropdown-panel {
+      margin-top: 0px;
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+      -moz-border-radius-bottomleft: 2px;
+      -moz-border-radius-bottomright: 2px;
+      -webkit-border-bottom-right-radius: 2px;
+      -webkit-border-bottom-left-radius: 2px;
+        border: 1px solid #80bdff;
+      padding: 0;
+        .ng-option {
+          display: block;
+          white-space: pre;
+          min-height: 1.2em;
+          padding: 0px 2px 1px;
+          .ng-option-label {
+            margin-left: 1rem;
+          }
+          &:last-child {
+            border-radius: 0;
+          }
+        }
+        .ng-option-marked {
+          color: #ffffff;
+          background-color: dodgerblue;
+        }
+    }
   }
 }
 
