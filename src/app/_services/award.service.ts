@@ -19,10 +19,12 @@ export class AwardService {
   updateAward(id: number, newInfo: Object) {
     return this.httpClient.put(this.serverURL + `update/${id}`, newInfo);
   }
-  uploadLogo(id: number, file: File) {
+  uploadLogo(id: number, file: File): Observable<any> {
     return this.httpClient.post(this.serverURL + `upload_logo/${id}`, {logo: file});
   }
-
+  getAwardTypes(): Observable<any> {
+    return this.httpClient.get(this.serverURL + 'award_type');
+  }
   getAwardDetail(id: number): Observable<Award> {
     return this.httpClient.get<Award>(this.serverURL + `info/${id}`);
   }

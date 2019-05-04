@@ -1,9 +1,9 @@
 export interface Nominee {
   id_nominee: number;
-  nominee_name?: NomineeName
+  nominee_name?: NomineeName;
   id_award?: number;
   id_team?: number;
-  updated_at?: Date
+  updated_at?: Date;
 }
 interface NomineeName {
   first_name?: string;

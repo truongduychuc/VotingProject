@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
-import {Team} from "../_models/team";
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Team} from '../_models/team';
 
 @Injectable({
   providedIn: 'root'
@@ -12,5 +12,8 @@ export class TeamService {
 
   getAllTeams(): Observable<Team[]> {
     return this.httpClient.get<Team[]>(this.serverURL + 'users/team');
+  }
+  getListForNominating(): Observable <any> {
+    return this.httpClient.get(this.serverURL + 'users/list_for_nominating');
   }
 }
