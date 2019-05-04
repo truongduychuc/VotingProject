@@ -1200,17 +1200,38 @@ router.post('/upload_avatar', authorize(), upload.single('avatar'), (req, res, n
 
 //LIST USER FOR NOMINATING
 router.get('/list_for_nominating', (req, res) => {
-    Team.findAll({
-            order: [
-                ['name']
-            ],
-            include: [{
-                model: User,
-                where: {
-                    is_active: 1
-                },
-                attributes: ['id', 'english_name'],
-            }]
+    // Team.findAll({
+    //         order: [
+    //             ['name']
+    //         ],
+    //         include: [{
+    //             model: User,
+    //             where: {
+    //                 is_active: 1
+    //             },
+    //             attributes: ['id', 'english_name'],
+    //         }]
+    //     })
+    //     .then(data => {
+    //         if (data.length == 0) {
+    //             res.status(200).send({ message: 'There is no nominee' });
+    //         } else {
+    //             res.status(200).send({ data: data });
+    //         }
+    //     })
+    //     .catch(err => {
+    //         res.status(400).send({ message: 'Error when get list', err });
+    //     })
+
+    User.findAll({
+            where: {
+                is_active: 1,
+                id_role: {
+                    [Op.gt]: [1]
+                }
+            },
+
+            attributes: ['id', 'english_name', 'id_team']
         })
         .then(data => {
             if (data.length == 0) {
@@ -1222,6 +1243,7 @@ router.get('/list_for_nominating', (req, res) => {
         .catch(err => {
             res.status(400).send({ message: 'Error when get list', err });
         })
+
 })
 
 
