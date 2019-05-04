@@ -60,7 +60,7 @@
                 <tr *ngFor="let user of usersList">
                   <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
                   <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
-                  <td *ngIf="isAdmin">{{user?.is_active}}</td>
+                  <td align="center" *ngIf="isAdmin">{{user?.is_active ? 'Active' : 'Inactive'}}</td>
                   <td>{{user.role?.name}}</td>
                   <td align="center">{{user.team?.name}}</td>
                   <td>{{user.email}}</td>
