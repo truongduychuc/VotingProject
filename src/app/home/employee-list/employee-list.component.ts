@@ -275,7 +275,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
   openCreatingModal() {
     const modalRef = this.modalService.open(CreateUserModalComponent);
-    modalRef.result.then(value => {
+    modalRef.result.then(value => {  // had created successfully
       this.getUserListPerPage();
     }, reason => {
       console.log(reason);
