@@ -5,26 +5,26 @@
   </button>
 </div>
 <div class="modal-body">
-  <div class="form">
+  <form (ngSubmit)="createNewAward()" [formGroup]="addAward">
     <div class="row">
       <div class="col-md-5">
         <div class="form-group">
           <label class="col-form-label">Name</label>
-          <select id="awardName" (change)="onAwardNameSelectChanged()" class="form-control">
+          <select formControlName="type" class="form-control">
             <option hidden>Award name</option>
             <option *ngFor="let type of types" [ngValue]="type?.id">{{type?.name}}</option>
-            <option value="other">Other</option>
+            <option [ngValue]="null">Other</option>
           </select>
         </div>
-        <div class="form-group" *ngIf="showOtherNameInput">
+        <div class="form-group" *ngIf="addAward.controls['type'].value === null">
           <label class="col-form-label">Other name</label>
-          <input type="text" class="form-control">
+          <input formControlName="name" type="text" class="form-control">
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-group">
           <label class="col-form-label">Year</label>
-          <select class="form-control">
+          <select formControlName="year" class="form-control">
             <option hidden>Year</option>
             <option *ngFor="let year of years" [ngValue]="year">{{year}}</option>
           </select>
@@ -34,9 +34,17 @@
         <div class="form-group">
           <label class="col-form-label">Date start</label>
           <div class="input-group">
-            <input class="form-control" placeholder="yyyy-mm-dd" ngbDatepicker #datePickerStart = "ngbDatepicker">
+            <input class="form-control"
+                   (change)="changeDateEndLimit()"
+                   (dateSelect)="changeDateEndLimit()"
+                   formControlName="date_start"
+                   [minDate]="dateStartMin"
+                   [maxDate]="dateStartMax"
+                   placeholder="yyyy-mm-dd"
+                   ngbDatepicker
+                   #datePickerStart = "ngbDatepicker">
             <div class="input-group-append">
-              <button class="input-group-text" type="button" (click)="datePickerStart.toggle()">
+              <button title="Click to select date" class="input-group-text" type="button" (click)="datePickerStart.toggle()">
                 <i class="fas fa-calendar-alt"></i>
               </button>
             </div>
@@ -45,9 +53,15 @@
         <div class="form-group">
           <label class="col-form-label">Date end</label>
           <div class="input-group">
-            <input class="form-control" placeholder="yyyy-mm-dd" ngbDatepicker #datePickerEnd = "ngbDatepicker">
+            <input class="form-control"
+                   formControlName="date_end"
+                   [minDate]="dateEndMin"
+                   [maxDate]="dateEndMax"
+                   placeholder="yyyy-mm-dd"
+                   ngbDatepicker
+                   #datePickerEnd = "ngbDatepicker">
             <div class="input-group-append">
-              <button class="input-group-text" type="button" (click)="datePickerEnd.toggle()">
+              <button title="Click to select date" class="input-group-text" type="button" (click)="datePickerEnd.toggle()">
                 <i class="fas fa-calendar-alt"></i>
               </button>
             </div>
@@ -59,46 +73,50 @@
       <div class="col-md-6">
         <div class="form-group">
           <label class="col-form-label">Total prize (in cash)</label>
-          <input type="text" class="form-control">
+          <input type="text" class="form-control" formControlName="prize">
         </div>
         <div class="form-group">
           <label class="col-form-label">Who can be nominated?</label>
           <ng-select
-            [(ngModel)]="selected"
-                     [items]="nominessMock"
-                     bindLabel="name"
+            formControlName="id_nominee"
+                     [items]="nomineesList"
+                     bindLabel="english_name"
                      [multiple]="true"
                      [hideSelected]="true"
-                     groupBy="team"
-                     [selectableGroup]="true"
-          >
+                     groupBy="team_name"
+                      bindValue="id"
+            [closeOnSelect]="false"
+            >
           </ng-select>
         </div>
       </div>
       <div class="col-md-6">
         <div class="form-group">
           <label class="col-form-label">Item</label>
-          <input type="text" class="form-control">
+          <input formControlName="item" type="text" class="form-control">
         </div>
         <div class="form-group">
           <label class="col-form-label">Who can vote?</label>
-          <select class="form-control">
+          <select formControlName="id_role_voter" class="form-control">
             <option hidden>Who?</option>
-              <option value="1">Manager</option>
-              <option value="2">All employees</option>
+              <option [ngValue]="[2]">Manager</option>
+              <option [ngValue]="[2,3]">All employees</option>
           </select>
         </div>
         <div class="form-group">
           <label class="col-form-label">Description</label>
-          <textarea class="form-control" rows="5"></textarea>
+          <textarea class="form-control" rows="5" formControlName="description"></textarea>
         </div>
       </div>
     </div>
-    <p>{{selected | json}}</p>
+    <p>{{addAward.controls['id_nominee'].value | json}}</p>
+    <p>{{addAward.controls['id_role_voter'].value | json}}</p>
+    <p>{{addAward.controls['date_start'].value | json}}</p>
+    <p>{{addAward.controls['date_end'].value | json}}</p>
     <div class="d-flex justify-content-center flex-wrap">
       <button type="submit" class="btn btn-success btn-rounded mr-md-4 ml-md-0 m-sm-2 m-1">Add</button>
       <button type="button" (click)="activeModal.dismiss('Called off adding new award!')" class="btn btn-dark btn-rounded ml-md-4 mr-md-0 m-sm-2 m-1">Cancel</button>
     </div>
-  </div>
+  </form>
 </div>
 
