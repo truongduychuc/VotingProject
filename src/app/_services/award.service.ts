@@ -13,6 +13,9 @@ export class AwardService {
   constructor(private httpClient: HttpClient) {
 
   }
+  createNewAward(newAward: Object) {
+    return this.httpClient.post(this.serverURL + 'create', newAward);
+  }
   getAwardList(): Observable<Award[]> {
     return this.httpClient.get<Award[]>(this.serverURL + 'list');
   }
