@@ -4,6 +4,8 @@ import {AccountService} from '../../../_services/account.service';
 import {User} from '../../../_models/user';
 import {Router} from "@angular/router";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {TeamService} from "../../../_services/team.service";
+import {Team} from "../../../_models/team";
 
 @Component({
   selector: 'app-create-user-form',
@@ -12,10 +14,12 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 })
 export class CreateUserModalComponent implements OnInit {
   createUser: FormGroup;
+  listTeams: Team[];
   constructor(private formBuilder: FormBuilder, private accountService: AccountService, private router: Router,
-              public activeModal: NgbActiveModal) {
+              public activeModal: NgbActiveModal, private teamService: TeamService) {
   }
   ngOnInit() {
+    this.getAllTeams();
     // generate form by using FormBuilder
     this.generateForm();
   }
@@ -24,34 +28,36 @@ export class CreateUserModalComponent implements OnInit {
     this.createUser = this.formBuilder.group({
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      passwordConfirmationInput: ['', Validators.required],
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      englishName: ['', Validators.required],
+      first_name: ['', Validators.required],
+      last_name: ['', Validators.required],
+      english_name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      position: ['', [Validators.required]]
-    }, {
-      // password matching checking
-      validator: this.MustMatch('password', 'passwordConfirmationInput')
+      id_role: ['', [Validators.required]],
+      id_team: ['Team']
     });
   }
-
+  getAllTeams() {
+    this.teamService.getAllTeams().subscribe( teams => {
+      this.listTeams = teams;
+    }, err => {
+      console.log(err);
+    });
+  }
   onSubmit() {
     if (this.createUser.invalid) {
       return;
     }
-    // get value from inputs and create a new User object
-  let newAccount = <User> {
-      username: this.createUser.controls['username'].value,
-      password: this.createUser.controls['password'].value,
-      first_name: this.createUser.controls['firstName'].value,
-      last_name: this.createUser.controls['lastName'].value,
-      english_name: this.createUser.controls['englishName'].value,
-      email: this.createUser.controls['email'].value,
-      id_role: parseInt(this.createUser.controls['position'].value)
-    };
+    if (this.createUser.value === undefined) {
+      console.log('Undefined form value!');
+      return;
+    }
+    // if position field was not chosen, it would be assigned 99 automatically
+    if(this.createUser.controls['id_role'].value === undefined || this.createUser.controls['id_role'].value === null) {
+      this.createUser.controls['id_role'].setValue('');
+    }
+    console.log(this.createUser.value);
   // using service send post method, and retrieve message and error
-    this.accountService.registerNewUser(newAccount).subscribe(data => {
+    this.accountService.registerNewUser(this.createUser.value).subscribe(data => {
       alert(data.message);
       this.activeModal.close('Created user successfully!');
 
