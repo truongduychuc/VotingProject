@@ -8,7 +8,7 @@
               <h4>{{awardDetail?.year}} {{awardDetail?.name}}</h4>
             </div>
             <div class="col-md-6 d-flex justify-content-center justify-content-md-end">
-              <button class="btn btn-warning btn-rounded mr-2">Edit</button>
+              <button *ngIf="isAdmin" class="btn btn-warning btn-rounded mr-2">Edit</button>
               <button class="btn btn-dark btn-rounded ml-2" routerLink="/home/award-list" >Back to list</button>
             </div>
           </div>

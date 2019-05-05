@@ -3,6 +3,7 @@ import {ActivatedRoute, Route, Router} from '@angular/router';
 import {AwardService} from '../../../_services/award.service';
 import {Award} from '../../../_models/award';
 import {PastWinner} from '../../../_models/past-winner';
+import {User} from "../../../_models/user";
 
 @Component({
   selector: 'app-award-detail',
@@ -13,14 +14,19 @@ export class AwardDetailComponent implements OnInit {
   id: number;
   awardDetail: Award;
   pastWinnerList: PastWinner;
-
-
-  constructor(private route: ActivatedRoute, private router: Router, private awardService: AwardService) {}
+  currentUser: User;
+  constructor(private route: ActivatedRoute, private router: Router, private awardService: AwardService) {
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  }
   ngOnInit() {
     // get id from routeLink params
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.getDetail();
     this.getPastWinner();
+  }
+  // to show the button only can be used by admin
+  get isAdmin() {
+    return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
   }
   getDetail() {
     this.awardService.getAwardDetail(this.id).subscribe((detail:Award) => {
