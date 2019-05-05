@@ -3,6 +3,7 @@ export interface Nominee {
   nominee_name?: NomineeName;
   id_award?: number;
   id_team?: number;
+  team_name?: string;
   updated_at?: Date;
 }
 interface NomineeName {
