@@ -13,12 +13,12 @@ import {DataSharingService} from '../../_shared/data-sharing.service';
 })
 export class AwardListComponent implements OnInit {
   awardList: any[];
+  currentUser: User;
   // sharedData: for transferring successfully uploading logo message from upload-logo.component
   constructor(private modalService: NgbModal, private awardService: AwardService, private groupByPipe: GroupByPipe,
               private  sharedData: DataSharingService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
-  currentUser: User;
   ngOnInit() {
     this.sharedData.currentMessage.subscribe( success => {
       console.log(success);
