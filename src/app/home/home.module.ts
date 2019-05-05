@@ -11,7 +11,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HomeRoutingModule} from "./home-routing.module";
 import {RouterModule} from "@angular/router";
 import {HomeComponent} from "./home.component";
-import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbDateNativeAdapter, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
 import { EditingModalComponent } from './employee-list/editing-modal/editing-modal.component';
@@ -57,7 +57,8 @@ import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.compon
     NgSelectModule
   ],
   providers: [
-    NgbActiveModal
+    NgbActiveModal,
+    NgbDateNativeAdapter
   ],
   entryComponents: [
     EditingModalComponent,
