@@ -9,6 +9,7 @@ const Op = Sequelize.Op;
 const authorize = require('../helpers/authorize');
 
 const Award = require('../models/award');
+const Role = require('../models/role')
 const Voter = require('../models/voter');
 const User = require('../models/user');
 const Nominee = require('../models/nominee');
@@ -258,15 +259,21 @@ router.post('/create', (req, res) => {
                                         } else {
                                             multichain.initiateMultichain().getNewAddress()
                                                 .then(address => {
-                                                    const asset_address = address;
+
+                                                    //const asset_address = address;
 
                                                     //Grant permission for asset
-                                                    multichain.initiateMultichain().grant({
-                                                        addresses: address,
-                                                        permissions: 'receive,send'
-                                                    });
+                                                    async function permission() {
+                                                        await multichain.initiateMultichain().grant({
+                                                            addresses: address,
+                                                            permissions: 'receive,send'
+                                                        });
+                                                    }
+                                                    permission();
+
+                                                    //Create new asset
                                                     async function asset() {
-                                                        //Create new asset
+
                                                         await multichain.initiateMultichain().issue({
                                                             address: address,
                                                             asset: token_name,
@@ -299,7 +306,7 @@ router.post('/create', (req, res) => {
                                                         console.log('------------');
 
                                                         //Get address of asset
-                                                        const address1 = asset_address;
+                                                        const address1 = address;
 
                                                         //Get new address
                                                         multichain.initiateMultichain().getNewAddress()
@@ -454,19 +461,17 @@ router.get('/list', (req, res) => {
                 //status: 0,
                 // id: 1,
             },
-
-            include: [{
-                model: Nominee,
-                required: true,
-                attributes: ['id_nominee'],
-                include: [{
-                    model: User,
-                    required: true,
-                    as: 'nominee_name',
-                    attributes: ['english_name']
-                }]
-            }],
-            // group: ['id'],
+            // include: [{
+            //     model: Nominee,
+            //     required: true,
+            //     attributes: ['id_nominee'],
+            //     include: [{
+            //         model: User,
+            //         required: true,
+            //         as: 'nominee_name',
+            //         attributes: ['english_name']
+            //     }]
+            // }],
             order: [
                 ['date_start', 'DESC']
             ],
@@ -743,7 +748,7 @@ router.get('/past_winner/:id', (req, res) => {
 })
 
 //RANKING BREAKDOWN
-router.get('/breakdown/:id', (req, res) => {
+router.get('/breakdown/:id', authorize(), (req, res) => {
     let limit = 10; //number of records per page
     let page = 1;
     let col = 'rank';
@@ -766,215 +771,102 @@ router.get('/breakdown/:id', (req, res) => {
     //Search
     let search = req.query.search;
 
-    Breakdown.findAndCountAll({
+    //Check award is taking place or not
+    Award.findOne({
             where: {
-                id_award: req.params.id
-            },
-        })
-        .then(data => {
-            if (data.count == 0) {
-                res.status(400).send({ message: 'There is no nominee', total_counts: data.count });
+                id: req.params.id
             }
-            // data.count != 0 
-            else {
-                //Check search box
-                if ((search == '') || (search == null)) {
-                    // if (search == '') {
-                    let pages = Math.ceil(data.count / limit);
-                    offset = limit * (page - 1);
-                    //Check if page number input is greater than real total pages
-                    if (page > pages) {
-                        offset = limit * (pages - 1);
+        })
+        .then(result => {
+            let status = result.status;
+            Role.findOne({
+                    where: {
+                        id: req.decoded.id_role
                     }
-                    if (table == 'votingBreakdown') {
-                        Breakdown.findAll({
+                })
+                .then(role => {
+                    if (status === 2 && role.name !== 'admin') {
+                        return res.status(401).json({ message: 'Unauthorized' });
+                    } else {
+                        Breakdown.findAndCountAll({
                                 where: {
                                     id_award: req.params.id
                                 },
-                                include: [{
-                                    model: User,
-                                    as: 'nominee_name',
-                                    attributes: ['first_name', 'last_name', 'english_name']
-                                }],
-                                order: [
-                                    [col, type]
-                                ],
-                                limit: limit,
-                                offset: offset,
-                            }).then(breakdown => {
-                                if (breakdown.length == 0) {
-                                    res.status(400).send({ message: 'There is no result' });
-                                } else {
-                                    res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                                }
                             })
-                            .catch(err => {
-                                res.status(400).send({ message: err });
-                            })
-                    } else {
-                        //table user -> nominee_name
-                        if (table == 'nominee_name') {
-                            Breakdown.findAll({
-                                    where: {
-                                        id_award: req.params.id
-                                    },
-                                    include: [{
-                                        model: User,
-                                        as: 'nominee_name',
-                                        attributes: ['first_name', 'last_name', 'english_name']
-                                    }],
-                                    order: [
-                                        [table, col, type]
-                                    ],
-                                    limit: limit,
-                                    offset: offset,
-                                }).then(breakdown => {
-                                    if (breakdown.length == 0) {
-                                        res.status(400).send({ message: 'There is no result' });
-                                    } else {
-                                        res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                                    }
-                                })
-                                .catch(err => {
-                                    res.status(400).send({ message: err });
-                                })
-                        } else {
-                            res.status(400).send({ message: 'Wrong table' });
-                        }
-                    }
-                } else {
-                    // search != '' && search != null
-                    Breakdown.findAndCountAll({
-                            where: {
-                                id_award: req.params.id,
-                                [Op.or]: [{
-                                        rank: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        first_votes: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        second_votes: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        third_votes: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        total_points: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        '$nominee_name.first_name$': {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        '$nominee_name.last_name$': {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        '$nominee_name.english_name$': {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                ]
-                            },
-                            include: [{
-                                model: User,
-                                as: 'nominee_name'
-                            }],
-                        })
-                        .then(data1 => {
-                            if (data1.count == 0) {
-                                res.status(400).send({ message: 'There is no result', count: data1.count });
-                            } else {
-                                let pages = Math.ceil(data1.count / limit);
-                                offset = limit * (page - 1);
-                                //Check if page number input is greater than real total pages
-                                if (page > pages) {
-                                    offset = limit * (pages - 1);
+                            .then(data => {
+                                if (data.count == 0) {
+                                    res.status(400).send({ message: 'There is no result', total_counts: data.count });
                                 }
-                                //console.log(data1, page, pages, offset, limit);
-                                if (table == 'votingBreakdown') {
-                                    Breakdown.findAll({
-                                            where: {
-                                                id_award: req.params.id,
-                                                [Op.or]: [{
-                                                        rank: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
+                                // data.count != 0 
+                                else {
+                                    //Check search box
+                                    if ((search == '') || (search == null)) {
+                                        // if (search == '') {
+                                        let pages = Math.ceil(data.count / limit);
+                                        offset = limit * (page - 1);
+                                        //Check if page number input is greater than real total pages
+                                        if (page > pages) {
+                                            offset = limit * (pages - 1);
+                                        }
+                                        if (table == 'votingBreakdown') {
+                                            Breakdown.findAll({
+                                                    where: {
+                                                        id_award: req.params.id
                                                     },
-                                                    {
-                                                        first_votes: {
-                                                            [Op.like]: '%' + search + '%'
+                                                    include: [{
+                                                        model: User,
+                                                        as: 'nominee_name',
+                                                        attributes: ['first_name', 'last_name', 'english_name']
+                                                    }],
+                                                    order: [
+                                                        [col, type]
+                                                    ],
+                                                    limit: limit,
+                                                    offset: offset,
+                                                }).then(breakdown => {
+                                                    if (breakdown.length == 0) {
+                                                        res.status(400).send({ message: 'There is no result' });
+                                                    } else {
+                                                        res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                    }
+                                                })
+                                                .catch(err => {
+                                                    res.status(400).send({ message: err });
+                                                })
+                                        } else {
+                                            //table user -> nominee_name
+                                            if (table == 'nominee_name') {
+                                                Breakdown.findAll({
+                                                        where: {
+                                                            id_award: req.params.id
+                                                        },
+                                                        include: [{
+                                                            model: User,
+                                                            as: 'nominee_name',
+                                                            attributes: ['first_name', 'last_name', 'english_name']
+                                                        }],
+                                                        order: [
+                                                            [table, col, type]
+                                                        ],
+                                                        limit: limit,
+                                                        offset: offset,
+                                                    }).then(breakdown => {
+                                                        if (breakdown.length == 0) {
+                                                            res.status(400).send({ message: 'There is no result' });
+                                                        } else {
+                                                            res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
                                                         }
-                                                    },
-                                                    {
-                                                        second_votes: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        third_votes: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        total_points: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        '$nominee_name.first_name$': {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        '$nominee_name.last_name$': {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        '$nominee_name.english_name$': {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                ]
-                                            },
-                                            include: [{
-                                                model: User,
-                                                as: 'nominee_name',
-                                                attributes: ['first_name', 'last_name', 'english_name']
-                                            }],
-                                            order: [
-                                                [col, type]
-                                            ],
-                                            limit: limit,
-                                            offset: offset,
-                                        }).then(breakdown => {
-                                            if (breakdown.length == 0) {
-                                                res.status(400).send({ message: 'There is no result' });
+                                                    })
+                                                    .catch(err => {
+                                                        res.status(400).send({ message: err });
+                                                    })
                                             } else {
-                                                res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                res.status(400).send({ message: 'Wrong table' });
                                             }
-                                        })
-                                        .catch(err => {
-                                            res.status(400).send({ message: err });
-                                        })
-                                } else {
-                                    //table user -> nominee_name
-                                    if (table == 'nominee_name') {
-                                        Breakdown.findAll({
+                                        }
+                                    } else {
+                                        // search != '' && search != null
+                                        Breakdown.findAndCountAll({
                                                 where: {
                                                     id_award: req.params.id,
                                                     [Op.or]: [{
@@ -1021,40 +913,179 @@ router.get('/breakdown/:id', (req, res) => {
                                                 },
                                                 include: [{
                                                     model: User,
-                                                    as: 'nominee_name',
-                                                    attributes: ['first_name', 'last_name', 'english_name']
+                                                    as: 'nominee_name'
                                                 }],
-                                                order: [
-                                                    [table, col, type]
-                                                ],
-                                                limit: limit,
-                                                offset: offset,
-                                            }).then(breakdown => {
-                                                if (breakdown.length == 0) {
-                                                    res.status(400).send({ message: 'There is no result' });
+                                            })
+                                            .then(data1 => {
+                                                if (data1.count == 0) {
+                                                    res.status(400).send({ message: 'There is no result', count: data1.count });
                                                 } else {
-                                                    res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                    let pages = Math.ceil(data1.count / limit);
+                                                    offset = limit * (page - 1);
+                                                    //Check if page number input is greater than real total pages
+                                                    if (page > pages) {
+                                                        offset = limit * (pages - 1);
+                                                    }
+                                                    //console.log(data1, page, pages, offset, limit);
+                                                    if (table == 'votingBreakdown') {
+                                                        Breakdown.findAll({
+                                                                where: {
+                                                                    id_award: req.params.id,
+                                                                    [Op.or]: [{
+                                                                            rank: {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            first_votes: {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            second_votes: {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            third_votes: {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            total_points: {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            '$nominee_name.first_name$': {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            '$nominee_name.last_name$': {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            '$nominee_name.english_name$': {
+                                                                                [Op.like]: '%' + search + '%'
+                                                                            }
+                                                                        },
+                                                                    ]
+                                                                },
+                                                                include: [{
+                                                                    model: User,
+                                                                    as: 'nominee_name',
+                                                                    attributes: ['first_name', 'last_name', 'english_name']
+                                                                }],
+                                                                order: [
+                                                                    [col, type]
+                                                                ],
+                                                                limit: limit,
+                                                                offset: offset,
+                                                            }).then(breakdown => {
+                                                                if (breakdown.length == 0) {
+                                                                    res.status(400).send({ message: 'There is no result' });
+                                                                } else {
+                                                                    res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                                }
+                                                            })
+                                                            .catch(err => {
+                                                                res.status(400).send({ message: err });
+                                                            })
+                                                    } else {
+                                                        //table user -> nominee_name
+                                                        if (table == 'nominee_name') {
+                                                            Breakdown.findAll({
+                                                                    where: {
+                                                                        id_award: req.params.id,
+                                                                        [Op.or]: [{
+                                                                                rank: {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                first_votes: {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                second_votes: {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                third_votes: {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                total_points: {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                '$nominee_name.first_name$': {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                '$nominee_name.last_name$': {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                '$nominee_name.english_name$': {
+                                                                                    [Op.like]: '%' + search + '%'
+                                                                                }
+                                                                            },
+                                                                        ]
+                                                                    },
+                                                                    include: [{
+                                                                        model: User,
+                                                                        as: 'nominee_name',
+                                                                        attributes: ['first_name', 'last_name', 'english_name']
+                                                                    }],
+                                                                    order: [
+                                                                        [table, col, type]
+                                                                    ],
+                                                                    limit: limit,
+                                                                    offset: offset,
+                                                                }).then(breakdown => {
+                                                                    if (breakdown.length == 0) {
+                                                                        res.status(400).send({ message: 'There is no result' });
+                                                                    } else {
+                                                                        res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                                    }
+                                                                })
+                                                                .catch(err => {
+                                                                    res.status(400).send({ message: err });
+                                                                })
+                                                        } else {
+                                                            res.status(400).send({ message: 'Wrong table' });
+                                                        }
+                                                    }
                                                 }
                                             })
                                             .catch(err => {
-                                                res.status(400).send({ message: err });
+                                                res.status(400).send({ message1: err });
                                             })
-                                    } else {
-                                        res.status(400).send({ message: 'Wrong table' });
                                     }
                                 }
-                            }
-                        })
-                        .catch(err => {
-                            res.status(400).send({ message1: err });
-                        })
-
-                }
-            }
+                            })
+                    }
+                })
+                .catch(err => {
+                    res.status(400).send({ message: err });
+                })
         })
         .catch(err => {
             res.status(400).send({ message: err });
         })
+
+    .catch(err => {
+        res.status(400).send({ message: err });
+    })
 })
 
 
@@ -1068,7 +1099,8 @@ router.post('/voting_award', authorize(), (req, res) => {
 
     Award.findOne({
             where: {
-                id: id_award
+                id: id_award,
+                // status: 2,
             }
         })
         .then(award => {
@@ -1346,26 +1378,47 @@ router.get('/get_award', (req, res) => {
     const today = new Date();
     Award.findAll({
             where: {
-                status: 2
+                status: {
+                    [Op.lte]: 1,
+                }
             }
         })
         .then(awards => {
             if (awards.length == 0) {
                 res.status(200).send('There is no award for voting');
             } else {
-                //End award
-                // for (var i = 0; i < awards.length; i++) {
+                //Check date
+                for (var i = 0; i < awards.length; i++) {
+                    //Start award
+                    if (awards[i].status == 1) {
+                        if (awards[i].date_start <= today) {
+                            Award.update({
+                                status: 2,
+                                updated_at: today
+                            }, {
+                                where: {
+                                    id: awards[i].id
+                                }
+                            })
+                        }
+                    }
 
-                //     if (awards[i].date_end >= today) {
-                //         Award.update({
-                //             status: 0
-                //         }, {
-                //             where: {
-                //                 id: awards[i].id
-                //             }
-                //         })
-                //     }
-                // }
+                    //End award
+                    if (awards[i].status == 2) {
+                        if (awards[i].date_end >= today) {
+                            // Award.update({
+                            //     status: 0
+                            // }, {
+                            //     where: {
+                            //         id: awards[i].id
+                            //     }
+                            // })
+                            chooseWinner(awards[i].id);
+                            finishAward(awards[i].id);
+                        }
+                    }
+                }
+
                 Award.findAll({
                         where: {
                             status: 2
@@ -1434,8 +1487,6 @@ router.put('/update_result', (req, res) => {
                             })
                     })
             }
-
-
             // Breakdown.findAll({
             //         where: {
             //             id_award: id_award
@@ -1634,14 +1685,9 @@ function checkDupNominee(id_nominee) {
 }
 
 
-function startAward() {
-
-}
-
-
-function finishAward() {
+function finishAward(id) {
     let today = new Date();
-    const award_id = req.body.id;
+    const award_id = id;
     Award.update({
             status: 0,
             updated_at: today,
@@ -1681,11 +1727,9 @@ function finishAward() {
                                             })
                                             .then(result1 => {
                                                 let address2 = result1.data.json.address;
-                                                grantC(address2, 'receive,send');
+                                                grant(address2, 'receive');
                                                 sendAssetFrom(address2, address1, token_name, 9);
                                                 console.log('Successfully');
-
-
                                             })
                                     }
                                 })
