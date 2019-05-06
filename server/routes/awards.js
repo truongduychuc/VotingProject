@@ -27,7 +27,9 @@ User.hasOne(Winner, { foreignKey: 'id_winner', as: 'winner_name', constraints: f
 
 Breakdown.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name' });
 
+// Award.hasMany(Nominee, { foreignKey: 'id_award' });
 Award.hasOne(Nominee, { foreignKey: 'id_award' });
+// Nominee.belongsToMany(Award, { foreignKey: 'id_award' });
 Nominee.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name' });
 
 Award_type.hasMany(Award, { foreignKey: 'id', constraints: false });
@@ -53,6 +55,13 @@ updateResult: (put) /update_result
 
 
 deleteAward(admin): (post) /delete/:id (not done)
+
+
+
+/awardStatus:
+0: finished
+1: not taking place
+2: in progress
 
 */
 
@@ -127,9 +136,12 @@ router.post('/create', (req, res) => {
     //     console.log(today);
     //     res.status(400).send({ message: 'Wrong year input' });
     // } else {
-    // if (!checkDateinput()) {
-    //     console.log('Date input wrong');
-    // } else {
+    //     if (!checkDateinput()) {
+    //         console.log('Date input wrong');
+    //     } else {
+    //         if (!checkDupNominee(req.body.id_nominee)) {
+    //             res.status(400).send({ message: 'Duplicate nominee' });
+    //         } else {
     Award.findAll({
             where: {
                 type: req.body.type,
@@ -188,7 +200,21 @@ router.post('/create', (req, res) => {
                         nomineeVotes.id_award = award.id;
 
                         //Subscribe
-                        multichain.subscribe(stream_name);
+                        //multichain.subscribe(stream_name);
+                        async function subscribe() {
+                            await multichain.initiateMultichain().subscribe({
+                                stream: stream_name
+                            }, (err) => {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log('Subscribe stream successfully');
+                                }
+                            })
+
+                        }
+                        subscribe();
+
                         //Add infomation
                         multichain.initiateMultichain().publish({
                             stream: stream_name,
@@ -415,6 +441,9 @@ router.post('/create', (req, res) => {
         .catch(err => {
             res.status(400).send({ error3: err })
         })
+        // }
+        //     }
+        // }
 })
 
 
@@ -422,18 +451,22 @@ router.post('/create', (req, res) => {
 router.get('/list', (req, res) => {
     Award.findAll({
             where: {
-                status: 0,
-                //id: 30,
+                //status: 0,
+                // id: 1,
             },
+
             include: [{
                 model: Nominee,
+                required: true,
                 attributes: ['id_nominee'],
                 include: [{
                     model: User,
+                    required: true,
                     as: 'nominee_name',
                     attributes: ['english_name']
                 }]
             }],
+            // group: ['id'],
             order: [
                 ['date_start', 'DESC']
             ],
@@ -529,18 +562,7 @@ router.get('/info/:id', (req, res) => {
     Award.findOne({
             where: {
                 id: req.params.id
-            },
-            //attributes: {},
-            include: [{
-                model: Winner,
-                as: 'winner',
-                attributes: ['id_winner', 'percent'],
-                include: [{
-                    model: User,
-                    as: 'winner_name',
-                    attributes: ['first_name', 'last_name', 'english_name']
-                }]
-            }]
+            }
         })
         .then(award => {
             if (!award) {
@@ -553,6 +575,31 @@ router.get('/info/:id', (req, res) => {
             res.status(400).send({ message: err });
         })
 })
+
+//WINNER
+router.post('/winner', (req, res) => {
+    Winner.findOne({
+            where: {
+                id_award: req.body.id_award
+            },
+            include: [{
+                model: User,
+                as: 'winner_name',
+                attributes: ['first_name', 'last_name', 'english_name', 'ava_url']
+            }]
+        })
+        .then(winner => {
+            if (!winner) {
+                res.status(400).send({ message: 'This award has not had winner yet!' });
+            } else {
+                res.status(200).send(winner);
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ message: err });
+        })
+})
+
 
 //PAST WINNER
 router.get('/past_winner/:id', (req, res) => {
@@ -576,16 +623,51 @@ router.get('/past_winner/:id', (req, res) => {
             if (!award) {
                 res.status(400).send({ message: 'Award does not exist' });
             } else {
-                if (award.status == 1) {
-                    res.status(400).send({ message: 'This award is taking place' });
+                // if (award.status == 2) {
+                //     res.status(400).send({ message: 'This award is taking place' });
+                // } else {
+                // console.log(1111111, award.name, award.year)
+                if (table == 'awardDetail') {
+                    Award.findAll({
+                            where: {
+                                type: award.type,
+                                year: {
+                                    [Op.lt]: award.year
+                                }
+                            },
+                            attributes: ['id', 'year'],
+                            include: [{
+                                model: Winner,
+                                as: 'winner',
+                                attributes: ['id_winner', 'percent'],
+                                include: [{
+                                    model: User,
+                                    as: 'winner_name',
+                                    attributes: ['first_name', 'last_name', 'english_name']
+                                }]
+                            }],
+                            order: [
+                                [col, type]
+                            ]
+                        })
+                        .then(awards => {
+                            if (awards.length == 0) {
+                                res.status(400).send({ message: 'There is no winner' });
+                            } else {
+                                res.status(200).json(awards);
+                            }
+                        })
+                        .catch(err => {
+                            res.status(400).send({ message1: err });
+                        })
                 } else {
-                    console.log(1111111, award.name, award.year)
-                    if (table == 'awardDetail') {
+                    //table: finalResult -> winner, user -> winner_name
+                    if (table == 'winner') {
                         Award.findAll({
                                 where: {
                                     type: award.type,
                                     year: {
-                                        [Op.lte]: award.year
+                                        [Op.lt]: award.year
                                     }
                                 },
                                 attributes: ['id', 'year'],
@@ -595,12 +677,12 @@ router.get('/past_winner/:id', (req, res) => {
                                     attributes: ['id_winner', 'percent'],
                                     include: [{
                                         model: User,
-                                        as: 'winner_name',
+                                        as: 'name',
                                         attributes: ['first_name', 'last_name', 'english_name']
                                     }]
                                 }],
                                 order: [
-                                    [col, type]
+                                    [table, col, type]
                                 ]
                             })
                             .then(awards => {
@@ -614,13 +696,12 @@ router.get('/past_winner/:id', (req, res) => {
                                 res.status(400).send({ message1: err });
                             })
                     } else {
-                        //table: finalResult -> winner, user -> winner_name
-                        if (table == 'winner') {
+                        if (table == 'winner_name') {
                             Award.findAll({
                                     where: {
                                         type: award.type,
                                         year: {
-                                            [Op.lte]: award.year
+                                            [Op.lt]: award.year
                                         }
                                     },
                                     attributes: ['id', 'year'],
@@ -630,12 +711,12 @@ router.get('/past_winner/:id', (req, res) => {
                                         attributes: ['id_winner', 'percent'],
                                         include: [{
                                             model: User,
-                                            as: 'name',
+                                            as: 'winner_name',
                                             attributes: ['first_name', 'last_name', 'english_name']
                                         }]
                                     }],
                                     order: [
-                                        [table, col, type]
+                                        ['winner', table, col, type]
                                     ]
                                 })
                                 .then(awards => {
@@ -649,45 +730,11 @@ router.get('/past_winner/:id', (req, res) => {
                                     res.status(400).send({ message1: err });
                                 })
                         } else {
-                            if (table == 'winner_name') {
-                                Award.findAll({
-                                        where: {
-                                            type: award.type,
-                                            year: {
-                                                [Op.lte]: award.year
-                                            }
-                                        },
-                                        attributes: ['id', 'year'],
-                                        include: [{
-                                            model: Winner,
-                                            as: 'winner',
-                                            attributes: ['id_winner', 'percent'],
-                                            include: [{
-                                                model: User,
-                                                as: 'winner_name',
-                                                attributes: ['first_name', 'last_name', 'english_name']
-                                            }]
-                                        }],
-                                        order: [
-                                            ['winner', table, col, type]
-                                        ]
-                                    })
-                                    .then(awards => {
-                                        if (awards.length == 0) {
-                                            res.status(400).send({ message: 'There is no winner' });
-                                        } else {
-                                            res.status(200).json(awards);
-                                        }
-                                    })
-                                    .catch(err => {
-                                        res.status(400).send({ message1: err });
-                                    })
-                            } else {
-                                res.status(400).send({ message: 'Wrong table' });
-                            }
+                            res.status(400).send({ message: 'Wrong table' });
                         }
                     }
                 }
+                // }
             }
         })
         .catch(err => {
@@ -1276,7 +1323,7 @@ router.get('/award_type', (req, res) => {
 })
 
 //Find an award
-router.get('/find_an_ward', (req, res) => {
+router.post('/find_an_ward', (req, res) => {
     Award.findAll({
             where: {
                 type: req.body.type
@@ -1295,32 +1342,33 @@ router.get('/find_an_ward', (req, res) => {
 })
 
 //Get award for vote
-
 router.get('/get_award', (req, res) => {
     const today = new Date();
     Award.findAll({
             where: {
-                status: 1
+                status: 2
             }
         })
         .then(awards => {
             if (awards.length == 0) {
                 res.status(200).send('There is no award for voting');
             } else {
-                for (var i = 0; i < awards.length; i++) {
-                    if (awards[i].date_end >= today) {
-                        Award.update({
-                            status: 0
-                        }, {
-                            where: {
-                                id: awards[i].id
-                            }
-                        })
-                    }
-                }
+                //End award
+                // for (var i = 0; i < awards.length; i++) {
+
+                //     if (awards[i].date_end >= today) {
+                //         Award.update({
+                //             status: 0
+                //         }, {
+                //             where: {
+                //                 id: awards[i].id
+                //             }
+                //         })
+                //     }
+                // }
                 Award.findAll({
                         where: {
-                            status: 1
+                            status: 2
                         },
                         attributes: ['id'],
                         include: [{
@@ -1571,6 +1619,23 @@ function chooseWinner(id) {
         .catch(err => {
             console.log('Err' + err)
         })
+}
+
+function checkDupNominee(id_nominee) {
+    for (var i = 0; i < id_nominee.length; i++) {
+        for (var j = i + 1; i < id_nominee.length; i++) {
+            if (id_nominee[i] == id_nominee[j]) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+}
+
+
+function startAward() {
+
 }
 
 

@@ -12,6 +12,7 @@ const authorize = require('../helpers/authorize');
 const User = require('../models/user');
 const Role = require('../models/role');
 const Team = require('../models/team');
+const Nominee = require('../models/nominee');
 
 router.use(cors());
 
@@ -21,6 +22,7 @@ Role.hasMany(User, { foreignKey: 'id_role', constraints: false });
 User.belongsTo(Role, { foreignKey: 'id_role', constraints: false });
 Team.hasMany(User, { foreignKey: 'id_team', constraints: false });
 User.belongsTo(Team, { foreignKey: 'id_team', constraints: false });
+Nominee.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name_1' });
 
 /*
 API
@@ -40,6 +42,8 @@ updateProfile: (put) /update_profile
 updateProfile(admin): (put) /update/:id
 uploadAvatar: (post) /upload_avatar
 listForNominating: (get) /list_for_nominating
+listForVoting: (post) /list_for_voting
+
 deleteUser(admin): (post) /delete/:id
 
 */
@@ -217,7 +221,7 @@ router.get('/profile', authorize(), (req, res) => {
                 res.status(400).send({ message: 'User does not exist' });
             } else {
                 if (user.team == null) {
-                    res.status(200).send({ user, message: 'User have not had a team yet' });
+                    res.status(200).send({ user, message: 'User has not had a team yet' });
                 } else {
                     User.findOne({
                             where: {
@@ -276,7 +280,7 @@ router.get('/profile/:id', authorize(), (req, res) => {
                         res.status(400).send({ message: 'User does not exist' });
                     } else {
                         if (user.team == null) {
-                            res.status(200).send({ user, message: 'User have not had a team yet' });
+                            res.status(200).send({ user, message: 'User has not had a team yet' });
                         } else {
                             User.findOne({
                                     where: {
@@ -1200,29 +1204,6 @@ router.post('/upload_avatar', authorize(), upload.single('avatar'), (req, res, n
 
 //LIST USER FOR NOMINATING
 router.get('/list_for_nominating', (req, res) => {
-    // Team.findAll({
-    //         order: [
-    //             ['name']
-    //         ],
-    //         include: [{
-    //             model: User,
-    //             where: {
-    //                 is_active: 1
-    //             },
-    //             attributes: ['id', 'english_name'],
-    //         }]
-    //     })
-    //     .then(data => {
-    //         if (data.length == 0) {
-    //             res.status(200).send({ message: 'There is no nominee' });
-    //         } else {
-    //             res.status(200).send({ data: data });
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.status(400).send({ message: 'Error when get list', err });
-    //     })
-
     User.findAll({
             where: {
                 is_active: 1,
@@ -1236,6 +1217,33 @@ router.get('/list_for_nominating', (req, res) => {
         .then(data => {
             if (data.length == 0) {
                 res.status(200).send({ message: 'There is no nominee' });
+            } else {
+                res.status(200).send({ data: data });
+            }
+        })
+        .catch(err => {
+            res.status(400).send({ message: 'Error when get list', err });
+        })
+
+})
+
+//LIST USER FOR VOTING
+router.post('/list_for_voting', (req, res) => {
+    Nominee.findAll({
+            where: {
+                id_award: req.body.id_award
+            },
+            attributes: ['id_nominee'],
+            include: {
+                model: User,
+                // Change name when get name for nominee
+                as: 'nominee_name_1',
+                attributes: ['first_name', 'last_name', 'english_name', 'id_team', 'ava_url']
+            }
+        })
+        .then(data => {
+            if (data.length == 0) {
+                res.status(200).send({ message: 'There is no nominee for this award' });
             } else {
                 res.status(200).send({ data: data });
             }
