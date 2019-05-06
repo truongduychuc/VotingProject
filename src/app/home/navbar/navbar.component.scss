@@ -167,6 +167,9 @@
   .dropdown-toggle {
     cursor: pointer;
     text-decoration: underline;
+    &:after {
+      display: none !important;
+    }
   }
   .navbar-nav {
     .nav-item {
@@ -177,7 +180,7 @@
       right: initial !important;
       min-width: 5rem !important;
       width: 200px!important;
-      left: -31px !important;
+      left: -18px !important;
       @media (max-width: 576px) {
         width: 167px !important;
       }
