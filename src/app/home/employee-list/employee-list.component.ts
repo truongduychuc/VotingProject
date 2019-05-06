@@ -1,11 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AccountService} from "../../_services/account.service";
-import {User} from "../../_models/user";
-import {HttpErrorResponse, HttpParams} from "@angular/common/http";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {EditingModalComponent} from "./editing-modal/editing-modal.component";
-import {CreateUserFormComponent} from "./create-user-form/create-user-form.component";
+import {AccountService} from '../../_services/account.service';
+import {User} from '../../_models/user';
+import {HttpErrorResponse, HttpParams} from '@angular/common/http';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {EditingModalComponent} from './editing-modal/editing-modal.component';
+import {CreateUserModalComponent} from './create-user-modal/create-user-modal.component';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
   selector: 'app-employee-list',
@@ -22,24 +22,42 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   currentSortedTable: string = 'user';
   totalRecords: number;   // total number of Users
   currentRecords: number; // amount of records filtered
-  itemsPerPageArr = [2,5,10,15,20,25];
+  itemsPerPageArr = [2, 5, 10, 15, 20, 25];
   error: any;
-  usersList : User[];
+  usersList: User[];
 
+  // for determining whether the current user is admin
+  currentUser: User;
   previousSearchText: string;
-  constructor(private accountService: AccountService, private modalService: NgbModal) { }
+  constructor(private accountService: AccountService, private authService: AuthenticationService, private modalService: NgbModal) {
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  }
+  get isAdmin() {
+    return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
+  }
   ngOnInit() {
     this.reloadPreviousStatus();
   }
   deleteUser(id: number) {
     console.log(id);
     this.accountService.deleteUser(id).subscribe(
-      (res:any) => {
+      (res: any) => {
         alert(res.message);
         this.getUserListPerPage(); // reload table
       },
-      (deletingError:any) => {
+      (deletingError: any) => {
         console.log(deletingError);
+      }
+    );
+  }
+
+  resetPassword(id: number) {
+    this.accountService.resetPassword(id).subscribe(
+      (res: any) => {
+        alert(res.message);
+        this.getUserListPerPage();
+      }, err => {
+        console.log(err);
       }
     );
   }
@@ -54,27 +72,27 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       // get last query params and append to reloadedParams
 
       let lastCol = lastParams.col;
-      if(lastCol) {  //if lastCol is undefined, if(lastCol) will return false
+      if(lastCol) {  // if lastCol is undefined, if(lastCol) will return false
         reloadedParams = reloadedParams.append('col', lastCol);  // it will be undefined if lastParams is {}
         this.currentSortedColumn = lastCol; // recover component to last status, such as previous select box's value
       }
       let lastType = lastParams.type;
-      if(lastType){
+      if (lastType) {
         reloadedParams = reloadedParams.append('type', lastParams.type);
         this.currentSortedType = lastType;
       }
       let lastTable = lastParams.table;
-      if(lastTable) {
+      if (lastTable) {
         reloadedParams = reloadedParams.append('table', lastParams.table);
         this.currentSortedTable = lastTable;
       }
       let lastSearch = lastParams.search;
-      if(lastSearch) {
+      if (lastSearch) {
         reloadedParams = reloadedParams.append('search', lastParams.search);
         this.currentSearchText = lastSearch;
       }
       let lastCount = lastParams.count;
-      if(lastCount) {
+      if (lastCount) {
         reloadedParams = reloadedParams.append('count', lastParams.count);
         this.currentPageSize = lastCount;
       }
@@ -102,7 +120,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     }
 
   }
-   getUserListPerPage(sortColumn?:string, sortType?:string, sortTable?:string, searchText?:string, itemsPerPage?:number, currentPage?:number) {
+  getUserListPerPage(sortColumn?:string, sortType?:string, sortTable?:string, searchText?:string, itemsPerPage?:number, currentPage?:number) {
     let params = new HttpParams();
     if(null == sortColumn && this.currentSortedColumn) { // if sortColumn param wasn't passed, the function will call current status of page
       sortColumn = this.currentSortedColumn;
@@ -162,10 +180,9 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       (res) => {
         this.usersList = res.data;
         this.totalRecords = res.total_counts;
-        if(!res.filtered_counts) {
+        if (!res.filtered_counts) {
           this.currentRecords = this.totalRecords;
-        }
-        else {
+        } else {
           this.currentRecords = res.filtered_counts;
         }
         console.log(this.totalRecords);
@@ -176,10 +193,10 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
           search: searchText,
           count: itemsPerPage,
           page: currentPage
-        }
+        };
         this.saveCurrentStatus(lastParams);
         console.log(res);
-      },(err:HttpErrorResponse) => {
+      }, (err: HttpErrorResponse) => {
         console.log(err);
         this.error = err;
       }
@@ -205,11 +222,11 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
   // sort on Column Name, if column belongs to tableName
   sortOnColumn(columnName: string, tableName:string) {
-    if(this.currentSortedColumn == columnName && this.currentSortedTable == tableName) {  // check if you sort at same column => change sort direction
+    if (this.currentSortedColumn == columnName && this.currentSortedTable == tableName) {  // check if you sort at same column => change sort direction
       this.changeSortType();
     } else {
       this.currentSortedType = 'ASC';
-      this.currentSortedColumn =  columnName;
+      this.currentSortedColumn = columnName;
       this.currentSortedTable = tableName;
     }
     this.getUserListPerPage();
@@ -254,15 +271,15 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       this.getUserListPerPage();
     }, reason => {
       console.log(reason);
-    })
+    });
   }
   openCreatingModal() {
-    const modalRef = this.modalService.open(CreateUserFormComponent);
-    modalRef.result.then(value => {
+    const modalRef = this.modalService.open(CreateUserModalComponent);
+    modalRef.result.then(value => {  // had created successfully
       this.getUserListPerPage();
     }, reason => {
       console.log(reason);
-    })
+    });
   }
 
  ngOnDestroy(): void {

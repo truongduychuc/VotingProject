@@ -7,10 +7,10 @@ import {Role} from "../_models/role";
   providedIn: 'root'
 })
 export class RoleService {
-  serverURL = 'http://localhost:4000';
+  serverURL = 'http://localhost:4000/';
   constructor(private httpClient: HttpClient) { }
 
   getAllRoles(): Observable<Role[]> {
-    return this.httpClient.get<Role[]>(this.serverURL + '/users/role');
+    return this.httpClient.get<Role[]>(this.serverURL + 'users/role');
   }
 }

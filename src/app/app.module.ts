@@ -8,7 +8,7 @@ import {AuthInterceptor} from "./_interceptors/auth.interceptor";
 import {ErrorInterceptor} from "./_interceptors/error.interceptor";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {DefaultComponent} from "./default/default.component";
-import {LoginFormComponent} from "./default/login-form/login-form.component";
+import {LoginModalComponent} from "./default/login-modal/login-modal.component";
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
@@ -16,7 +16,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
   declarations: [
     AppComponent,
     DefaultComponent,
-    LoginFormComponent,
+    LoginModalComponent,
     PageNotFoundComponent
   ],
   imports: [
@@ -33,7 +33,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
   ],
   entryComponents: [
-    LoginFormComponent
+    LoginModalComponent
   ],
   bootstrap: [AppComponent]
 })

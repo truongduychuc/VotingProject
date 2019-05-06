@@ -1,0 +1,37 @@
+<div class="card shadow">
+  <div class="card-header">
+    <strong>AWARD LIST</strong>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-6">
+
+      </div>
+      <div class="col-sm-6 d-flex justify-content-sm-end">
+        <div *ngIf="isAdmin" class="form-group">
+          <button (click)="openAddingAward()" class="btn btn-add-award"><i class="fas fa-plus-circle fa-2x"></i></button>
+        </div>
+        <div class="form-group">
+          <select class="form-control" style="margin-top: 0.56rem">
+            <option hidden >Find an award</option>
+            <option>text 1</option>
+            <option>text 2</option>
+            <option>text 3</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body overflow-auto award-list-container">
+            <app-award-as-year *ngFor="let awardsAsYear of awardList"
+              [year]="awardsAsYear.key"
+              [awardListOfYear]="awardsAsYear.value">
+            </app-award-as-year>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

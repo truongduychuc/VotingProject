@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreateUserFormComponent } from './create-user-form.component';
+import { AddAwardModalComponent } from './add-award-modal.component';
 
-describe('CreateUserFormComponent', () => {
-  let component: CreateUserFormComponent;
-  let fixture: ComponentFixture<CreateUserFormComponent>;
+describe('AddAwardModalComponent', () => {
+  let component: AddAwardModalComponent;
+  let fixture: ComponentFixture<AddAwardModalComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateUserFormComponent ]
+      declarations: [ AddAwardModalComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateUserFormComponent);
+    fixture = TestBed.createComponent(AddAwardModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

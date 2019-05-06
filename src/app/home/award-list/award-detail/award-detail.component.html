@@ -1,0 +1,56 @@
+<div class="card shadow">
+  <div class="card-body">
+    <div class="row">
+      <div class="card custom">
+        <div style="border-bottom: none" class="card-header">
+          <div class="row">
+            <div class="col-md-6 d-flex justify-content-md-start justify-content-center">
+              <h4>{{awardDetail?.year}} {{awardDetail?.name}}</h4>
+            </div>
+            <div class="col-md-6 d-flex justify-content-center justify-content-md-end">
+              <button *ngIf="isAdmin" class="btn btn-warning btn-rounded mr-2">Edit</button>
+              <button class="btn btn-dark btn-rounded ml-2" routerLink="/home/award-list" >Back to list</button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="award-description">
+            <h6>Description:</h6>
+            <p class="card-description">{{awardDetail?.description}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <h4 class="card-title">Past winner</h4>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Winner</th>
+                <th class="text-center">% of total votes</th>
+                <th align="center" class="text-center">Result</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let pastWinner of pastWinnerList">
+              <td>{{pastWinner?.year}}</td>
+              <td>
+                {{
+                (pastWinner.winner != null)? pastWinner?.winner?.winner_name?.first_name
+                  + ' (' + pastWinner?.winner?.winner_name?.english_name
+                  + ') ' + pastWinner?.winner?.winner_name?.last_name.toUpperCase():''
+                }}
+              </td>
+              <td class="text-center">{{pastWinner?.winner?.percent}}</td>
+              <td class="text-center"><a class="small">View Result</a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

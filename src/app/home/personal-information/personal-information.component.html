@@ -1,7 +1,9 @@
 <div class="grid-margin">
-  <div class="card">
+  <div class="card shadow">
+    <div class="card-header">
+      <strong>EDIT PERSONAL PROFILE</strong>
+    </div>
     <div class="card-body">
-      <h3>Edit personal profile</h3>
       <form (ngSubmit)="updateInfo()" [formGroup]="personalUpdating">
         <div class="row">
           <div class="col-md-6">
@@ -67,8 +69,8 @@
           </div>
         </div>
         <div class="d-flex justify-content-center flex-wrap">
-          <button type="button" (click)="changeEditable()" class="btn btn-warning mr-md-4 ml-md-0 m-sm-2 m-1">Edit</button>
-          <input type="submit" class="btn btn-info ml-md-4 mr-md-0 m-sm-2 m-1" value="Save">
+          <button type="button" (click)="changeEditable()" class="btn btn-warning btn-rounded mr-md-4 ml-md-0 m-sm-2 m-1">Edit</button>
+          <input type="submit" class="btn btn-info btn-rounded ml-md-4 mr-md-0 m-sm-2 m-1" value="Save">
         </div>
       </form>
     </div>

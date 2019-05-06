@@ -8,6 +8,7 @@ export interface User {
   is_active?: number;
   role?: Role;
   team?: Team;
+  position?: string;
   username: string;
   password?: string;
   first_name: string;

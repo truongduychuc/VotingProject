@@ -22,6 +22,7 @@
     "@angular/router": "^7.2.11",
     "@fortawesome/fontawesome-free": "^5.8.1",
     "@ng-bootstrap/ng-bootstrap": "^4.1.0",
+    "@ng-select/ng-select": "^2.18.0",
     "bootstrap": "^4.3.1",
     "compass-mixins": "^0.12.10",
     "core-js": "^3.0.0",

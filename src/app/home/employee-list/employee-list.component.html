@@ -1,12 +1,10 @@
 
 <div class="card shadow">
+  <div class="card-header">
+        <strong>EMPLOYEE LIST</strong>
+  </div>
       <div class="card-body">
-        <div class="row">
-          <div class="col-12 text-center">
-            <h3>Employee list</h3>
-          </div>
-        </div>
-        <div class="row">
+        <div class="row clearfix">
           <div class="col-sm-6 p-0">
             <div class="row d-flex justify-content-sm-start">
               <div class="form-group pb-3 pt-3 m-0">
@@ -24,7 +22,7 @@
           <div class="col-sm-6 p-0">
             <div class="row d-flex justify-content-sm-end">
               <div class="p-3">
-                <button class="btn btn-primary pl-1 pr-1" (click)="openCreatingModal()" title="Create new user"><i class="fas fa-user-plus"></i></button>
+                <button class="btn pl-1 pr-1" *ngIf="isAdmin" (click)="openCreatingModal()" title="Create new user"><i class="fas fa-user-plus"></i></button>
               </div>
               <div class="form-group pl-3 pb-3 pt-3 m-0">
                 <input type="text" id="search" class="form-control" (keyup)="searchOnText()" [(ngModel)]="currentSearchText" placeholder="Search...">
@@ -42,6 +40,7 @@
                   <th (click)="sortOnColumn('first_name','user')" class="hand-cursor" scope="col" title="Click column's name to change sort direction">Name
                     <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon by sort direction-->
                   </th>
+                  <th *ngIf="isAdmin" class="text-center" align="center" scope="col">Is Active</th>
                   <th (click)="sortOnColumn('name','role')" class="hand-cursor" title="Click column's name to change sort direction" scope="col">Position
                     <i class="sort-icon" [hidden]="!(currentSortedColumn == 'name')||!(currentSortedTable == 'role')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
@@ -54,20 +53,22 @@
                   <th (click)="sortOnColumn('english_name','user')" class="hand-cursor" title="Click column's name to change sort direction" class="text-center" align="center" scope="col">English name
                     <i class="sort-icon" [hidden]="!(currentSortedColumn == 'english_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-arrow-up':'fas fa-arrow-down'"></i>  <!--Change icon-->
                   </th>
-                  <th class="text-center" align="center" scope="col">Tool</th>
+                  <th *ngIf="isAdmin" class="text-center" align="center" scope="col">Tool</th>
                 </tr>
                 </thead>
                 <tbody *ngIf="!error"> <!--There's result from search operator-->
                 <tr *ngFor="let user of usersList">
                   <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
                   <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
-                  <td  >{{user.role?.name}}</td>
+                  <td align="center" *ngIf="isAdmin">{{user?.is_active ? 'Active' : 'Inactive'}}</td>
+                  <td>{{user.role?.name}}</td>
                   <td align="center">{{user.team?.name}}</td>
                   <td>{{user.email}}</td>
                   <td align="center">{{user.english_name}}</td>
-                  <td align="center">
-                    <button class="btn btn-info btn-sm" (click)="openEditingModal(user?.id)">Edit</button>
-                    <button class="btn btn-dark btn-sm ml-2" (click)="deleteUser(user.id)">Delete</button>
+                  <td align="center" *ngIf="isAdmin">
+                    <a (click)="openEditingModal(user.id)" title="Edit this user" class="btn btn-sm edit"><i class="fas fa-user-edit"></i></a>
+                    <a (click)="deleteUser(user.id)" title="Delete this user" class="btn btn-sm delete"><i class="fas fa-trash"></i></a>
+                    <a (click)="resetPassword(user.id)" title="Reset password" class="btn btn-sm reset"><i class="fas fa-undo"></i></a>
                   </td>
                 </tr>
                 </tbody>

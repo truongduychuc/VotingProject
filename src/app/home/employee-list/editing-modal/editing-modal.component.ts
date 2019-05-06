@@ -1,13 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {User} from "../../../_models/user";
-import {HttpErrorResponse} from "@angular/common/http";
-import {AccountService} from "../../../_services/account.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {RoleService} from "../../../_services/role.service";
-import {Role} from "../../../_models/role";
-import {TeamService} from "../../../_services/team.service";
-import {Team} from "../../../_models/team";
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {User} from '../../../_models/user';
+import {HttpErrorResponse} from '@angular/common/http';
+import {AccountService} from '../../../_services/account.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {RoleService} from '../../../_services/role.service';
+import {Role} from '../../../_models/role';
+import {TeamService} from '../../../_services/team.service';
+import {Team} from '../../../_models/team';
 
 @Component({
   selector: 'app-dynamic-modal',
@@ -16,7 +16,7 @@ import {Team} from "../../../_models/team";
 })
 export class EditingModalComponent implements OnInit {
   @Input()  title = 'Information';
-  @Input()  public id: number;
+  @Input()  id: number;
   roles: Role[];
   teams: Team[];
   userProfile: User;
@@ -36,8 +36,8 @@ export class EditingModalComponent implements OnInit {
   generateForm() {
     this.editingUser = this.fb.group({
       id_role: this.userProfile.role.id,
-      id_team: this.userProfile.team != null?this.userProfile.team.id:null,
-      email: [this.userProfile.email,[Validators.email]],
+      id_team: this.userProfile.team != null ? this.userProfile.team.id : null,
+      email: [this.userProfile.email, [Validators.email]],
       first_name: this.userProfile.first_name,
       last_name: this.userProfile.last_name,
       english_name: this.userProfile.english_name,
@@ -63,11 +63,11 @@ export class EditingModalComponent implements OnInit {
     })
   }
   getAllRoles() {
-    this.roleService.getAllRoles().subscribe((rolesRes:Role[]) => {
+    this.roleService.getAllRoles().subscribe((rolesRes: Role[]) => {
       this.roles = rolesRes;
       console.log(this.roles);
     }, error1 => {
-      console.log(error1)
+      console.log(error1);
     });
   }
   getAllTeams() {

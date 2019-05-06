@@ -1,0 +1,20 @@
+<div [title]="isCollapsed?'Click expand to expand':'Click collapse to collapse'" class="card">
+  <div class="card-body shadow d-flex justify-content-between banner">
+    <strong>{{year}}</strong>
+    <a [title]="isCollapsed?'Click to expand':'Click to collapse'" [attr.aria-expanded]="isCollapsed" aria-controls="collapseExample" (click)="isCollapsed = !isCollapsed">
+      {{isCollapsed? 'Expand':'Collapse'}}
+    </a>
+  </div>
+</div>
+<div id="collapseExample" [ngbCollapse]="isCollapsed">
+  <app-award *ngFor="let award of awardListOfYear"
+             [awardId]="award.id"
+             [awardLogoURL]="award.logo_url"
+             [dateStart]="award.date_start"
+             [dateEnd]="award.date_end"
+             [awardName]="award.name"
+             [item]="award.item"
+             [prize]="award.prize"
+             [nominee]="award.nominee">
+  </app-award>
+</div>

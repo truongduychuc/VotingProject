@@ -6,19 +6,19 @@ import {AccountService} from "../../_services/account.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-login-form',
-  templateUrl: './login-form.component.html',
-  styleUrls: ['./login-form.component.scss']
+  templateUrl: './login-modal.component.html',
+  styleUrls: ['./login-modal.component.scss']
 })
-export class LoginFormComponent implements OnInit {
+export class LoginModalComponent implements OnInit {
   loginForm: FormGroup;
   constructor(public activeModal: NgbActiveModal,private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router, private accountService: AccountService) { }
 
   ngOnInit() {
-    if(this.authService.isLoggedIn()) {
-      this.activeModal.close();
-      this.router.navigate(['home']);
+    if (this.authService.isLoggedIn()) {
+      this.activeModal.close('Login successfully');
+    } else {
+      this.generateForm();
     }
-    this.generateForm();
   }
   // create form by using form builder
   private generateForm(): void {
@@ -34,9 +34,8 @@ export class LoginFormComponent implements OnInit {
     this.authService.login(username, password).subscribe(res => {
       // get current user after set token
       this.activeModal.close('Login successfully!');
-        this.router.navigate(['home']);
     }, errorLogin => {
-      console.log('Login form' + JSON.stringify(errorLogin));
+      console.log('Login form: ' + JSON.stringify(errorLogin));
     } );
   }
 
