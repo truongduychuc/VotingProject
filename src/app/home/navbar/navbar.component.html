@@ -30,9 +30,9 @@
       </li>
       <!--Display with xs screen-->
       <li *ngIf="currentUserProfile" class="nav-item dropdown d-block d-sm-none" ngbDropdown>
-        <a class="nav-link" id="UserDropdownMini">
+        <a class="nav-link" >
           <img (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
-          <span title="Click to show the menu" class="profile-text dropdown-toggle" ngbDropdownToggle></span>
+          <span id="UserDropdownMini" title="Click to show the menu" class="profile-text ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
         </a>
         <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">
           <a class="dropdown-item">
