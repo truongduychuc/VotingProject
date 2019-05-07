@@ -1,8 +1,8 @@
-import {Injectable} from "@angular/core";
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {Observable} from "rxjs";
-import {Award} from "../_models/award";
-import {PastWinner} from "../_models/past-winner";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Award} from '../_models/award';
+import {PastWinner} from '../_models/past-winner';
 
 
 @Injectable({
@@ -16,6 +16,7 @@ export class AwardService {
   createNewAward(newAward: Object) {
     return this.httpClient.post(this.serverURL + 'create', newAward);
   }
+
   getAwardList(): Observable<Award[]> {
     return this.httpClient.get<Award[]>(this.serverURL + 'list');
   }
