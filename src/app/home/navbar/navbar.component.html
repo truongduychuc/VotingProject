@@ -11,13 +11,14 @@
     <ul class="navbar-nav navbar-nav-right">
       <!--Display with small screen and bigger-->
       <li *ngIf="currentUserProfile" class="nav-item dropdown d-none d-sm-block" ngbDropdown>
-        <a class="nav-link" id="UserDropdown">
-            <span title="Click to show the menu" class="profile-text dropdown-toggle" ngbDropdownToggle>
+        <a class="nav-link">
+          <img title="Click to upload avatar" (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+          <span class="profile-text">
               {{
               currentUserProfile.first_name.toUpperCase() == 'ADMIN' || currentUserProfile.last_name.toUpperCase() == 'ADMIN' || currentUserProfile.english_name.toUpperCase() == 'ADMIN'? 'Admin':
                 currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
               }}</span>
-          <img (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+          <span id="UserDropdown" title="Click to show the menu" class="ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
         </a>
         <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdown">
           <a (click)="openChangingPasswordModal()" class="dropdown-item">
@@ -31,16 +32,10 @@
       <!--Display with xs screen-->
       <li *ngIf="currentUserProfile" class="nav-item dropdown d-block d-sm-none" ngbDropdown>
         <a class="nav-link" >
-          <img (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
-          <span id="UserDropdownMini" title="Click to show the menu" class="profile-text ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
+          <img title="Click to upload avatar" (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+          <span id="UserDropdownMini" title="Click to show the menu" class="ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
         </a>
         <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">
-          <a class="dropdown-item">
-            {{
-            currentUserProfile.first_name.toUpperCase() == 'ADMIN' || currentUserProfile.last_name.toUpperCase() == 'ADMIN' || currentUserProfile.english_name.toUpperCase() == 'ADMIN'? 'Admin':
-              currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
-            }}
-          </a>
           <a (click)="openChangingPasswordModal()" class="dropdown-item">
             Change Password
           </a>
