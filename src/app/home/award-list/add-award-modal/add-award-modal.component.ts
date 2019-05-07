@@ -3,9 +3,7 @@ import {NgbActiveModal, NgbCalendar, NgbDateNativeAdapter, NgbDateStruct} from '
 import {TeamService} from '../../../_services/team.service';
 import {AwardService} from '../../../_services/award.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {map} from "rxjs/operators";
-import {Team} from "../../../_models/team";
-import {forEach} from "@angular/router/src/utils/collection";
+import {Team} from '../../../_models/team';
 
 @Component({
   selector: 'app-add-award',
@@ -98,7 +96,7 @@ export class AddAwardModalComponent implements OnInit {
       } else {
         this.nomineesList.forEach(value => {
           let team = this.listTeams.find(team => team.id === value.id_team);
-          if(!team) {
+          if (!team) {
             console.log('Error when finding equivalent team!');
           } else {
             value.team_name = team.name;
