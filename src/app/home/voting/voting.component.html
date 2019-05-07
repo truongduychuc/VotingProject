@@ -23,7 +23,7 @@
           <div class="form-group row">
             <label class="col-sm-3 col-form-label">1st place:</label>
             <div class="col-sm-9">
-              <select (focus)="onChange($event)" (change)="onChange($event)" id="firstPlace" class="form-control" formControlName="first_vote">
+              <select class="form-control" formControlName="first_vote">
                 <option hidden>Nominee Name</option>
                 <option *ngFor="let nominee of listNominees" [ngValue]="nominee.id">{{nominee.name}}</option>
               </select>
@@ -38,7 +38,7 @@
           <div class="form-group row">
             <label class="col-sm-3 col-form-label">2nd place:</label>
             <div class="col-sm-9">
-              <select id="secondPlace" class="form-control" formControlName="second_vote">
+              <select class="form-control" formControlName="second_vote">
                 <option hidden>Nominee Name</option>
                 <option *ngFor="let nominee of listNominees" [ngValue]="nominee.id">{{nominee.name}}</option>
               </select>
@@ -53,7 +53,7 @@
           <div class="form-group row">
             <label class="col-sm-3 col-form-label">3rd place:</label>
             <div class="col-sm-9">
-              <select id="thirdPlace" class="form-control" formControlName="third_vote">
+              <select  class="form-control" formControlName="third_vote">
                 <option hidden>Nominee Name</option>
                 <option *ngFor="let nominee of listNominees" [ngValue]="nominee.id">{{nominee.name}}</option>
               </select>

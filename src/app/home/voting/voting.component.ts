@@ -9,13 +9,8 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 export class VotingComponent implements OnInit {
   voting: FormGroup;
   selected: any[] = [];
-  listNominees = [
-    {id: 1, name: 'Chuc (Gray) D. TRUONG'},
-    {id: 2, name: 'Canh (Adam) V. TRUONG'},
-    {id: 3, name: 'Hau (Hammer) T. PHAM'},
-    {id: 4, name: 'Bao (Berny) C. BAO'},
-    {id: 5, name: 'Dinh (Roger) D. LE'}
-  ]
+  listAwards: any[];
+  listNominees: any[];
   constructor(private formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -29,15 +24,29 @@ export class VotingComponent implements OnInit {
       third_vote: 'Nominee Name'
     });
   }
-  // after an option selected in select box
+  // after an option selected in select box, deleting the option chosen out of the list
   onChange(event) {
     const id = event.target.value;
-    const selected = this.listNominees.find(nominee => nominee.id === id);
-    this.selected.push(selected);
-
+    let index = this.listNominees.findIndex(nominee => nominee.id === id);
+    console.log(index);
+    if (index === -1) {
+      console.log('Error when find the nominee in the list!');
+    } else {
+      // index here is the index which the nominee was save in nominee list, we use it to save its old position
+      this.selected.push({element: this.listNominees[index], index: index});
+      this.listNominees.splice(index, 1);
+    }
   }
   onFocus(event) {
-
+    const id = event.target.value;
+    // find the current value of select box in the selected array
+    const indexSelected = this.selected.findIndex(data => data.element.id === id );
+    if ( indexSelected === -1) {
+      console.log('Error when find the element!');
+    } else {
+      this.listNominees.splice(this.selected[indexSelected].index, 0, this.selected[indexSelected].element);
+      this.selected.splice(indexSelected, 1);
+    }
   }
 
 }
