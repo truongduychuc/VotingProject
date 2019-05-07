@@ -31,7 +31,7 @@
         white-space: nowrap;
         height: $nav-link-height;
         color: $sidebar-light-menu-color;
-        i {
+        /*i {
           &.menu-arrow {
             margin-left: auto;
             margin-right: 0;
@@ -48,7 +48,7 @@
               color: rgba($sidebar-light-menu-color, 0.5);
             }
           }
-        }
+        }*/
         &[aria-expanded="true"] {
           background: $sidebar-light-menu-active-bg;
           i {
