@@ -50,7 +50,7 @@ getAwardInfo: (get) /info/:id
 getPastWinner: (get) /past_winner/:id
 getRankingBreakdown: (get) /breakdown/:id
 getTypeOfAward: (get) /award_type
-findAnAward: (get) /find_an_ward
+findAnAward: (get) /find_an_award
 voting: (post) /voting_award
 updateResult: (put) /update_result
 
@@ -461,17 +461,11 @@ router.get('/list', (req, res) => {
                 //status: 0,
                 // id: 1,
             },
-            // include: [{
-            //     model: Nominee,
-            //     required: true,
-            //     attributes: ['id_nominee'],
-            //     include: [{
-            //         model: User,
-            //         required: true,
-            //         as: 'nominee_name',
-            //         attributes: ['english_name']
-            //     }]
-            // }],
+            include: [{
+                model: Award_type,
+                required: true,
+                attributes: ['name'],
+            }],
             order: [
                 ['date_start', 'DESC']
             ],
@@ -1355,7 +1349,7 @@ router.get('/award_type', (req, res) => {
 })
 
 //Find an award
-router.post('/find_an_ward', (req, res) => {
+router.post('/find_an_award', (req, res) => {
     Award.findAll({
             where: {
                 type: req.body.type
