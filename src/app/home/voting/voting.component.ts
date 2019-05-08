@@ -15,8 +15,8 @@ export class VotingComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private awardService: AwardService, private userService: AccountService) { }
 
   ngOnInit() {
-    this.generateForm();
     this.getListAwardForVoting();
+    this.generateForm();
   }
   generateForm() {
     this.voting = this.formBuilder.group({
@@ -61,8 +61,8 @@ export class VotingComponent implements OnInit {
     if (this.voting.invalid) {
       return;
     }
-    this.awardService.vote(this.voting.value).subscribe( data => {
-      console.log(data);
+    this.awardService.vote(this.voting.value).subscribe( successMes => {
+      alert(successMes);
     }, err => {
       console.log(err);
     });

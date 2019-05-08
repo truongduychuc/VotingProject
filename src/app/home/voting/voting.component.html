@@ -30,7 +30,7 @@
         </div>
 
         <div class="row">
-          <div class="col-md-4">
+          <div *ngIf="voting.controls['id'].value" class="col-md-4">
             <div class="card shadow">
               <div class="card-header">
                 <h6 class="card-title">First place</h6>
@@ -38,7 +38,7 @@
               <div class="card-body">
                 <div *ngIf="!voting.controls['id'].value" class="row">
                   <div class="col-12">
-                    <p class="text-danger">Please choose an award</p>
+                    <p class="text-danger">Please choose the nominee for first place</p>
                   </div>
                 </div>
                 <div *ngIf="voting.controls['id'].value" class="row">
@@ -56,7 +56,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+          <div *ngIf="voting.controls['first_vote'].value" class="col-md-4">
             <div class="card shadow">
               <div class="card-header">
                 <h6 class="card-title">Second place</h6>
@@ -64,7 +64,7 @@
               <div class="card-body">
                 <div *ngIf="!voting.controls['first_vote'].value" class="row">
                   <div class="col-12">
-                    <p class="text-danger">Please choose an award</p>
+                    <p class="text-danger">Please choose the nominee for second place</p>
                   </div>
                 </div>
                 <div *ngIf="voting.controls['first_vote'].value" class="row">
@@ -82,7 +82,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+          <div *ngIf="voting.controls['second_vote'].value" class="col-md-4">
             <div class="card shadow">
               <div class="card-header">
                 <h6 class="card-title">Third place</h6>
@@ -90,7 +90,7 @@
               <div class="card-body">
                 <div *ngIf="!voting.controls['second_vote'].value" class="row">
                   <div class="col-12">
-                    <p class="text-danger">Please choose an award</p>
+                    <p class="text-danger">Please choose the nominee for third place</p>
                   </div>
                 </div>
                 <div *ngIf="voting.controls['second_vote'].value" class="row">
@@ -110,7 +110,8 @@
           </div>
         </div>
         <div class="mt-4 d-flex justify-content-center flex-wrap">
-          <button [disabled]="voting.invalid" type="submit" [ngClass]="voting.invalid ? 'btn-dark': 'btn-success'" class="btn btn-rounded">Vote</button>
+          <button [disabled]="voting.invalid" type="submit" [ngClass]="voting.invalid ? 'btn-dark': 'btn-success'" class="btn btn-rounded m-2">Vote</button>
+          <button (click)="resetAllSelections()" type="button" class="btn btn-danger btn-rounded m-2">Reset</button>
         </div>
       </form>
     </div>
