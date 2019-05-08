@@ -1373,12 +1373,14 @@ router.get('/get_award', (req, res) => {
     Award.findAll({
             where: {
                 status: {
-                    [Op.lte]: 1,
+                    [Op.gte]: 1,
                 }
             }
         })
         .then(awards => {
+
             if (awards.length == 0) {
+                console.log('1');
                 res.status(200).send('There is no award for voting');
             } else {
                 //Check date
@@ -1412,12 +1414,12 @@ router.get('/get_award', (req, res) => {
                         }
                     }
                 }
-
+                console.log('2');
                 Award.findAll({
                         where: {
                             status: 2
                         },
-                        attributes: ['id'],
+                        attributes: ['id', 'year', 'logo_url'],
                         include: [{
                             model: Award_type,
                             attributes: ['name'],
@@ -1425,8 +1427,10 @@ router.get('/get_award', (req, res) => {
                     })
                     .then(results => {
                         if (results.length == 0) {
+                            console.log('4');
                             res.status(200).send('There is no award for voting');
                         } else {
+                            console.log('3');
                             res.status(200).send({ data: results });
                         }
                     })
