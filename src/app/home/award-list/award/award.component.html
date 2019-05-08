@@ -29,7 +29,7 @@
       </div>
       <div class="col-md-2">
         <div class="d-flex flex-wrap flex-column">
-          <button class="btn btn-edit btn-block btn-rounded">Edit</button>
+          <button *ngIf="isAdmin" class="btn btn-edit btn-block btn-rounded">Edit</button>
           <button class="btn btn-detail btn-block btn-rounded" routerLink="/home/award-detail/{{awardId}}">Detail</button>
         </div>
       </div>

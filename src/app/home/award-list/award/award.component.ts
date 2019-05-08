@@ -3,7 +3,7 @@ import {Nominee} from '../../../_models/nominee';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {UploadLogoComponent} from '../upload-logo/upload-logo.component';
 import {DataSharingService} from '../../../_shared/data-sharing.service';
-
+import {User} from '../../_models/user'
 @Component({
   selector: 'app-award',
   templateUrl: './award.component.html',
@@ -23,11 +23,17 @@ export class AwardComponent implements OnInit {
   @Input() item: string;
   @Input() awardLogoURL: string;
 
+  currentUser: User;
   serverURL = 'http://localhost:4000/';
   // sharedData: for transferring successfully uploading logo message to award-list component
-  constructor(private modalService: NgbModal, private sharedData: DataSharingService) { }
-
+  constructor(private modalService: NgbModal, private sharedData: DataSharingService) {
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    console.log(this.currentUser);
+  }
   ngOnInit() {
+  }
+  get isAdmin() {
+    return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
   }
   openUploadingLogoModal() {
     const modalRef = this.modalService.open(UploadLogoComponent);
