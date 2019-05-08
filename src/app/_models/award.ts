@@ -1,9 +1,10 @@
-import {Nominee} from "./nominee";
-import {Winner} from "./winner";
+import {Nominee} from './nominee';
+import {Winner} from './winner';
 
 export interface Award {
   id: number;
-  name: string;
+  type: number;
+  name?: string;
   year: number;
   status: boolean;
   description: string;

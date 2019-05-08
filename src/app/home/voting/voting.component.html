@@ -1,70 +1,118 @@
-<div class="card shadow">
+<div class="card">
   <div class="card-header">
-    <strong>VOTING</strong>
+    <h3>Voting</h3>
   </div>
   <div class="card-body">
-    <form [formGroup]="voting">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group row">
-            <label class="col-form-label col-sm-3">Award Name:</label>
-            <div class="col-sm-9">
-              <select class="form-control">
-                <option [ngValue]="1">Employee  of the year</option>
-                <option [ngValue]="2">Rookie of the year</option>
-              </select>
+    <div class="voting-custom">
+      <form (ngSubmit)="sendVotingElection()" [formGroup]="voting">
+        <div class="row">
+          <div class="col-12">
+            <div class="card shadow">
+              <div class= "card-header">
+                <strong class="card-title">Award</strong>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="col-form-label">Choose an award:</label>
+                      <select formControlName="id" (change)="loadNomineesCorresponding(voting.controls['id'].value)" class="form-control">
+                          <option *ngFor="let award of listAwards" [ngValue]="award?.id">
+                            {{award?.awardType?.name}}
+                          </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <!--1st place-->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label">1st place:</label>
-            <div class="col-sm-9">
-              <select class="form-control" formControlName="first_vote">
-                <option hidden>Nominee Name</option>
-                <option *ngFor="let nominee of listNominees" [ngValue]="nominee.id">{{nominee.name}}</option>
-              </select>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card shadow">
+              <div class="card-header">
+                <h6 class="card-title">First place</h6>
+              </div>
+              <div class="card-body">
+                <div *ngIf="!voting.controls['id'].value" class="row">
+                  <div class="col-12">
+                    <p class="text-danger">Please choose an award</p>
+                  </div>
+                </div>
+                <div *ngIf="voting.controls['id'].value" class="row">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label class="col-form-label">Choose a nominee:</label>
+                      <select formControlName="first_vote" class="form-control">
+                        <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
+                          {{nominee?.nominee_name_1?.english_name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card shadow">
+              <div class="card-header">
+                <h6 class="card-title">Second place</h6>
+              </div>
+              <div class="card-body">
+                <div *ngIf="!voting.controls['first_vote'].value" class="row">
+                  <div class="col-12">
+                    <p class="text-danger">Please choose an award</p>
+                  </div>
+                </div>
+                <div *ngIf="voting.controls['first_vote'].value" class="row">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label class="col-form-label">Choose a nominee:</label>
+                      <select formControlName="second_vote" class="form-control">
+                        <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
+                          {{nominee?.nominee_name_1?.english_name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card shadow">
+              <div class="card-header">
+                <h6 class="card-title">Third place</h6>
+              </div>
+              <div class="card-body">
+                <div *ngIf="!voting.controls['second_vote'].value" class="row">
+                  <div class="col-12">
+                    <p class="text-danger">Please choose an award</p>
+                  </div>
+                </div>
+                <div *ngIf="voting.controls['second_vote'].value" class="row">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label class="col-form-label">Choose a nominee:</label>
+                      <select formControlName="third_vote" class="form-control">
+                        <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
+                          {{nominee?.nominee_name_1?.english_name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-6 d-lg-flex"></div>
-      </div>
-      <!--2nd place-->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label">2nd place:</label>
-            <div class="col-sm-9">
-              <select class="form-control" formControlName="second_vote">
-                <option hidden>Nominee Name</option>
-                <option *ngFor="let nominee of listNominees" [ngValue]="nominee.id">{{nominee.name}}</option>
-              </select>
-            </div>
-          </div>
+        <div class="mt-4 d-flex justify-content-center flex-wrap">
+          <button [disabled]="voting.invalid" type="submit" [ngClass]="voting.invalid ? 'btn-dark': 'btn-success'" class="btn btn-rounded">Vote</button>
         </div>
-        <div class="col-md-6 d-lg-flex"></div>
-      </div>
-      <!--3rd place-->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label">3rd place:</label>
-            <div class="col-sm-9">
-              <select  class="form-control" formControlName="third_vote">
-                <option hidden>Nominee Name</option>
-                <option *ngFor="let nominee of listNominees" [ngValue]="nominee.id">{{nominee.name}}</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 d-lg-flex"></div>
-      </div>
-      <div class="d-flex justify-content-center flex-wrap">
-        <button type="submit" class="btn btn-success btn-rounded">Vote</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>

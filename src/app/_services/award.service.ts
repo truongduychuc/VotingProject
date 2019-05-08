@@ -38,4 +38,11 @@ export class AwardService {
   getRankingBreakDown(id: number, params?: HttpParams) {
     return this.httpClient.get(this.serverURL + `breakdown/${id}`, {params: params});
   }
+  // awards are taking place
+  getAwardComingAbout() {
+    return this.httpClient.get(this.serverURL + 'get_award');
+  }
+  vote(votingResult: Object) {
+    return this.httpClient.post(this.serverURL + 'voting_award', votingResult);
+  }
 }

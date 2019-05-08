@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AwardService} from '../../_services/award.service';
+import {AccountService} from '../../_services/account.service';
 
 @Component({
   selector: 'app-voting',
@@ -8,45 +10,66 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 })
 export class VotingComponent implements OnInit {
   voting: FormGroup;
-  selected: any[] = [];
   listAwards: any[];
   listNominees: any[];
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, private awardService: AwardService, private userService: AccountService) { }
 
   ngOnInit() {
     this.generateForm();
+    this.getListAwardForVoting();
   }
   generateForm() {
     this.voting = this.formBuilder.group({
-      id: 'Award Name',
-      first_vote: 'Nominee Name',
-      second_vote: 'Nominee Name',
-      third_vote: 'Nominee Name'
+      id: [null, Validators.required],
+      first_vote: [null, Validators.required],
+      second_vote: [null, Validators.required],
+      third_vote: [null, Validators.required]
     });
   }
-  // after an option selected in select box, deleting the option chosen out of the list
-  onChange(event) {
-    const id = event.target.value;
-    let index = this.listNominees.findIndex(nominee => nominee.id === id);
-    console.log(index);
-    if (index === -1) {
-      console.log('Error when find the nominee in the list!');
-    } else {
-      // index here is the index which the nominee was save in nominee list, we use it to save its old position
-      this.selected.push({element: this.listNominees[index], index: index});
-      this.listNominees.splice(index, 1);
-    }
+  // get list of award is going on
+  getListAwardForVoting() {
+    this.awardService.getAwardComingAbout().subscribe( (success: any) => {
+      console.log(success);
+      if (!success.hasOwnProperty('data')) {
+        console.log('The response has no property named \'data!\'');
+      } else {
+        this.listAwards = success.data;
+      }
+    }, err => {
+      console.log(err);
+    });
   }
-  onFocus(event) {
-    const id = event.target.value;
-    // find the current value of select box in the selected array
-    const indexSelected = this.selected.findIndex(data => data.element.id === id );
-    if ( indexSelected === -1) {
-      console.log('Error when find the element!');
-    } else {
-      this.listNominees.splice(this.selected[indexSelected].index, 0, this.selected[indexSelected].element);
-      this.selected.splice(indexSelected, 1);
-    }
+  // load list of nominees for award has id === id
+  loadNomineesCorresponding(id: number) {
+    this.resetAllSelections();
+    this.userService.getListNomineesForVoting(id).subscribe( (success: any) => {
+      console.log(success);
+      if (!success.hasOwnProperty('data')) {  // check response if it get back the true data
+        console.log('The response has no property named \'data!\'');
+      } else {
+        this.listNominees = success.data;
+        console.log(this.listNominees);
+      }
+    } , err => {
+      console.log(err);
+    });
   }
-
+  // onSubmit
+  // send the result after finishing up choosing nominee for all places
+  sendVotingElection() {
+    console.log(this.voting.value);
+    if (this.voting.invalid) {
+      return;
+    }
+    this.awardService.vote(this.voting.value).subscribe( data => {
+      console.log(data);
+    }, err => {
+      console.log(err);
+    });
+  }
+  resetAllSelections() {
+    this.voting.controls['first_vote'].setValue(null);
+    this.voting.controls['second_vote'].setValue(null);
+    this.voting.controls['third_vote'].setValue(null);
+  }
 }

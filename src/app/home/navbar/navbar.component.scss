@@ -163,7 +163,7 @@
     border-radius: 1px!important;
     padding: 10px 0!important;
     width: 50px;
-    position: absolute;
+    position: relative;
     @media (max-width: 576px) {
       font-size: 0.8rem !important;
     }
@@ -172,6 +172,13 @@
       @media (max-width: 576px) {
         padding: 7px 10px !important;
       }
+    }
+    //
+    .triangle {
+      width: 28px;
+      height: 11px;
+      position: absolute;
+      top: -10px;
     }
   }
   //
@@ -231,12 +238,6 @@
     display: flex;
     margin-top: 0.5rem;
   }
-}
-.triangle {
-  width: 28px;
-  height: 11px;
-  position: absolute;
-  z-index: inherit;
 }
 //
 .img-thumbnail {

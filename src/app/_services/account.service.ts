@@ -55,7 +55,7 @@ export class AccountService {
       });
   }
   getListNomineesForVoting(id: number) {
-    this.httpClient.post(this.serverURL + 'users/list_for_voting', {id_award: id});
+    return this.httpClient.post(this.serverURL + 'users/list_for_voting', {id_award: id});
   }
   resetPassword(id: number) {
     return this.httpClient.put(this.serverURL + `users/reset_password/${id}`, {});
