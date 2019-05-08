@@ -11,7 +11,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 })
 export class LoginModalComponent implements OnInit {
   loginForm: FormGroup;
-  constructor(public activeModal: NgbActiveModal,private formBuilder: FormBuilder, private authService: AuthenticationService, private router :Router, private accountService: AccountService) { }
+  constructor(public activeModal: NgbActiveModal,private formBuilder: FormBuilder, 
+  private authService: AuthenticationService, private router :Router, 
+  private accountService: AccountService) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
@@ -24,11 +26,14 @@ export class LoginModalComponent implements OnInit {
   private generateForm(): void {
    this.loginForm = this.formBuilder.group({
      username: ['', Validators.required],
-     password: ['', [Validators.required, Validators.minLength(8)]]
+     password: ['',Validators.required]
    });
   }
 
   loginWithUserAndPass() {
+    if(this.loginForm.invalid) {
+      return;
+    }
     const username = this.getControl.username.value;
     const password = this.getControl.password.value;
     this.authService.login(username, password).subscribe(res => {
