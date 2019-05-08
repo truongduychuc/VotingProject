@@ -1380,7 +1380,6 @@ router.get('/get_award', (req, res) => {
         .then(awards => {
 
             if (awards.length == 0) {
-                console.log('1');
                 res.status(200).send('There is no award for voting');
             } else {
                 //Check date
@@ -1401,20 +1400,20 @@ router.get('/get_award', (req, res) => {
 
                     //End award
                     if (awards[i].status == 2) {
-                        if (awards[i].date_end >= today) {
-                            // Award.update({
-                            //     status: 0
-                            // }, {
-                            //     where: {
-                            //         id: awards[i].id
-                            //     }
-                            // })
+                        if (awards[i].date_end <= today) {
+
+                            async function updateAward() {
+                                await updateResult(awards[i].id);
+                            }
+                            updateAward();
+                            updatePercent(awards[i].id);
+
                             chooseWinner(awards[i].id);
                             finishAward(awards[i].id);
                         }
                     }
                 }
-                console.log('2');
+
                 Award.findAll({
                         where: {
                             status: 2
@@ -1427,10 +1426,10 @@ router.get('/get_award', (req, res) => {
                     })
                     .then(results => {
                         if (results.length == 0) {
-                            console.log('4');
+
                             res.status(200).send('There is no award for voting');
                         } else {
-                            console.log('3');
+
                             res.status(200).send({ data: results });
                         }
                     })
@@ -1545,6 +1544,89 @@ router.put('/update_result', (req, res) => {
             res.status(400).send({ err: err })
         })
 })
+
+function updateResult(id_award) {
+    const today = new Date();
+    const id_award = id_award;
+    const stream_name = 'award_' + id_award;
+
+    Breakdown.findAll({
+            where: {
+                id_award: id_award
+            }
+        })
+        .then(nominees => {
+            for (var i = 0; i < nominees.length; i++) {
+                let id_nominee = nominees[i].id_nominee;
+                let key_name = 'nominee_' + id_nominee;
+                multichain.initiateMultichain().getStreamKeySummary({
+                        stream: stream_name,
+                        key: key_name,
+                        mode: 'jsonobjectmerge'
+                    })
+                    .then(result => {
+                        let total_points = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
+                        Breakdown.update({
+                                first_votes: result.json.first_votes,
+                                second_votes: result.json.second_votes,
+                                third_votes: result.json.third_votes,
+                                total_points: total_points,
+                                updated_at: today
+                            }, {
+                                where: {
+                                    id_award: id_award,
+                                    id_nominee: id_nominee
+                                }
+                            })
+                            .then(() => {
+                                calculate(id_award);
+
+                            })
+                            .catch(err => {
+                                console.log('Error when update result', err);
+                            })
+                    })
+            }
+        })
+        .catch(err => {
+            console.log('Error when get result', err);
+        })
+}
+
+function updatePercent(id_award) {
+    const today = new Date();
+    const id_award = id_award;
+    let sum = 0;
+    Breakdown.findAll({
+            where: {
+                id_award: id_award
+            }
+        })
+        .then(nominees => {
+            for (var i = 0; i < nominees.length; i++) {
+                sum = sum + nominees[i].total_points;
+            }
+            for (var i = 0; i < nominees.length; i++) {
+                let id_nominee = nominees[i].id_nominee;
+                let num = nominees[i].total_points / sum * 100;
+                let percent = Math.round(num * 100) / 100;
+                Breakdown.update({
+                    percent: percent,
+                    updated_at: today
+                }, {
+                    where: {
+                        id_award: id_award,
+                        id_nominee: id_nominee
+                    }
+                })
+
+            }
+            console.log('Update percent successfully');
+        })
+        .catch(err => {
+            console.log('Error when update percent', err);
+        })
+}
 
 function updateRank(i, id_nominee) {
     Breakdown.update({
