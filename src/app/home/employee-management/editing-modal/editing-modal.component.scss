@@ -1,0 +1,12 @@
+.custom-switch .custom-control-label {
+  font-size: 0.75rem;
+  &:before {
+    left: 3.75rem;
+  }
+  &:after {
+    left: calc(3.75rem + 2px);
+  }
+}
+.modal-header {
+  border-bottom: none;
+}
