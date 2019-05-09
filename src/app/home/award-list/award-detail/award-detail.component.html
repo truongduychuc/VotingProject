@@ -5,7 +5,7 @@
         <div style="border-bottom: none" class="card-header">
           <div class="row">
             <div class="col-md-6 d-flex justify-content-md-start justify-content-center">
-              <h4>{{awardDetail?.year}} {{awardDetail?.name}}</h4>
+              <h4>{{awardDetail?.year}} {{awardDetail?.awardType.name}}</h4>
             </div>
             <div class="col-md-6 d-flex justify-content-center justify-content-md-end">
               <button *ngIf="isAdmin" class="btn btn-warning btn-rounded mr-2">Edit</button>

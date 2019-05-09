@@ -204,7 +204,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
   // for search input
   searchOnText() {
-    if(this.currentSearchText == this.previousSearchText){
+    if (this.currentSearchText == this.previousSearchText){
       return;
     }
     this.error = undefined;
@@ -274,7 +274,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     });
   }
   openCreatingModal() {
-    const modalRef = this.modalService.open(CreateUserModalComponent);
+    const modalRef = this.modalService.open(CreateUserModalComponent, {backdrop: 'static'});
     modalRef.result.then(value => {  // had created successfully
       this.getUserListPerPage();
     }, reason => {

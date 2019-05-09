@@ -1,0 +1,10 @@
+<div class="modal-header">
+  <h4 class="modal-title"><i class="fas fa-question-circle"></i>Confirmation</h4>
+</div>
+<div class="modal-body">
+  <p class="text-black">{{dialogContent}}</p>
+</div>
+<div class="modal-footer justify-content-center">
+  <button (click)="activeModal.close('Yes')" class="btn btn-primary btn-rounded">Yes</button>
+  <button (click)="activeModal.dismiss('No')" class="btn btn-danger btn-rounded">No</button>
+</div>

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AccountService} from '../../../_services/account.service';
-import {Router} from "@angular/router";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {TeamService} from "../../../_services/team.service";
-import {Team} from "../../../_models/team";
+import {Router} from '@angular/router';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {TeamService} from '../../../_services/team.service';
+import {Team} from '../../../_models/team';
 
 @Component({
   selector: 'app-create-user-form',
@@ -26,7 +26,7 @@ export class CreateUserModalComponent implements OnInit {
   generateForm() {
     this.createUser = this.formBuilder.group({
       username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', Validators.required],
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
       english_name: ['', Validators.required],

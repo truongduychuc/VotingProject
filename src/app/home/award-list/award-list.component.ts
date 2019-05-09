@@ -21,8 +21,10 @@ export class AwardListComponent implements OnInit {
   }
   ngOnInit() {
     this.sharedData.currentMessage.subscribe( success => {
-      console.log(success);
+      // this is the message from shared service sent after uploading logo successfully
       this.getAwardList();
+    }, error1 => {
+      console.log(error1);
     });
   }
   // get awardList at beginning

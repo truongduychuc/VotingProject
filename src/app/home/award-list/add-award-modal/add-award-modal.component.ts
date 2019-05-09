@@ -57,21 +57,32 @@ export class AddAwardModalComponent implements OnInit {
     };
     this.dateEndMin = this.dateStartMin;
     this.dateEndMax = <NgbDateStruct>{
-      year: this.dateStartMin.year+1,
+      year: this.dateStartMin.year + 1,
       month: this.dateStartMin.month,
       day: this.dateStartMin.day
     };
   }
   changeDateEndLimit() {
-    let currentDateStart = this.addAward.controls['date_start'].value;
+    this.resetDateEnd();
+    const currentDateStart = this.addAward.controls['date_start'].value;
     console.log(new Date());
     console.log(currentDateStart);
     this.dateEndMin = currentDateStart;
     this.dateEndMax = <NgbDateStruct>{
-      year: currentDateStart.year+1,
+      year: currentDateStart.year + 1,
       month: currentDateStart.month,
       day: currentDateStart.day
     };
+  }
+  // it is going to be involved if the date end < date start after selecting new date_start from date picker
+  resetDateEnd() {
+    console.log(this.dateNative.toModel(this.formControl['date_start'].value));
+    const date_start = this.dateNative.toModel(this.formControl['date_start'].value);
+    const date_end = this.dateNative.toModel(this.formControl['date_end'].value);
+    if (date_start > date_end) {
+      // console.log('OK!');
+      this.formControl['date_end'].setValue(null);
+    }
   }
   setYearsArray() {
     const currentYear = new Date().getFullYear();
@@ -91,7 +102,7 @@ export class AddAwardModalComponent implements OnInit {
     this.teamService.getAllTeams().subscribe( teams => {
       this.listTeams = teams;
       console.log(this.nomineesList);
-      if(!this.nomineesList) {
+      if (!this.nomineesList) {
         console.log('Nominee list is undefined!');
       } else {
         this.nomineesList.forEach(value => {
@@ -120,7 +131,7 @@ export class AddAwardModalComponent implements OnInit {
   }
   // onSubmit
   createNewAward() {
-    if(this.addAward.invalid) {
+    if (this.addAward.invalid) {
       console.log('Invalid!');
       return;
     } else {
