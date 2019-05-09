@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-header">
-    <h3>VOTING</h3>
+    <h3>Voting</h3>
   </div>
   <div class="card-body">
     <div class="voting-custom">
@@ -46,14 +46,10 @@
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
                       <select formControlName="first_vote" class="form-control">
-                        <option [disabled]="formControls['second_vote'].value === nominee.id_nominee || formControls['third_vote'].value === nominee.id_nominee"
-                                *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
+                        <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
                       </select>
-                      <small *ngIf="voting.controls['first_vote'].errors?.duplicatedOption" class="text-small text-danger">
-                        {{voting.controls['first_vote'].errors?.message}}
-                      </small>
                     </div>
                   </div>
                 </div>
@@ -68,7 +64,7 @@
               <div class="card-body">
                 <div *ngIf="!voting.controls['first_vote'].value" class="row">
                   <div class="col-12">
-                    <p class="text-danger">Please choose the nominee for first place</p>
+                    <p class="text-danger">Please choose the nominee for second place</p>
                   </div>
                 </div>
                 <div *ngIf="voting.controls['first_vote'].value" class="row">
@@ -76,15 +72,10 @@
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
                       <select formControlName="second_vote" class="form-control">
-                        <option
-                          [disabled]="formControls['first_vote'].value === nominee.id_nominee || formControls['third_vote'].value === nominee.id_nominee"
-                          *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
+                        <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
                       </select>
-                      <small *ngIf="voting.controls['second_vote'].errors?.duplicatedOption" class="text-small text-danger">
-                        {{voting.controls['second_vote'].errors?.message}}
-                      </small>
                     </div>
                   </div>
                 </div>
@@ -107,15 +98,10 @@
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
                       <select formControlName="third_vote" class="form-control">
-                        <option
-                          [disabled]="formControls['first_vote'].value === nominee.id_nominee || formControls['second_vote'].value === nominee.id_nominee"
-                          *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
+                        <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
                       </select>
-                      <small *ngIf="voting.controls['third_vote'].errors?.duplicatedOption" class="text-small text-danger">
-                        {{voting.controls['third_vote'].errors?.message}}
-                      </small>
                     </div>
                   </div>
                 </div>
@@ -125,7 +111,7 @@
         </div>
         <div class="mt-4 d-flex justify-content-center flex-wrap">
           <button [disabled]="voting.invalid" type="submit" [ngClass]="voting.invalid ? 'btn-dark': 'btn-success'" class="btn btn-rounded m-2">Vote</button>
-          <button (click)="resetWholeSelections()" type="button" class="btn btn-danger btn-rounded m-2">Reset</button>
+          <button (click)="resetAllSelections()" type="button" class="btn btn-danger btn-rounded m-2">Reset</button>
         </div>
       </form>
     </div>

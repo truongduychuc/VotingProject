@@ -22,6 +22,6 @@ export class ImageService {
     console.log(image.name);
     console.log(image);
     formData.append('logo', image, image.name); // formData can not be logged by console.log
-    return this.httpClient.post(this.serverURL + `awards/upload_logo/${id}`, formData);
+    return this.httpClient.post(this.serverURL + `awards/upload_avatar/${id}`, formData);
   }
 }

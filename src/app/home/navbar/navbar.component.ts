@@ -36,14 +36,14 @@ export class NavbarComponent implements OnInit {
     this.accountService.getPersonalProfile().subscribe(
       res => {
         this.currentUserProfile = res.user;
-        // console.log(res.user);
+        console.log(res.user);
       }, error1 => {
         console.log(error1);
       }
     );
   }
   openChangingPasswordModal() {
-    this.modalService.open(ChangePasswordModalComponent, {size: 'sm'});
+    this.modalService.open(ChangePasswordModalComponent);
   }
   openUploadingAvatarModal() {
     const modalRef = this.modalService.open(UploadAvatarComponent);
