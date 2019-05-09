@@ -3,7 +3,7 @@ import {Winner} from './winner';
 
 export interface Award {
   id: number;
-  type: number;
+  awardType?: AwardType;
   name?: string;
   year: number;
   status: boolean;
@@ -17,5 +17,9 @@ export interface Award {
   updated_at: Date;
   nominee: Nominee[];
   winner: Winner;
+}
+interface AwardType {
+  id: number;
+  name: string;
 }
 
