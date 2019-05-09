@@ -16,6 +16,7 @@ export class VotingComponent implements OnInit {
 
   ngOnInit() {
     this.getListAwardForVoting();
+    this.getListAwardForVoting();
     this.generateForm();
   }
   generateForm() {
@@ -41,7 +42,7 @@ export class VotingComponent implements OnInit {
   }
   // load list of nominees for award has id === id
   loadNomineesCorresponding(id: number) {
-    this.resetAllSelections();
+    this.resetNomineeSelections();
     this.userService.getListNomineesForVoting(id).subscribe( (success: any) => {
       console.log(success);
       if (!success.hasOwnProperty('data')) {  // check response if it get back the true data
@@ -68,6 +69,12 @@ export class VotingComponent implements OnInit {
     });
   }
   resetAllSelections() {
+    this.voting.controls['id'].setValue(null);
+    this.voting.controls['first_vote'].setValue(null);
+    this.voting.controls['second_vote'].setValue(null);
+    this.voting.controls['third_vote'].setValue(null);
+  }
+  resetNomineeSelections() {
     this.voting.controls['first_vote'].setValue(null);
     this.voting.controls['second_vote'].setValue(null);
     this.voting.controls['third_vote'].setValue(null);
