@@ -3,7 +3,7 @@ import {Nominee} from '../../../_models/nominee';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {UploadLogoComponent} from '../upload-logo/upload-logo.component';
 import {DataSharingService} from '../../../_shared/data-sharing.service';
-import {User} from '../../_models/user'
+import {User} from '../../../_models/user';
 @Component({
   selector: 'app-award',
   templateUrl: './award.component.html',
@@ -39,7 +39,8 @@ export class AwardComponent implements OnInit {
     const modalRef = this.modalService.open(UploadLogoComponent);
     modalRef.componentInstance.id = this.awardId;
     modalRef.componentInstance.current_logo_url = this.awardLogoURL;
-    modalRef.result.then( success => {
+    modalRef.result.then( () => {
+      this.sharedData.changeMessage('Updated logo successfully!');
     }, dismiss => {
       console.log(dismiss);
     });
