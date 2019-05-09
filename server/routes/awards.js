@@ -5,6 +5,7 @@ const multer = require('multer');
 const cors = require('cors');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+var CronJob = require('cron').CronJob;
 
 const authorize = require('../helpers/authorize');
 
@@ -687,7 +688,6 @@ router.post('/create', (req, res) => {
                                                                     multichain.setNomineeVote(stream_name, nominee_data);
 
                                                                     //Add nominee
-                                                                    console.log(nomineeData);
                                                                     Nominee.create(nomineeData)
                                                                         .then(() => {})
                                                                         .catch(err => {
@@ -843,7 +843,12 @@ router.get('/info/:id', (req, res) => {
     Award.findOne({
             where: {
                 id: req.params.id
-            }
+            },
+            include: [{
+                model: Award_type,
+                required: true,
+                attributes: ['name'],
+            }],
         })
         .then(award => {
             if (!award) {
@@ -1655,7 +1660,7 @@ router.post('/find_an_award', (req, res) => {
 })
 
 //Get award for vote
-router.get('/get_award', (req, res) => {
+router.get('/get_award', authorize(), (req, res) => {
     const today = new Date();
     Award.findAll({
             where: {
@@ -1665,7 +1670,6 @@ router.get('/get_award', (req, res) => {
             }
         })
         .then(awards => {
-
             if (awards.length == 0) {
                 res.status(200).send('There is no award for voting');
             } else {
@@ -1686,19 +1690,19 @@ router.get('/get_award', (req, res) => {
                     }
 
                     //End award
-                    if (awards[i].status == 2) {
-                        if (awards[i].date_end <= today) {
+                    // if (awards[i].status == 2) {
+                    //     if (awards[i].date_end <= today) {
 
-                            async function updateAward() {
-                                await updateResult(awards[i].id);
-                            }
-                            updateAward();
-                            updatePercent(awards[i].id);
+                    //         async function updateAward() {
+                    //             await updateResult(awards[i].id);
+                    //         }
+                    //         updateAward();
+                    //         updatePercent(awards[i].id);
 
-                            chooseWinner(awards[i].id);
-                            finishAward(awards[i].id);
-                        }
-                    }
+                    //         chooseWinner(awards[i].id);
+                    //         finishAward(awards[i].id);
+                    //     }
+                    // }
                 }
 
                 Award.findAll({
@@ -1713,10 +1717,8 @@ router.get('/get_award', (req, res) => {
                     })
                     .then(results => {
                         if (results.length == 0) {
-
                             res.status(200).send('There is no award for voting');
                         } else {
-
                             res.status(200).send({ data: results });
                         }
                     })
@@ -1831,6 +1833,60 @@ router.put('/update_result', (req, res) => {
             res.status(400).send({ err: err })
         })
 })
+
+
+//Check status vote of voter
+
+router.post('/check_status_voter', authorize(), (req, res) => {
+
+    const voter1 = req.decoded.id;
+    const stream_name = 'award_' + req.body.id_award;
+    // //Check if voter has already voted for award or not
+
+    //List voter
+    multichain.initiateMultichain().listStreamKeyItems({
+            stream: stream_name,
+            key: 'voter'
+        })
+        .then(voters => {
+            console.log('Get list voter successfully');
+            for (var i = 0; i < voters.length; i++) {
+                //Get txid
+                let txid = voters[i].txid;
+                //Check id voter
+                multichain.initiateMultichain().getStreamItem({
+                        stream: stream_name,
+                        txid: txid
+                    })
+                    .then(voter => {
+                        let id_voter = voter.data.json.id;
+                        if (voter1 == id_voter) {
+                            let address1 = voter.data.json.address;
+                            multichain.initiateMultichain().getAddressBalances({
+                                address: address1
+                            }).then(qty => {
+                                if (qty.length == 0) {
+                                    Voter.update({
+                                        vote_status: 0,
+                                        updated_at: today
+                                    }, {
+                                        where: {
+                                            id_award: id_award,
+                                            id_user: req.decoded.id
+                                        }
+                                    })
+                                    res.status(400).send({ message: 'You already vote for this award' });
+                                } else {
+                                    res.status(200).send({ message: 'You can vote for this award' });
+                                }
+                            })
+                        }
+                    })
+            }
+        })
+})
+
+
 
 function updateResult(id_award) {
     const today = new Date();
@@ -2109,6 +2165,63 @@ function finishAward(id) {
         })
 }
 
+function checkDateAward() {
+    let today = new Date();
+    Award.findAll({
+            where: {
+                status: {
+                    [Op.gte]: 1,
+                }
+            }
+        })
+        .then(awards => {
+            if (awards.length == 0) {
+                console.log('There is no award for voting');
+            } else {
+                //Check date
+                for (var i = 0; i < awards.length; i++) {
+                    //Start award
+                    if (awards[i].status == 1) {
+                        if (awards[i].date_start <= today) {
+                            console.log(awards[i].date_start, today);
+                            let id_award = awards[i].id;
+                            Award.update({
+                                    status: 2,
+                                    updated_at: today
+                                }, {
+                                    where: {
+                                        id: awards[i].id
+                                    }
+                                })
+                                .then(() => {
+                                    console.log('Award ', id_award, ' has started!');
+                                })
+                        }
+                    }
+
+                    //End award
+                    if (awards[i].status == 2) {
+                        if (awards[i].date_end <= today) {
+                            let id_award = awards[i].id;
+                            Award.update({
+                                    status: 2,
+                                    updated_at: today
+                                }, {
+                                    where: {
+                                        id: awards[i].id
+                                    }
+                                })
+                                .then(() => {
+                                    console.log('Award ', id_award, ' has finished!');
+                                })
+                        }
+                    }
+                }
+                console.log('Up today');
+            }
+        })
+}
+
 router.get('/get/123', (req, res) => {
     multichain.initiateMultichain().getStreamKeySummary({
         stream: "award_150",
@@ -2124,4 +2237,18 @@ router.get('/get/123', (req, res) => {
 })
 
 
+console.log('Before job instantiation');
+const checkAward = new CronJob('0,30 * * * * *', function() {
+    const d = new Date();
+    var a = moment.tz(d, "Asia/Ho_Chi_Minh");
+    checkDateAward();
+    console.log('--------------');
+    console.log('Midnight:', d);
+    console.log('Now: ', a.format());
+    // console.log('Now: ', a.ict().format());
+
+});
+console.log('After job instantiation');
+checkAward.start();
+// checkAward.stop();
 module.exports = router;
