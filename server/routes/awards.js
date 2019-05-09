@@ -26,12 +26,9 @@ Winner.belongsTo(Award, { foreignKey: 'id_award', as: 'winner', constraints: fal
 Winner.belongsTo(User, { foreignKey: 'id_winner', as: 'winner_name', constraints: false });
 User.hasOne(Winner, { foreignKey: 'id_winner', as: 'winner_name', constraints: false });
 
-Breakdown.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name' });
+Breakdown.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name', constraints: false });
 
-// Award.hasMany(Nominee, { foreignKey: 'id_award' });
-Award.hasOne(Nominee, { foreignKey: 'id_award' });
-// Nominee.belongsToMany(Award, { foreignKey: 'id_award' });
-Nominee.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name' });
+Nominee.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name', constraints: false });
 
 Award_type.hasMany(Award, { foreignKey: 'id', constraints: false });
 Award.belongsTo(Award_type, { foreignKey: 'type', constraints: false });
@@ -401,21 +398,22 @@ router.post('/create', (req, res) => {
                                                     multichain.setNomineeVote(stream_name, nominee_data);
 
 
+
                                                     //Add nominee default votes
                                                     Breakdown.create(nomineeVotes)
                                                         .then(() => {})
                                                         .catch(err => {
-                                                            console.log('error0' + err);
+                                                            console.log('Error when add nominee to breakdown ' + err);
                                                             //res.status(400).send({ error6: err });
                                                         })
-
-                                                    //Add nominee
+                                                        //Add nominee
                                                     Nominee.create(nomineeData)
                                                         .then(() => {})
                                                         .catch(err => {
-                                                            console.log('error1' + err);
+                                                            console.log('Error when add nominee to nominee ' + err);
                                                             //res.status(400).send({ error5: err });
                                                         })
+
 
                                                 }
                                             }
@@ -689,18 +687,19 @@ router.post('/create', (req, res) => {
                                                                     multichain.setNomineeVote(stream_name, nominee_data);
 
                                                                     //Add nominee
+                                                                    console.log(nomineeData);
                                                                     Nominee.create(nomineeData)
                                                                         .then(() => {})
                                                                         .catch(err => {
-                                                                            console.log('error0' + err);
-                                                                            res.status(400).send({ error5: err });
+                                                                            console.log('Error when add nominee to nominee ' + err);
+                                                                            //res.status(400).send({ error5: err });
                                                                         })
 
                                                                     //Add nominee default votes
                                                                     Breakdown.create(nomineeVotes)
                                                                         .then(() => {})
                                                                         .catch(err => {
-                                                                            console.log('error0' + err);
+                                                                            console.log('Error when add nominee to breakdown ' + err);
                                                                             res.status(400).send({ error6: err });
                                                                         })
                                                                 }

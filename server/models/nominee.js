@@ -5,13 +5,15 @@ const Nominee = db.sequelize.define(
     'nominee', {
         id_award: {
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
         },
         id_team: {
-            type: Sequelize.INTEGER
+            type: Sequelize.INTEGER,
+
         },
         id_nominee: {
-            type: Sequelize.INTEGER
+            type: Sequelize.INTEGER,
+            primaryKey: true
         },
         updated_at: {
             type: Sequelize.DATE
