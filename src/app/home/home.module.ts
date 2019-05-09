@@ -1,7 +1,7 @@
 import {NgModule } from '@angular/core';
 import {CommonModule } from '@angular/common';
 import {ChangePasswordModalComponent} from "./change-password-modal/change-password-modal.component";
-import {CreateUserModalComponent} from "./employee-list/create-user-modal/create-user-modal.component";
+import {CreatingUserModalComponent} from "./employee-list/creating-user-modal/creating-user-modal.component";
 import {EmployeeListComponent} from "./employee-list/employee-list.component";
 import {FooterComponent} from "./footer/footer.component";
 import {NavbarComponent} from "./navbar/navbar.component";
@@ -28,7 +28,7 @@ import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.compon
 @NgModule({
   declarations: [
     ChangePasswordModalComponent,
-    CreateUserModalComponent,
+    CreatingUserModalComponent,
     EmployeeListComponent,
     NavbarComponent,
     SidebarComponent,
@@ -62,7 +62,7 @@ import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.compon
   ],
   entryComponents: [
     EditingModalComponent,
-    CreateUserModalComponent,
+    CreatingUserModalComponent,
     AddAwardModalComponent,
     ChangePasswordModalComponent,
     UploadAvatarComponent,

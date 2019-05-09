@@ -4,7 +4,7 @@ import {User} from '../../_models/user';
 import {HttpErrorResponse, HttpParams} from '@angular/common/http';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditingModalComponent} from './editing-modal/editing-modal.component';
-import {CreateUserModalComponent} from './create-user-modal/create-user-modal.component';
+import {CreatingUserModalComponent} from './creating-user-modal/creating-user-modal.component';
 import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
@@ -274,7 +274,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     });
   }
   openCreatingModal() {
-    const modalRef = this.modalService.open(CreateUserModalComponent);
+    const modalRef = this.modalService.open(CreatingUserModalComponent);
     modalRef.result.then(value => {  // had created successfully
       this.getUserListPerPage();
     }, reason => {

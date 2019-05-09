@@ -8,10 +8,10 @@ import {Team} from "../../../_models/team";
 
 @Component({
   selector: 'app-create-user-form',
-  templateUrl: './create-user-modal.component.html',
-  styleUrls: ['./create-user-modal.component.scss']
+  templateUrl: './creating-user-modal.component.html',
+  styleUrls: ['./creating-user-modal.component.scss']
 })
-export class CreateUserModalComponent implements OnInit {
+export class CreatingUserModalComponent implements OnInit {
   createUser: FormGroup;
   listTeams: Team[];
   constructor(private formBuilder: FormBuilder, private accountService: AccountService, private router: Router,
