@@ -1678,6 +1678,7 @@ router.get('/get_award', authorize(), (req, res) => {
                     //Start award
                     if (awards[i].status == 1) {
                         if (awards[i].date_start <= today) {
+                            //Change status award
                             Award.update({
                                 status: 2,
                                 updated_at: today
@@ -1690,19 +1691,19 @@ router.get('/get_award', authorize(), (req, res) => {
                     }
 
                     //End award
-                    // if (awards[i].status == 2) {
-                    //     if (awards[i].date_end <= today) {
-
-                    //         async function updateAward() {
-                    //             await updateResult(awards[i].id);
-                    //         }
-                    //         updateAward();
-                    //         updatePercent(awards[i].id);
-
-                    //         chooseWinner(awards[i].id);
-                    //         finishAward(awards[i].id);
-                    //     }
-                    // }
+                    if (awards[i].status == 2) {
+                        if (awards[i].date_end <= today) {
+                            // /Change status award
+                            Award.update({
+                                status: 0,
+                                updated_at: today
+                            }, {
+                                where: {
+                                    id: awards[i].id
+                                }
+                            })
+                        }
+                    }
                 }
 
                 Award.findAll({
@@ -1723,7 +1724,6 @@ router.get('/get_award', authorize(), (req, res) => {
                         }
                     })
             }
-
         })
         .catch(err => {
             res.status(400).send('Error when get award for vote', err);
@@ -1732,106 +1732,21 @@ router.get('/get_award', authorize(), (req, res) => {
 
 //Update result
 router.put('/update_result', (req, res) => {
-    const today = new Date();
     const id_award = req.body.id;
-    const stream_name = 'award_' + id_award;
-    let sum = 0;
-    Breakdown.findAll({
-            where: {
-                id_award: id_award
-            }
-        })
-        .then(nominees => {
-            for (var i = 0; i < nominees.length; i++) {
-                let id_nominee = nominees[i].id_nominee;
-                let key_name = 'nominee_' + id_nominee;
-                multichain.initiateMultichain().getStreamKeySummary({
-                        stream: stream_name,
-                        key: key_name,
-                        mode: 'jsonobjectmerge'
-                    })
-                    .then(result => {
-                        let total_points = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
-                        Breakdown.update({
-                                first_votes: result.json.first_votes,
-                                second_votes: result.json.second_votes,
-                                third_votes: result.json.third_votes,
-                                total_points: total_points,
-                                updated_at: today
-                            }, {
-                                where: {
-                                    id_award: id_award,
-                                    id_nominee: id_nominee
-                                }
-                            })
-                            .then(() => {
-                                calculate(id_award);
-
-                            })
-                            .catch(err => {
-                                res.status(400).send({ err: err })
-                            })
-                    })
-            }
-            // Breakdown.findAll({
-            //         where: {
-            //             id_award: id_award
-            //         }
-            //     })
-            //     .then(nominees => {
-            //         for (var i = 0; i < nominees.length; i++) {
-            //             sum = sum + nominees[i].total_points;
-            //         }
-            //         console.log(sum);
-            //         for (var i = 0; i < nominees.length; i++) {
-            //             let id_nominee = nominees[i].id_nominee;
-            //             let num = nominees[i].total_points / sum * 100;
-            //             let percent = Math.round(num * 100) / 100;
-            //             Breakdown.update({
-            //                 percent: percent,
-            //                 updated_at: today
-            //             }, {
-            //                 where: {
-            //                     id_award: id_award,
-            //                     id_nominee: id_nominee
-            //                 }
-            //             })
-
-            //         }
-            //     })
-            // res.status(200).send({ message: 'Update successfully' });
-        })
+    async function waitForUpdate() {
+        await updateResult(id_award);
+        await updatePercent(id_award);
+        await chooseWinner(id_award);
+    }
+    waitForUpdate()
         .then(() => {
-            Breakdown.findAll({
-                    where: {
-                        id_award: id_award
-                    }
-                })
-                .then(nominees => {
-                    for (var i = 0; i < nominees.length; i++) {
-                        sum = sum + nominees[i].total_points;
-                    }
-                    for (var i = 0; i < nominees.length; i++) {
-                        let id_nominee = nominees[i].id_nominee;
-                        let num = nominees[i].total_points / sum * 100;
-                        let percent = Math.round(num * 100) / 100;
-                        Breakdown.update({
-                            percent: percent,
-                            updated_at: today
-                        }, {
-                            where: {
-                                id_award: id_award,
-                                id_nominee: id_nominee
-                            }
-                        })
-
-                    }
-                })
             res.status(200).send({ message: 'Update successfully' });
         })
         .catch(err => {
-            res.status(400).send({ err: err })
+            res.status(400).send({ message: 'Error when update ' + err });
         })
+
+
 })
 
 
@@ -1888,12 +1803,12 @@ router.post('/check_status_voter', authorize(), (req, res) => {
 
 
 
-function updateResult(id_award) {
+async function updateResult(id) {
     const today = new Date();
-    const id_award = id_award;
+    const id_award = id;
     const stream_name = 'award_' + id_award;
 
-    Breakdown.findAll({
+    await Breakdown.findAll({
             where: {
                 id_award: id_award
             }
@@ -1929,6 +1844,9 @@ function updateResult(id_award) {
                                 console.log('Error when update result', err);
                             })
                     })
+                    .catch(err => {
+                        console.log('Error when get result from blockchain', err);
+                    })
             }
         })
         .catch(err => {
@@ -1936,11 +1854,77 @@ function updateResult(id_award) {
         })
 }
 
-function updatePercent(id_award) {
+function updateCurrentResult() {
     const today = new Date();
-    const id_award = id_award;
+    Award.findAll({
+            where: {
+                status: 2
+            }
+        })
+        .then(awards => {
+            if (awards.length == 0) {
+                console.log('There is no award for updating right now');
+            } else {
+                for (var j = 0; j < awards.length; j++) {
+                    let id_award = awards[j].id;
+                    let stream_name = 'award_' + id_award;
+                    Breakdown.findAll({
+                            where: {
+                                id_award: id_award
+                            }
+                        })
+                        .then(nominees => {
+                            for (var i = 0; i < nominees.length; i++) {
+                                let id_nominee = nominees[i].id_nominee;
+                                let key_name = 'nominee_' + id_nominee;
+                                multichain.initiateMultichain().getStreamKeySummary({
+                                        stream: stream_name,
+                                        key: key_name,
+                                        mode: 'jsonobjectmerge'
+                                    })
+                                    .then(result => {
+                                        let total_points = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
+                                        Breakdown.update({
+                                                first_votes: result.json.first_votes,
+                                                second_votes: result.json.second_votes,
+                                                third_votes: result.json.third_votes,
+                                                total_points: total_points,
+                                                updated_at: today
+                                            }, {
+                                                where: {
+                                                    id_award: id_award,
+                                                    id_nominee: id_nominee
+                                                }
+                                            })
+                                            .then(() => {
+                                                calculate(id_award);
+                                            })
+                                            .catch(err => {
+                                                console.log('Error when update result ', err);
+                                            })
+                                    })
+                                    .catch(err => {
+                                        console.log('Error when result from blockchain ', err);
+                                    })
+                            }
+                        })
+                        .catch(err => {
+                            console.log('Error when get result ', err);
+                        })
+                }
+            }
+        })
+        .catch(err => {
+            console.log('Error when get awards', err);
+        })
+
+}
+
+async function updatePercent(id) {
+    const today = new Date();
+    const id_award = id;
     let sum = 0;
-    Breakdown.findAll({
+    await Breakdown.findAll({
             where: {
                 id_award: id_award
             }
@@ -1971,15 +1955,7 @@ function updatePercent(id_award) {
         })
 }
 
-function updateRank(i, id_nominee) {
-    Breakdown.update({
-        rank: i
-    }, {
-        where: {
-            id_nominee: id_nominee
-        }
-    })
-}
+
 
 function calculate(id) {
     const award_id = id;
@@ -2043,6 +2019,15 @@ function calculate(id) {
         })
 }
 
+function updateRank(i, id_nominee) {
+    Breakdown.update({
+        rank: i
+    }, {
+        where: {
+            id_nominee: id_nominee
+        }
+    })
+}
 
 function checkVoteValid(id, first_vote, second_vote, third_vote) {
     id_award = id;
@@ -2055,9 +2040,9 @@ function checkVoteValid(id, first_vote, second_vote, third_vote) {
     return true;
 }
 
-function chooseWinner(id) {
+async function chooseWinner(id) {
     const id_award = id;
-    Breakdown.findOne({
+    await Breakdown.findOne({
             where: {
                 id_award: id_award,
                 rank: 1
@@ -2080,7 +2065,7 @@ function chooseWinner(id) {
                     } else {
                         Winner.update({
                             id_winner: winner_data.id_winner,
-                            percent: winner_data.id_winner
+                            percent: winner_data.percent
                         }, {
                             where: {
                                 id_award: id_award
@@ -2202,17 +2187,24 @@ function checkDateAward() {
                     //End award
                     if (awards[i].status == 2) {
                         if (awards[i].date_end <= today) {
-                            let id_award = awards[i].id;
+                            let id_award1 = awards[i].id;
                             Award.update({
-                                    status: 2,
+                                    status: 0,
                                     updated_at: today
                                 }, {
                                     where: {
-                                        id: awards[i].id
+                                        id: id_award1
                                     }
                                 })
                                 .then(() => {
-                                    console.log('Award ', id_award, ' has finished!');
+                                    console.log('Award ', id_award1, ' has finished!');
+                                    async function waitForUpdate() {
+                                        await updateResult(id_award1);
+                                        await updatePercent(id_award1);
+                                        await chooseWinner(id_award1);
+                                    }
+                                    waitForUpdate();
+
                                 })
                         }
                     }
@@ -2221,6 +2213,7 @@ function checkDateAward() {
             }
         })
 }
+
 
 router.get('/get/123', (req, res) => {
     multichain.initiateMultichain().getStreamKeySummary({
@@ -2246,9 +2239,19 @@ const checkAward = new CronJob('0,30 * * * * *', function() {
     console.log('Midnight:', d);
     console.log('Now: ', a.format());
     // console.log('Now: ', a.ict().format());
-
 });
+
+const updateAward = new CronJob('0,30 * * * * *', function() {
+    const d = new Date();
+    var a = moment.tz(d, "Asia/Ho_Chi_Minh");
+    updateCurrentResult();
+    console.log('--------------');
+    console.log('Midnight:', d);
+    console.log('Now: ', a.format());
+});
+
 console.log('After job instantiation');
 checkAward.start();
 // checkAward.stop();
+// updateAward.start();
 module.exports = router;
