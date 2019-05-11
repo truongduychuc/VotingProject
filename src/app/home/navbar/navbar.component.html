@@ -1,0 +1,72 @@
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row shadow">
+  <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
+    <a class="navbar-brand brand-logo" href="index.html">
+
+    </a>
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleOffcanvas()">
+      <span class="mdi mdi-menu"></span>
+    </button>
+  </div>
+  <div class="navbar-menu-wrapper d-flex align-items-stretch">
+    <ul class="navbar-nav navbar-nav-right">
+      <!--Display with small screen and bigger-->
+      <li *ngIf="currentUserProfile" class="nav-item nav-profile dropdown" ngbDropdown>
+        <a id="userDropdown" class="nav-link dropdown-toggle" ngbDropdownToggle>
+          <div class="nav-profile-img">
+              <img class="img-xs rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'">
+              <span class="availability-status online"></span>
+          </div>
+          <div class="nav-profile-text">
+            <p class="mb-1 text-white">
+                {{
+                  currentUserProfile.first_name.toUpperCase() == 'ADMIN' || currentUserProfile.last_name.toUpperCase() == 'ADMIN' || currentUserProfile.english_name.toUpperCase() == 'ADMIN'? 'Admin':
+                    currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
+                 }}
+            </p>
+          </div>
+          <div ngbDropdownMenu placement="bottom-right" class="dropdown-menu navbar-dropdown" aria-labelledby="userDropdown">
+            <a class="dropdown-item" (click)="openUploadingAvatarModal()">Upload avatar</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="openChangingPasswordModal()">Change password</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="logout()">Log out</a>
+          </div>
+        </a>
+      </li>
+      <!-- <li *ngIf="currentUserProfile" class="nav-item dropdown d-none d-sm-block" ngbDropdown>
+        <a class="nav-link">
+          <img title="Click to upload avatar" (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+          <span class="profile-text">
+              {{
+              currentUserProfile.first_name.toUpperCase() == 'ADMIN' || currentUserProfile.last_name.toUpperCase() == 'ADMIN' || currentUserProfile.english_name.toUpperCase() == 'ADMIN'? 'Admin':
+                currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
+              }}</span>
+          <span id="UserDropdown" title="Click to show the menu" class="ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdown">
+          <a (click)="openChangingPasswordModal()" class="dropdown-item">
+            Change Password
+          </a>
+          <a (click)="logout()" class="dropdown-item">
+            Sign Out
+          </a>
+        </div>
+      </li> -->
+      <!--Display with xs screen-->
+      <!-- <li *ngIf="currentUserProfile" class="nav-item dropdown d-block d-sm-none" ngbDropdown>
+        <a class="nav-link" >
+          <img title="Click to upload avatar" (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
+          <span id="UserDropdownMini" title="Click to show the menu" class="ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">
+          <a (click)="openChangingPasswordModal()" class="dropdown-item">
+            Change Password
+          </a>
+          <a (click)="logout()" class="dropdown-item">
+            Sign Out
+          </a>
+        </div>
+      </li> -->
+    </ul>
+  </div>
+</nav>
