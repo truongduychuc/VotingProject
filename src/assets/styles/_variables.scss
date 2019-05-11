@@ -34,7 +34,7 @@ $social-colors: ( twitter: #1da1f2, facebook: #3b579d, google: #dc4a38, linkedin
 $type-1: 'Poppins',
 sans-serif;
 $type-2: $type-1;
-$default-font-size: 12px;
+$default-font-size: 13px;
 $text-muted: #c2c2c2;
 $body-color: #212529;
 ////////// FONT VARIABLES //////////
@@ -68,9 +68,9 @@ $sidebar-dark-category-color: #999999;
 $sidebar-dark-menu-icon-color: #404852;
 $sidebar-dark-profile-name-color: #404852;
 $sidebar-dark-profile-title-color: #8d9498;
-$sidebar-menu-font-size: 12px;
+$sidebar-menu-font-size: 1rem; // original: 12px;
 $sidebar-icon-size: 16px;
-$sidebar-menu-padding: 16px 35px;
+$sidebar-menu-padding: 1.125rem 0; //16px 35px;
 $nav-link-height: 52px;
 $sidebar-submenu-padding: 0 0 0 4rem;
 $sidebar-submenu-font-size: $sidebar-menu-font-size;
@@ -108,9 +108,9 @@ $horizontal-2-bg: $blue-teal-gradient;
 $horizontal-2-brand-width: 125px;
 ///////// HORIZONTAL MENU 2/////////
 ///////// NAVBAR ////////
-$navbar-height: 63px;
+$navbar-height: 63px; // $nav
 $navbar-light-color: #202339;
-$navbar-font-size: $sidebar-menu-font-size;
+$navbar-font-size: 1rem; //$sidebar-menu-font-size;
 $navbar-icon-font-size: 1.25rem;
 ///////// NAVBAR ////////
 ///////// BUTTONS ////////
