@@ -58,10 +58,11 @@
           }
         }
         .menu-icon {
-          margin-right: 1.25rem;
+          // margin-right: 1.25rem;
+          margin-left: auto;
           width: $sidebar-icon-size;
           line-height: 1;
-          font-size: 18px;
+          font-size: $sidebar-icon-size; //18px;
           color: lighten($sidebar-light-menu-icon-color, 30%);
           .rtl & {
             margin-right: 0;
@@ -71,7 +72,7 @@
         .menu-title {
           color: inherit;
           display: inline-block;
-          font-size: $sidebar-menu-font-size;
+          font-size: 1em; //$sidebar-menu-font-size;
           line-height: 1;
           vertical-align: middle;
         }
@@ -125,10 +126,11 @@
     }
     &:not(.sub-menu) {
       >.nav-item {
+        padding: 0 2.25rem;
         &:hover {
-          &:not(.nav-profile) {
+          &:not(.nav-profile) {  // change nav item color & background when hovering on it
+             background: #0fdfd3; // for menu on sidebar
             >.nav-link {
-              background: #0fdfd3; // for menu on sidebar
               color: white;
               >i {
                 color: white;
@@ -181,10 +183,11 @@
     overflow: auto;
     left: -$sidebar-width-lg;
     -webkit-transition: all 0.25s ease-out;
-    -o-transition: all 0.25s ease-out;
+    -o-transition:  all 0.25s ease-out;
     transition: all 0.25s ease-out;
     &.active {
       left: 0;
+      box-shadow: 3px 1px 8px -2px #777;
     }
   }
 }
