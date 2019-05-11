@@ -11,7 +11,7 @@
     <ul class="navbar-nav navbar-nav-right">
       <!--Display with small screen and bigger-->
       <li *ngIf="currentUserProfile" class="nav-item nav-profile dropdown" ngbDropdown>
-        <a id="userDropdown" class="nav-link dropdown-toggle" ngbDropdownToggle>
+        <a id="userDropdown" title="Click to show menu" class="nav-link dropdown-toggle" ngbDropdownToggle>
           <div class="nav-profile-img">
               <img class="img-xs rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'">
               <span class="availability-status online"></span>

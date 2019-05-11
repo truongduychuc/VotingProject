@@ -84,7 +84,7 @@
           align-items: center;
           display: flex !important; //
           color: inherit;
-          font-size: $navbar-font-size;  // -> source: variable.css -> $sidebar-font-size
+          font-size: 0.875rem;  // $navbar-font-size -> source: variable.css -> $sidebar-font-size
           vertical-align: middle;
           @media (max-width: 767px) {
             margin-left: 0.5rem;
@@ -188,7 +188,7 @@
   // }
   //
   .dropdown {
-    font-size: 1rem;
+    font-size: 0.875rem;
     @media (max-width: 991px) {
       position: static;
     }
@@ -205,13 +205,18 @@
         padding: 11px 13px!important;
         align-items: center !important;
         cursor: pointer;
-        font-size: 1.1em;
+        font-size: 1em;
       }
     }
   }
   //
   .dropdown-toggle {
     cursor: pointer;
+    &:hover {
+      >p {
+        color: aliceblue;
+      }
+    }
     &:after {
       font-size: 1em; // or inherit from .nav-link (parent)
     }
