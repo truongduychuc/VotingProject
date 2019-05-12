@@ -1,11 +1,11 @@
-<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row shadow">
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
   <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
     <a class="navbar-brand brand-logo" href="index.html">
-
+      <img alt="Full logo" src="assets/images/logo/voting-logo.png">
     </a>
-    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleOffcanvas()">
-      <span class="mdi mdi-menu"></span>
-    </button>
+    <a class="navbar-brand brand-logo-mini" href="index.html">
+      <img alt="Mini logo" src="assets/images/logo/voting-mini.png">
+    </a>
   </div>
   <div class="navbar-menu-wrapper d-flex align-items-stretch">
     <ul class="navbar-nav navbar-nav-right">
@@ -39,40 +39,9 @@
           </div>
         </a>
       </li>
-      <!-- <li *ngIf="currentUserProfile" class="nav-item dropdown d-none d-sm-block" ngbDropdown>
-        <a class="nav-link">
-          <img title="Click to upload avatar" (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
-          <span class="profile-text">
-              {{
-              currentUserProfile.first_name.toUpperCase() == 'ADMIN' || currentUserProfile.last_name.toUpperCase() == 'ADMIN' || currentUserProfile.english_name.toUpperCase() == 'ADMIN'? 'Admin':
-                currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
-              }}</span>
-          <span id="UserDropdown" title="Click to show the menu" class="ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdown">
-          <a (click)="openChangingPasswordModal()" class="dropdown-item">
-            Change Password
-          </a>
-          <a (click)="logout()" class="dropdown-item">
-            Sign Out
-          </a>
-        </div>
-      </li> -->
-      <!--Display with xs screen-->
-      <!-- <li *ngIf="currentUserProfile" class="nav-item dropdown d-block d-sm-none" ngbDropdown>
-        <a class="nav-link" >
-          <img title="Click to upload avatar" (click)="openUploadingAvatarModal()" class="img-xs img-thumbnail rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
-          <span id="UserDropdownMini" title="Click to show the menu" class="ml-2" ngbDropdownToggle><i class="fas fa-sort-down"></i></span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">
-          <a (click)="openChangingPasswordModal()" class="dropdown-item">
-            Change Password
-          </a>
-          <a (click)="logout()" class="dropdown-item">
-            Sign Out
-          </a>
-        </div>
-      </li> -->
     </ul>
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleOffcanvas()">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 </nav>
