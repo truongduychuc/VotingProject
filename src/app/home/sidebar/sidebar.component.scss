@@ -58,8 +58,8 @@
           }
         }
         .menu-icon {
-          // margin-right: 1.25rem;
-          margin-left: auto;
+          margin-right: 1.25rem;
+          // margin-left: auto;
           width: $sidebar-icon-size;
           line-height: 1;
           font-size: $sidebar-icon-size; //18px;
@@ -127,7 +127,7 @@
     }
     &:not(.sub-menu) {
       >.nav-item {
-        padding: 0 2.25rem;
+        // padding: 0 2.25rem;
         &:hover {
           &:not(.nav-profile) {  // change nav item color & background when hovering on it
              background: #0fdfd3; // for menu on sidebar
