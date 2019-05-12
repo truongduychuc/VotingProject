@@ -25,11 +25,17 @@
             </p>
           </div>
           <div ngbDropdownMenu placement="bottom-right" class="dropdown-menu navbar-dropdown" aria-labelledby="userDropdown">
-            <a class="dropdown-item" (click)="openUploadingAvatarModal()">Upload avatar</a>
+            <a class="dropdown-item" (click)="openUploadingAvatarModal()">
+             <i class="fas fa-camera mr-2 text-primary"></i>Upload avatar
+            </a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" (click)="openChangingPasswordModal()">Change password</a>
+            <a class="dropdown-item" (click)="openChangingPasswordModal()">
+              <i class="fas fa-key mr-2 text-primary"></i>Change password
+            </a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" (click)="logout()">Log out</a>
+            <a class="dropdown-item" (click)="logout()">
+              <i class="fas fa-sign-out-alt mr-2 text-primary"></i>Log out
+            </a>
           </div>
         </a>
       </li>
