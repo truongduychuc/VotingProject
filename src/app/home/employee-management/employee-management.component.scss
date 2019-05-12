@@ -3,6 +3,9 @@
   i {
     font-style: 0.75rem;
   }
+  .col-sm-6 {
+    height: 2rem;
+  }
   margin: 1rem 0px;
   .form-control-sm {
     padding: 0.2rem 0.3rem;
@@ -18,10 +21,15 @@ table{
   table-layout: auto;
   thead{
     th {
+      border-bottom: 1px solid lightblue!important;
+      border-bottom-width: 2px!important;
       cursor: pointer;
       position: relative;
-      background-color: #9068be;
       word-wrap: break-word;
+      i {
+        position:absolute;
+        right: 0;
+      }
     }
   }
   td {
