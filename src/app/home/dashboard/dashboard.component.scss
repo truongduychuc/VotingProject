@@ -75,7 +75,6 @@
   .card-body {
     background: $white;
     &:first-child {
-      background: url("../../../assets/images/samples/weather.svg") no-repeat center;
       background-size: cover;
     }
   }
