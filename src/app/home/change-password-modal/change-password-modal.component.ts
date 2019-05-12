@@ -18,7 +18,7 @@ export class ChangePasswordModalComponent implements OnInit {
   generateForm() {
     this.changingPasswordForm = this.formBuilder.group({
       currentPassword: ['', [Validators.required, Validators.minLength(8)]],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: ['', Validators.required],
       confirmNewPassword: ['', [Validators.required]]
     }, {
       validator: this.MustMatch('newPassword', 'confirmNewPassword')
