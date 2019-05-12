@@ -26,13 +26,13 @@ export class CreatingUserModalComponent implements OnInit {
   generateForm() {
     this.createUser = this.formBuilder.group({
       username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required]],
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
       english_name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       id_role: ['', [Validators.required]],
-      id_team: ['Team']
+      id_team: ['']
     });
   }
   getAllTeams() {
