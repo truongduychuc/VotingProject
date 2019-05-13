@@ -1,0 +1,16 @@
+.card-header {
+  background-color: transparent;
+  border-bottom: none;
+  .card-description {
+    font-style: italic;
+  }
+}
+.card-body {
+  .form-control-sm {
+    padding: 0.2rem 0.3rem;
+    background-color: aliceblue;
+  }
+  small {
+    font-size: 0.8em;
+  }
+}

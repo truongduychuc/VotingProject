@@ -1,0 +1,70 @@
+<div class="card shadow">
+  <div class="card-header">
+    <div class="row">
+      <div class="col-md-6 d-flex justify-content-md-start justify-content-center align-items-center pt-2 pb-2">
+        <div class="badge-info badge-pill">
+          2019
+        </div>
+        <h4 class="mb-0 ml-2">{{'Employee of the year' | uppercase}}</h4>
+      </div>
+      <div class="col-md-6 d-none d-md-flex justify-content-center justify-content-md-end align-items-center pt-2 pb-2">
+        <button class="btn btn-success btn-rounded mr-2">BACK TO DETAIL</button>
+        <button class="btn btn-outline-success btn-rounded ml-2" routerLink="/home/award-management" >BACK TO LIST</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 justify-content-md-start justify-content-center">
+        <p class="card-description text-center text-md-left">VOTING BREAKDOWN</p>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-6 align-items-center d-flex justify-content-center justify-content-sm-start mb-2 mb-sm-0">
+        <div class="form-group">
+          <label class="col-form-label">
+            Show
+            <select class="form-control-sm">
+              <option>2</option>
+              <option>5</option>
+              <option>10</option>
+              <option>15</option>
+            </select>
+            entries
+          </label>
+        </div>
+      </div>
+      <div class="col-sm-6 align-items-center d-flex justify-content-center justify-content-sm-end mt-2 mt-sm-0">
+        <div class="form-group">
+          <input type="text" id="search" class="form-control" placeholder="Search...">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Nominee</th>
+              <th>1st votes <small>(5 points)</small></th>
+              <th>2nd votes <small>(3 points)</small></th>
+              <th>3rd votes <small>(1 points)</small></th>
+              <th>Total point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Dinh (Roger) Q. LE</td>
+              <td>20</td>
+              <td>21</td>
+              <td>22</td>
+              <td>185</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
