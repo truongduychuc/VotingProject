@@ -63,12 +63,14 @@
     padding: $btn-padding-y-xs $btn-padding-x-xs;
     font-size: $btn-font-size-xs;
   }
-
+  &.btn-primary,
   &.btn-danger,
   &.btn-info,
   &.btn-teal,
-  &.btn-warning {
+  &.btn-warning,
+  &.btn-success{
     color: $white;
+    border-width: 2px !important;
   }
 
   &.btn-light {
