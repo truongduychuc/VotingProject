@@ -20,9 +20,9 @@ export class ChangePasswordModalComponent implements OnInit {
       currentPassword: ['', Validators.required],
       newPassword: ['', Validators.required],
       confirmNewPassword: ['', [Validators.required]]
-    }, /*{
+    }, {
       validator: this.MustMatch('newPassword', 'confirmNewPassword')
-    }*/);
+    });
   }
   onSubmit() {
     if(this.changingPasswordForm.invalid) {
