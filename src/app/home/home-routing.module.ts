@@ -10,6 +10,7 @@ import {AwardManagementComponent} from './award-management/award-management.comp
 import {RoleGuard} from '../_guards/role.guard';
 import {Role} from '../_enums/role';
 import {AwardDetailComponent} from './award-management/award-detail/award-detail.component';
+import {VotingBreakdownComponent} from './award-management/voting-breakdown/voting-breakdown.component';
 
 
 const homeRoutes: Routes = [
@@ -31,7 +32,8 @@ const homeRoutes: Routes = [
       }
       },
       {path: 'award-management', component: AwardManagementComponent},
-      {path: 'award-detail/:id', component: AwardDetailComponent}
+      {path: 'award-detail/:id', component: AwardDetailComponent},
+      {path: 'voting-breakdown/:id', component: VotingBreakdownComponent}
     ]}
 ];
 @NgModule({

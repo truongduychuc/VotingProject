@@ -25,6 +25,7 @@ import {GroupByPipe} from '../_pipes/group-by.pipe';
 import { AwardDetailComponent } from './award-management/award-detail/award-detail.component';
 import { UploadLogoComponent } from './award-management/upload-logo/upload-logo.component';
 import { EditingAwardModalComponent } from './award-management/editing-award-modal/editing-award-modal.component';
+import { VotingBreakdownComponent } from './award-management/voting-breakdown/voting-breakdown.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { EditingAwardModalComponent } from './award-management/editing-award-mod
     GroupByPipe,
     AwardDetailComponent,
     UploadLogoComponent,
-    EditingAwardModalComponent
+    EditingAwardModalComponent,
+    VotingBreakdownComponent
   ],
   imports: [
     CommonModule,
