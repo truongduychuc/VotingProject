@@ -4,7 +4,7 @@
 <div class="modal-body">
   <form (ngSubmit)="createNewAward()" [formGroup]="addAward">
     <div class="row">
-      <div class="col-md-5">
+      <div class="col-md-6 flex-md-row flex-column">
         <div class="form-group">
           <label class="col-form-label">Name</label>
           <select formControlName="type" class="form-control">
@@ -18,7 +18,7 @@
           <input formControlName="name" type="text" class="form-control">
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-6">
         <div class="form-group">
           <label class="col-form-label">Year</label>
           <select formControlName="year" class="form-control">
@@ -27,9 +27,11 @@
           </select>
         </div>
       </div>
-      <div class="col-md-4">
+    </div>
+    <div class="row">
+      <div class="col-md-6">
         <div class="form-group">
-          <label class="col-form-label">Date start</label>
+          <label class="col-form-label">Start day</label>
           <div class="input-group">
             <input class="form-control"
                    (change)="changeDateEndLimit()"
@@ -47,8 +49,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="col-md-6">
         <div class="form-group">
-          <label class="col-form-label">Date end</label>
+          <label class="col-form-label">End date</label>
           <div class="input-group">
             <input class="form-control"
                    formControlName="date_end"
@@ -76,14 +80,15 @@
           <label class="col-form-label">Who can be nominated?</label>
           <ng-select
             formControlName="id_nominee"
-                     [items]="nomineesList"
-                     bindLabel="english_name"
-                     [multiple]="true"
-                     [hideSelected]="true"
-                     groupBy="team_name"
-                      bindValue="id"
+            [items]="nomineesList"
+            bindLabel="english_name"
+            [multiple]="true"
+            [hideSelected]="true"
+            groupBy="team_name"
+            bindValue="id"
+            dropdownPosition="bottom"
             [closeOnSelect]="false"
-            >
+          >
           </ng-select>
         </div>
       </div>
@@ -96,10 +101,14 @@
           <label class="col-form-label">Who can vote?</label>
           <select formControlName="id_role_voter" class="form-control">
             <option hidden>Who?</option>
-              <option [ngValue]="[2]">Manager</option>
-              <option [ngValue]="[2,3]">All employees</option>
+            <option [ngValue]="[2]">Manager</option>
+            <option [ngValue]="[2,3]">All employees</option>
           </select>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
         <div class="form-group">
           <label class="col-form-label">Description</label>
           <textarea class="form-control" rows="5" formControlName="description"></textarea>
