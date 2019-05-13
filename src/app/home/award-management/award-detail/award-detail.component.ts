@@ -15,7 +15,7 @@ export class AwardDetailComponent implements OnInit {
   awardDetail: Award;
   pastWinnerList: PastWinner;
   currentUser: User;
-  constructor(private route: ActivatedRoute, private router: Router, private awardService: AwardService) {
+  constructor(private route: ActivatedRoute, private awardService: AwardService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
@@ -29,7 +29,7 @@ export class AwardDetailComponent implements OnInit {
     return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
   }
   getDetail() {
-    this.awardService.getAwardDetail(this.id).subscribe((detail:Award) => {
+    this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
       this.awardDetail = detail;
     }, error1 => {
       console.log(error1);
