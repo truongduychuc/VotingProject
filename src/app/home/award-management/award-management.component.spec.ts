@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AwardListComponent } from './award-list.component';
+import { AwardManagementComponent } from './award-management.component';
 
-describe('AwardListComponent', () => {
-  let component: AwardListComponent;
-  let fixture: ComponentFixture<AwardListComponent>;
+describe('AwardManagementComponent', () => {
+  let component: AwardManagementComponent;
+  let fixture: ComponentFixture<AwardManagementComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AwardListComponent ]
+      declarations: [ AwardManagementComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AwardListComponent);
+    fixture = TestBed.createComponent(AwardManagementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

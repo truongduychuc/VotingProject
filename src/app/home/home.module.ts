@@ -15,16 +15,16 @@ import {NgbActiveModal, NgbDateNativeAdapter, NgbModule} from '@ng-bootstrap/ng-
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
 import { EditingModalComponent } from './employee-management/editing-modal/editing-modal.component';
-import { AwardListComponent } from './award-list/award-list.component';
-import { AwardAsYearComponent } from './award-list/award-as-year/award-as-year.component';
-import { AwardComponent } from './award-list/award/award.component';
-import { AddAwardModalComponent } from './award-list/add-award-modal/add-award-modal.component';
+import { AwardManagementComponent } from './award-management/award-management.component';
+import { AwardAsYearComponent } from './award-management/award-as-year/award-as-year.component';
+import { AwardComponent } from './award-management/award/award.component';
+import { AddAwardModalComponent } from './award-management/add-award-modal/add-award-modal.component';
 import {NgSelectModule} from '@ng-select/ng-select';
 import { UploadAvatarComponent } from './upload-avatar/upload-avatar.component';
 import {GroupByPipe} from '../_pipes/group-by.pipe';
-import { AwardDetailComponent } from './award-list/award-detail/award-detail.component';
-import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.component';
-import { EditingAwardModalComponent } from './award-list/editing-award-modal/editing-award-modal.component';
+import { AwardDetailComponent } from './award-management/award-detail/award-detail.component';
+import { UploadLogoComponent } from './award-management/upload-logo/upload-logo.component';
+import { EditingAwardModalComponent } from './award-management/editing-award-modal/editing-award-modal.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +39,7 @@ import { EditingAwardModalComponent } from './award-list/editing-award-modal/edi
     PersonalInformationComponent,
     VotingComponent,
     EditingModalComponent,
-    AwardListComponent,
+    AwardManagementComponent,
     AwardAsYearComponent,
     AwardComponent,
     AddAwardModalComponent,

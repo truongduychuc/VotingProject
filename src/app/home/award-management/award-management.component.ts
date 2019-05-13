@@ -8,10 +8,10 @@ import {DataSharingService} from '../../_shared/data-sharing.service';
 
 @Component({
   selector: 'app-award-list',
-  templateUrl: './award-list.component.html',
-  styleUrls: ['./award-list.component.scss']
+  templateUrl: './award-management.component.html',
+  styleUrls: ['./award-management.component.scss']
 })
-export class AwardListComponent implements OnInit {
+export class AwardManagementComponent implements OnInit {
   awardList: any[];
   currentUser: User;
   // sharedData: for transferring successfully uploading logo message from upload-logo.component

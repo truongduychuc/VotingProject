@@ -6,10 +6,10 @@ import {DashboardComponent} from './dashboard/dashboard.component';
 import {HomeComponent} from './home.component';
 import {PersonalInformationComponent} from './personal-information/personal-information.component';
 import {VotingComponent} from './voting/voting.component';
-import {AwardListComponent} from './award-list/award-list.component';
+import {AwardManagementComponent} from './award-management/award-management.component';
 import {RoleGuard} from '../_guards/role.guard';
 import {Role} from '../_enums/role';
-import {AwardDetailComponent} from './award-list/award-detail/award-detail.component';
+import {AwardDetailComponent} from './award-management/award-detail/award-detail.component';
 
 
 const homeRoutes: Routes = [
@@ -30,7 +30,7 @@ const homeRoutes: Routes = [
         roles: [Role.MANAGER, Role.DEVELOPER]
       }
       },
-      {path: 'award-list', component: AwardListComponent},
+      {path: 'award-management', component: AwardManagementComponent},
       {path: 'award-detail/:id', component: AwardDetailComponent}
     ]}
 ];

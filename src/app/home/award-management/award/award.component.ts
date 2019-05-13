@@ -25,7 +25,7 @@ export class AwardComponent implements OnInit {
 
   currentUser: User;
   serverURL = 'http://localhost:4000/';
-  // sharedData: for transferring successfully uploading logo message to award-list component
+  // sharedData: for transferring successfully uploading logo message to award-management component
   constructor(private modalService: NgbModal, private sharedData: DataSharingService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     console.log(this.currentUser);
