@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Route, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AwardService} from '../../../_services/award.service';
 import {Award} from '../../../_models/award';
 import {PastWinner} from '../../../_models/past-winner';
-import {User} from "../../../_models/user";
+import {User} from '../../../_models/user';
 
 @Component({
   selector: 'app-award-detail',

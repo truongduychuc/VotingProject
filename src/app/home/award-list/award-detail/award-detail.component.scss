@@ -1,14 +1,38 @@
 .custom {
   width: 100%;
   .award-description {
-    border: 1px solid #38b5dc;
-    height: 150px;
+    height: 200px;
     padding: 1rem;
     overflow: auto;
+  }
+  .card-header {
+    background: transparent;
+    .col-md-6 {
+      align-items: center;
+    }
   }
 }
 .table-responsive {
   overflow-y: auto;
   max-height: 400px;
+
+  table {
+    table-layout: auto;
+
+    thead {
+      th {
+        border-bottom: 1px solid lightgray !important;
+        border-bottom-width: 2px !important;
+        cursor: pointer;
+        position: relative;
+        word-wrap: break-word;
+
+        i {
+          position: absolute;
+          right: 0;
+        }
+      }
+    }
+  }
 }
 
