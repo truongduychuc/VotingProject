@@ -30,7 +30,7 @@ export class AddAwardModalComponent implements OnInit {
     this.getListNominees();
     this.getAwardTypes();
     this.setDateInitially();
-    this.getListTeams();
+    // this.getListTeams();
     this.setYearsArray();
     this.generateForm();
   }
@@ -68,7 +68,7 @@ export class AddAwardModalComponent implements OnInit {
     console.log(currentDateStart);
     this.dateEndMin = currentDateStart;
     this.dateEndMax = <NgbDateStruct>{
-      year: currentDateStart.year+1,
+      year: currentDateStart.year + 1,
       month: currentDateStart.month,
       day: currentDateStart.day
     };
@@ -81,31 +81,48 @@ export class AddAwardModalComponent implements OnInit {
   }
   getListNominees() {
     this.teamService.getListForNominating().subscribe( successRes => {
-      this.nomineesList = successRes.data;
       // console.log(this.nomineesList);
+      this.teamService.getAllTeams().subscribe( teams => {
+        this.nomineesList = successRes.data;
+        this.listTeams = teams;
+        console.log(this.nomineesList);
+        if (!this.nomineesList) {
+          console.log('Nominee list is undefined!');
+        } else {
+          this.nomineesList.forEach(value => {
+            let team = this.listTeams.find(team => team.id === value.id_team);
+            if (!team) {
+              console.log('Error when finding equivalent team!');
+            } else {
+              value.team_name = team.name;
+            }
+          });
+          console.log(this.nomineesList);
+        }
+      }, error1 => console.log(error1));
     }, error => {
       console.log(error);
     });
   }
-  getListTeams() {
-    this.teamService.getAllTeams().subscribe( teams => {
-      this.listTeams = teams;
-      console.log(this.nomineesList);
-      if(!this.nomineesList) {
-        console.log('Nominee list is undefined!');
-      } else {
-        this.nomineesList.forEach(value => {
-          let team = this.listTeams.find(team => team.id === value.id_team);
-          if (!team) {
-            console.log('Error when finding equivalent team!');
-          } else {
-            value.team_name = team.name;
-          }
-        });
-        console.log(this.nomineesList);
-      }
-    }, error1 => console.log(error1));
-  }
+  // getListTeams() {
+  //   this.teamService.getAllTeams().subscribe( teams => {
+  //     this.listTeams = teams;
+  //     console.log(this.nomineesList);
+  //     if (!this.nomineesList) {
+  //       console.log('Nominee list is undefined!');
+  //     } else {
+  //       this.nomineesList.forEach(value => {
+  //         let team = this.listTeams.find(team => team.id === value.id_team);
+  //         if (!team) {
+  //           console.log('Error when finding equivalent team!');
+  //         } else {
+  //           value.team_name = team.name;
+  //         }
+  //       });
+  //       console.log(this.nomineesList);
+  //     }
+  //   }, error1 => console.log(error1));
+  // }
   getAwardTypes() {
     this.awardService.getAwardTypes().subscribe( successRes => {
       if (!successRes.hasOwnProperty('types')) {
