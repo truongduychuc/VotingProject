@@ -8,7 +8,7 @@
         <h4 class="mb-0 ml-2">{{'Employee of the year' | uppercase}}</h4>
       </div>
       <div class="col-md-6 d-none d-md-flex justify-content-center justify-content-md-end align-items-center pt-2 pb-2">
-        <button class="btn btn-success btn-rounded mr-2">BACK TO DETAIL</button>
+        <button class="btn btn-success btn-rounded mr-2" routerLink="/home/award-detail/{{id}}">BACK TO DETAIL</button>
         <button class="btn btn-outline-success btn-rounded ml-2" routerLink="/home/award-management" >BACK TO LIST</button>
       </div>
     </div>
@@ -54,13 +54,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Dinh (Roger) Q. LE</td>
-              <td>20</td>
-              <td>21</td>
-              <td>22</td>
-              <td>185</td>
+            <tr *ngFor="let breakdown of breakdownList">
+              <td>{{breakdown?.rank}}</td>
+              <td>{{breakdown?.nominee_name ? breakdown?.nominee_name?.first_name + ' (' + breakdown?.nominee_name?.english_name + ') ' + breakdown?.nominee_name?.last_name : ''}}</td>
+              <td>{{breakdown?.first_votes}}</td>
+              <td>{{breakdown?.second_votes}}</td>
+              <td>{{breakdown?.third_votes}}</td>
+              <td>{{breakdown?.total_points}}</td>
             </tr>
           </tbody>
         </table>
