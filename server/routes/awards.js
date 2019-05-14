@@ -677,7 +677,7 @@ router.post('/create', (req, res) => {
 
                                                                         async function test() {
                                                                             await createAsset();
-                                                                            await createAsset();
+                                                                            await createVoter();
                                                                         }
 
                                                                         test();
