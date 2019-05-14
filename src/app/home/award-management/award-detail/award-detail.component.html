@@ -30,9 +30,16 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <th>Year</th>
-                <th>Winner</th>
-                <th>% of total votes</th>
+                <th (click)="sortOnColumn('year','awardDetail')">Year
+                  <!--Change icon by sort direction-->
+                  <i class="sort-icon" [hidden]="!(currentSortedColumn == 'year')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+                </th>
+                <th (click)="sortOnColumn('first_name', 'winner_name')">Winner
+                  <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+                </th>
+                <th (click)="sortOnColumn('percent', 'winner')">% of total votes
+                  <i class="sort-icon" [hidden]="!(currentSortedColumn == 'percent')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+                </th>
                 <th>Result</th>
               </tr>
             </thead>
@@ -41,13 +48,13 @@
               <td>{{pastWinner?.year}}</td>
               <td>
                 {{
-                (pastWinner.winner != null)? pastWinner?.winner?.winner_name?.first_name
+                (pastWinner?.winner != null)? pastWinner?.winner?.winner_name?.first_name
                   + ' (' + pastWinner?.winner?.winner_name?.english_name
-                  + ') ' + pastWinner?.winner?.winner_name?.last_name.toUpperCase():''
+                  + ') ' + pastWinner?.winner?.winner_name?.last_name.toUpperCase() : ''
                 }}
               </td>
               <td>{{pastWinner?.winner?.percent}}</td>
-              <td><a class="small">View Result</a></td>
+              <td><a class="small" routerLink="/home/voting-breakdown/{{pastWinner.id}}">View Result</a></td>
             </tr>
             </tbody>
           </table>

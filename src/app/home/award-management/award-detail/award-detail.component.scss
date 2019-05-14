@@ -14,20 +14,15 @@
 }
 .table-responsive {
   overflow-y: auto;
-  max-height: 400px;
-
   table {
     table-layout: auto;
-
     thead {
       th {
         //border-bottom: 1px solid lightgray !important;
         //border-bottom-width: 2px !important;
-        cursor: pointer;
         position: relative;
         word-wrap: break-word;
-
-        i {
+        .sort-icon {
           position: absolute;
           right: 0;
         }
