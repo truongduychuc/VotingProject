@@ -48,6 +48,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   reloadPreviousStatus() {
     // get params at the last times getting user list
     let lastPastWinnerParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
+    console.log(lastPastWinnerParams);
     if (null == lastPastWinnerParams) {
       // when you open browser initially
       // load default list
@@ -122,7 +123,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
         table: sortTable,
       };
       this.saveCurrentStatus(lastPastWinnerParams);
-      console.log(lastPastWinnerParams);
+      // console.log(lastPastWinnerParams);
     }, (err: HttpErrorResponse) => {
       console.log(err);
     });
@@ -148,13 +149,13 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   // stay on current status after reloading page
   saveCurrentStatus(lastPastWinnerParams: Object) {
     // session Storage actually get cleared as the browser is closed.
-    sessionStorage.setItem('lastEmployeeParams', JSON.stringify(lastPastWinnerParams));
+    sessionStorage.setItem('lastPastWinnerParams', JSON.stringify(lastPastWinnerParams));
   }
 
   // try to get previous page status
   getPreviousStatus() {
     let lastPastWinnerParams = JSON.parse(sessionStorage.getItem('lastPastWinnerParams'));
-    console.log(lastPastWinnerParams);
+    // console.log(lastPastWinnerParams);
     return lastPastWinnerParams;
   }
 
@@ -164,5 +165,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.removeStatus();
+    console.log('Destroyed!');
+    console.log(sessionStorage.getItem('lastPastWinnerParams'));
   }
 }
