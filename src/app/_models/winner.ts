@@ -3,7 +3,7 @@ export interface Winner {
   percent: number;
   winner_name?: WinnerName;
 }
-interface WinnerName {
+export interface WinnerName {
   first_name: string;
   last_name: string;
   english_name: string;
