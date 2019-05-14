@@ -128,8 +128,8 @@ export class AddAwardModalComponent implements OnInit {
       const startDate: NgbDate = this.formControl['date_start'].value;
       const endDate: NgbDate = this.formControl['date_end'].value;
       // concat date and time taken from datepicker and timepicker
-      const startDateTime = new Date(startDate.year, startDate.month, startDate.day, startTime.hour,  startTime.minute, startTime.second);
-      const endDateTime = new Date(endDate.year, endDate.month, endDate.day, endTime.hour,  endTime.minute, endTime.second);
+      const startDateTime = new Date(startDate.year, startDate.month - 1, startDate.day, startTime.hour,  startTime.minute, startTime.second);
+      const endDateTime = new Date(endDate.year, endDate.month - 1, endDate.day, endTime.hour,  endTime.minute, endTime.second);
       console.log(startDateTime);
       this.formControl['date_start'].setValue(startDateTime);
       this.formControl['date_end'].setValue(endDateTime);
