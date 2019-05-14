@@ -274,9 +274,6 @@ router.post('/create', (req, res) => {
                                                             await asset();
                                                         }
 
-                                                        createAsset();
-
-
                                                         //Insert asset data
                                                         let asset_data = {
                                                             id: 0,
@@ -285,87 +282,97 @@ router.post('/create', (req, res) => {
                                                         multichain.publish(stream_name, asset_name, asset_data);
                                                         //console.log('Input asset data to stream successfully');
 
-                                                        for (var i = 0; i < users.length; i++) {
-                                                            voterData.id_user = users[i].id;
-                                                            let id = users[i].id;
+                                                        async function createVoter() {
+                                                            for (var i = 0; i < users.length; i++) {
+                                                                voterData.id_user = users[i].id;
+                                                                let id = users[i].id;
 
-                                                            console.log('------------');
-                                                            console.log(stream_name, asset_name, token_name);
-                                                            console.log('------------');
+                                                                console.log('------------');
+                                                                console.log(stream_name, asset_name, token_name);
+                                                                console.log('------------');
 
-                                                            //Get address of asset
-                                                            const address1 = address;
+                                                                //Get address of asset
+                                                                const address1 = address;
 
-                                                            //Get new address
-                                                            multichain.initiateMultichain().getNewAddress()
-                                                                .then(address2 => {
+                                                                //Get new address
+                                                                multichain.initiateMultichain().getNewAddress()
+                                                                    .then(address2 => {
 
-                                                                    async function permissionForVoter() {
-                                                                        //Grant permission for voter
-                                                                        await multichain.initiateMultichain().grant({
-                                                                            addresses: address2,
-                                                                            permissions: 'receive'
-                                                                        }, (err) => {
-                                                                            if (err) {
-                                                                                console.log(err);
-                                                                            } else {
-                                                                                console.log('Grant voter permission successfully');
-                                                                            }
-                                                                        });
-
-                                                                    }
-
-                                                                    async function sendTokenToVoter() {
-                                                                        await User.findOne({
-                                                                            where: {
-                                                                                id: id
-                                                                            }
-                                                                        })
-                                                                            .then(user => {
-                                                                                //Save data to stream
-                                                                                let voter_data = {
-                                                                                    id: user.id,
-                                                                                    first_name: user.first_name,
-                                                                                    last_name: user.last_name,
-                                                                                    english_name: user.english_name,
-                                                                                    address: address2
+                                                                        async function permissionForVoter() {
+                                                                            //Grant permission for voter
+                                                                            await multichain.initiateMultichain().grant({
+                                                                                addresses: address2,
+                                                                                permissions: 'receive'
+                                                                            }, (err) => {
+                                                                                if (err) {
+                                                                                    console.log(err);
+                                                                                } else {
+                                                                                    console.log('Grant voter permission successfully');
                                                                                 }
+                                                                            });
 
-                                                                                let key_name1 = 'voter';
+                                                                        }
 
-                                                                                multichain.publishEmployee(stream_name, key_name1, voter_data);
-
-                                                                                //Send token to voter
-                                                                                multichain.sendAssetFrom(address1, address2, token_name, 9);
-
-                                                                                //Revoke permission
-                                                                                //multichain.revoke(address2, 'receive');
+                                                                        async function sendTokenToVoter() {
+                                                                            await User.findOne({
+                                                                                where: {
+                                                                                    id: id
+                                                                                }
                                                                             })
-                                                                            .catch(err => {
-                                                                                console.log('Error when send token ' + err);
-                                                                            })
-                                                                    }
+                                                                                .then(user => {
+                                                                                    //Save data to stream
+                                                                                    let voter_data = {
+                                                                                        id: user.id,
+                                                                                        first_name: user.first_name,
+                                                                                        last_name: user.last_name,
+                                                                                        english_name: user.english_name,
+                                                                                        address: address2
+                                                                                    }
 
-                                                                    async function voter() {
-                                                                        await permissionForVoter();
-                                                                        await sendTokenToVoter();
-                                                                    }
-                                                                    voter();
+                                                                                    let key_name1 = 'voter';
 
-                                                                })
-                                                                .catch(err => {
-                                                                    console.log('Error when get new address ' + err);
-                                                                })
+                                                                                    multichain.publishEmployee(stream_name, key_name1, voter_data);
+
+                                                                                    //Send token to voter
+                                                                                    multichain.sendAssetFrom(address1, address2, token_name, 9);
+
+                                                                                    //Revoke permission
+                                                                                    //multichain.revoke(address2, 'receive');
+                                                                                })
+                                                                                .catch(err => {
+                                                                                    console.log('Error when send token ' + err);
+                                                                                })
+                                                                        }
+
+                                                                        async function voter() {
+                                                                            await permissionForVoter();
+                                                                            await sendTokenToVoter();
+                                                                        }
+                                                                        voter();
+
+                                                                    })
+                                                                    .catch(err => {
+                                                                        console.log('Error when get new address ' + err);
+                                                                    })
 
 
-                                                            //Add voter
-                                                            Voter.create(voterData)
-                                                                .then(() => { })
-                                                                .catch(err => {
-                                                                    console.log('error0' + err);
-                                                                    res.status(400).send({ error0: err });
-                                                                })
+                                                                //Add voter
+                                                                Voter.create(voterData)
+                                                                    .then(() => { })
+                                                                    .catch(err => {
+                                                                        console.log('error0' + err);
+                                                                        res.status(400).send({ error0: err });
+                                                                    })
+                                                            }
                                                         }
+
+                                                        async function test() {
+                                                            await createAsset();
+                                                            await createVoter();
+                                                        }
+
+                                                        test();
+
                                                     })
                                                     .catch(err => {
                                                         console.log('Error when set new address ' + err);
@@ -576,8 +583,6 @@ router.post('/create', (req, res) => {
                                                                             await asset();
                                                                         }
 
-                                                                        createAsset();
-
                                                                         //Insert asset data
                                                                         let asset_data = {
                                                                             id: 0,
@@ -586,87 +591,96 @@ router.post('/create', (req, res) => {
                                                                         multichain.publish(stream_name, asset_name, asset_data);
                                                                         //console.log('Input asset data to stream successfully');
 
-                                                                        for (var i = 0; i < users.length; i++) {
-                                                                            voterData.id_user = users[i].id;
-                                                                            let id = users[i].id;
+                                                                        async function createVoter() {
+                                                                            for (var i = 0; i < users.length; i++) {
+                                                                                voterData.id_user = users[i].id;
+                                                                                let id = users[i].id;
 
-                                                                            console.log('------------');
-                                                                            console.log(stream_name, asset_name, token_name);
-                                                                            console.log('------------');
+                                                                                console.log('------------');
+                                                                                console.log(stream_name, asset_name, token_name);
+                                                                                console.log('------------');
 
-                                                                            //Get address of asset
-                                                                            const address1 = address;
+                                                                                //Get address of asset
+                                                                                const address1 = address;
 
-                                                                            //Get new address
-                                                                            multichain.initiateMultichain().getNewAddress()
-                                                                                .then(address2 => {
+                                                                                //Get new address
+                                                                                multichain.initiateMultichain().getNewAddress()
+                                                                                    .then(address2 => {
 
-                                                                                    async function permissionForVoter() {
-                                                                                        //Grant permission for voter
-                                                                                        await multichain.initiateMultichain().grant({
-                                                                                            addresses: address2,
-                                                                                            permissions: 'receive'
-                                                                                        }, (err) => {
-                                                                                            if (err) {
-                                                                                                console.log(err);
-                                                                                            } else {
-                                                                                                console.log('Grant voter permission successfully');
-                                                                                            }
-                                                                                        });
-
-                                                                                    }
-
-                                                                                    async function sendTokenToVoter() {
-                                                                                        await User.findOne({
-                                                                                            where: {
-                                                                                                id: id
-                                                                                            }
-                                                                                        })
-                                                                                            .then(user => {
-                                                                                                //Save data to stream
-                                                                                                let voter_data = {
-                                                                                                    id: user.id,
-                                                                                                    first_name: user.first_name,
-                                                                                                    last_name: user.last_name,
-                                                                                                    english_name: user.english_name,
-                                                                                                    address: address2
+                                                                                        async function permissionForVoter() {
+                                                                                            //Grant permission for voter
+                                                                                            await multichain.initiateMultichain().grant({
+                                                                                                addresses: address2,
+                                                                                                permissions: 'receive'
+                                                                                            }, (err) => {
+                                                                                                if (err) {
+                                                                                                    console.log(err);
+                                                                                                } else {
+                                                                                                    console.log('Grant voter permission successfully');
                                                                                                 }
+                                                                                            });
 
-                                                                                                let key_name1 = 'voter';
+                                                                                        }
 
-                                                                                                multichain.publishEmployee(stream_name, key_name1, voter_data);
-
-                                                                                                //Send token to voter
-                                                                                                multichain.sendAssetFrom(address1, address2, token_name, 9);
-
-                                                                                                //Revoke permission
-                                                                                                //multichain.revoke(address2, 'receive');
+                                                                                        async function sendTokenToVoter() {
+                                                                                            await User.findOne({
+                                                                                                where: {
+                                                                                                    id: id
+                                                                                                }
                                                                                             })
-                                                                                            .catch(err => {
-                                                                                                console.log('Error when send token ' + err);
-                                                                                            })
-                                                                                    }
+                                                                                                .then(user => {
+                                                                                                    //Save data to stream
+                                                                                                    let voter_data = {
+                                                                                                        id: user.id,
+                                                                                                        first_name: user.first_name,
+                                                                                                        last_name: user.last_name,
+                                                                                                        english_name: user.english_name,
+                                                                                                        address: address2
+                                                                                                    }
 
-                                                                                    async function voter() {
-                                                                                        await permissionForVoter();
-                                                                                        await sendTokenToVoter();
-                                                                                    }
+                                                                                                    let key_name1 = 'voter';
 
-                                                                                    voter();
-                                                                                })
-                                                                                .catch(err => {
-                                                                                    console.log('Error when get new address ' + err);
-                                                                                })
+                                                                                                    multichain.publishEmployee(stream_name, key_name1, voter_data);
+
+                                                                                                    //Send token to voter
+                                                                                                    multichain.sendAssetFrom(address1, address2, token_name, 9);
+
+                                                                                                    //Revoke permission
+                                                                                                    //multichain.revoke(address2, 'receive');
+                                                                                                })
+                                                                                                .catch(err => {
+                                                                                                    console.log('Error when send token ' + err);
+                                                                                                })
+                                                                                        }
+
+                                                                                        async function voter() {
+                                                                                            await permissionForVoter();
+                                                                                            await sendTokenToVoter();
+                                                                                        }
+
+                                                                                        voter();
+                                                                                    })
+                                                                                    .catch(err => {
+                                                                                        console.log('Error when get new address ' + err);
+                                                                                    })
 
 
-                                                                            //Add voter
-                                                                            Voter.create(voterData)
-                                                                                .then(() => { })
-                                                                                .catch(err => {
-                                                                                    console.log('error0' + err);
-                                                                                    res.status(400).send({ error0: err });
-                                                                                })
+                                                                                //Add voter
+                                                                                Voter.create(voterData)
+                                                                                    .then(() => { })
+                                                                                    .catch(err => {
+                                                                                        console.log('error0' + err);
+                                                                                        res.status(400).send({ error0: err });
+                                                                                    })
+                                                                            }
                                                                         }
+
+                                                                        async function test() {
+                                                                            await createAsset();
+                                                                            await createAsset();
+                                                                        }
+
+                                                                        test();
                                                                     })
                                                                     .catch(err => {
                                                                         console.log('Error when set new address ' + err);
@@ -1421,6 +1435,7 @@ router.post('/voting_award', authorize(), (req, res) => {
                         if (!voter) {
                             res.status(400).send({ message: 'You are not allowed to vote this award' });
                         } else {
+
                             if (first_vote == second_vote || first_vote == third_vote || second_vote == third_vote) {
                                 res.status(400).send({ message: 'Your vote is duplicated' });
                             } else {
