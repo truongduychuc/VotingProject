@@ -98,7 +98,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
         this.currentPageSize = lastCount;
       }
       let lastPage = lastEmployeeParams.page;
-      if(lastPage) {
+      if (lastPage) {
         reloadedParams = reloadedParams.append('page', lastEmployeeParams.page);
         this.currentPage = lastPage;
       }
