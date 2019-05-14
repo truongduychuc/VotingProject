@@ -4,13 +4,17 @@
       <div class="card custom">
         <div style="border-bottom: none" class="card-header">
           <div class="row">
-            <div class="col-md-6 d-flex justify-content-md-start justify-content-center">
+            <div class="col-md-6 d-flex justify-content-md-start p-sm-2 p-0 justify-content-center">
               <div class="badge-info badge-pill">
                 {{awardDetail?.year}}
               </div>
               <h4 class="mb-0 ml-2">{{awardDetail?.awardType.name | uppercase}}</h4>
+              <small class="ml-1" *ngIf="awardDetail?.status > 1">
+                <em>(Is taking place)</em>
+                <a class="text-info ml-1" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
+              </small>
             </div>
-            <div class="col-md-6 d-flex justify-content-center justify-content-md-end">
+            <div class="col-md-6 d-flex justify-content-center p-sm-2 p-0 justify-content-md-end">
               <button *ngIf="isAdmin" class="btn btn-success btn-rounded mr-2">EDIT</button>
               <button class="btn btn-outline-success btn-rounded ml-2" routerLink="/home/award-management">BACK TO LIST</button>
             </div>
