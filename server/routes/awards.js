@@ -252,11 +252,9 @@ router.post('/create', (req, res) => {
                                                                 permissions: 'receive,send'
                                                             });
                                                         }
-                                                        permission();
-
+                                                        
                                                         //Create new asset
                                                         async function asset() {
-
                                                             await multichain.initiateMultichain().issue({
                                                                 address: address,
                                                                 asset: token_name,
@@ -270,7 +268,14 @@ router.post('/create', (req, res) => {
                                                                 }
                                                             })
                                                         }
-                                                        asset();
+
+                                                        async function createAsset() {
+                                                            await permission();
+                                                            await asset();
+                                                        }
+                                                        
+                                                        createAsset();
+
 
                                                         //Insert asset data
                                                         let asset_data = {
@@ -1413,6 +1418,7 @@ router.post('/voting_award', authorize(), (req, res) => {
                                 let key_name1 = 'nominee_' + data.id_nominee_first;
                                 let key_name2 = 'nominee_' + data.id_nominee_second;
                                 let key_name3 = 'nominee_' + data.id_nominee_third;
+                                
                                 //List voter
                                 multichain.initiateMultichain().listStreamKeyItems({
                                         stream: stream_name,
@@ -1751,7 +1757,6 @@ router.put('/update_result', (req, res) => {
 
 
 //Check status vote of voter
-
 router.post('/check_status_voter', authorize(), (req, res) => {
 
     const voter1 = req.decoded.id;
@@ -1838,7 +1843,6 @@ async function updateResult(id) {
                             })
                             .then(() => {
                                 calculate(id_award);
-
                             })
                             .catch(err => {
                                 console.log('Error when update result', err);
@@ -1957,9 +1961,9 @@ async function updatePercent(id) {
 
 
 
-function calculate(id) {
+ function calculate(id) {
     const award_id = id;
-    Breakdown.findAll({
+     Breakdown.findAll({
             where: {
                 id_award: award_id
             },
@@ -2251,7 +2255,7 @@ const updateAward = new CronJob('0,30 * * * * *', function() {
 });
 
 console.log('After job instantiation');
-checkAward.start();
+// checkAward.start();
 // checkAward.stop();
 // updateAward.start();
 module.exports = router;
