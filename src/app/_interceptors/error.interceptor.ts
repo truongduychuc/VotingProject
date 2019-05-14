@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {Injectable} from '@angular/core';
 import {
   HttpHandler,
   HttpInterceptor,
@@ -6,14 +6,13 @@ import {
   HttpEvent,
   HttpErrorResponse,
   HttpResponse
-} from "@angular/common/http";
-import {AuthenticationService} from "../_services/authentication.service";
-import {Observable, throwError} from "rxjs";
-import {catchError, tap} from "rxjs/operators";
+} from '@angular/common/http';
+import {Observable, throwError} from 'rxjs';
+import {catchError, tap} from 'rxjs/operators';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor{
-  constructor(private authService: AuthenticationService) {
+  constructor() {
   }
  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(tap(evt => {
@@ -23,20 +22,20 @@ export class ErrorInterceptor implements HttpInterceptor{
           alert(evt.body.success.message);
         }
       }
-    }),catchError((err:HttpErrorResponse) => {
-      if(err.status === 401) {
+    }),catchError((err: HttpErrorResponse) => {
+      if (err.status === 401) {
         console.log(err.error.message);
         alert(err.error.message);
       }
-      if(err.status === 400) {
+      if (err.status === 400) {
         console.log(err.error.message);
         alert(err.error.message);
       }
-      if(err.status === 404) {
+      if (err.status === 404) {
         console.log(err.error.message);
         alert(err.error.message); //alert, for example: 'User or password is incorrect'
       }
-      if(err.status === 403) {
+      if (err.status === 403) {
         console.log(err.error.message);
         alert(err.error.message);
       }
