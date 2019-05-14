@@ -61,44 +61,45 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
       }
     );
   }
+  // after pressing F5 or click reloading page button, user is still in the last page's status
   reloadPreviousStatus() {
     // get params at the last times getting user list
-    let lastParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
-    if(null == lastParams) {   // when you open browser initially
+    let lastEmployeeParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
+    if(null == lastEmployeeParams) {   // when you open browser initially
       // load default list
      this.getUserListPerPage();
     } else {
       let reloadedParams = new HttpParams();
       // get last query params and append to reloadedParams
 
-      let lastCol = lastParams.col;
-      if(lastCol) {  // if lastCol is undefined, if(lastCol) will return false
-        reloadedParams = reloadedParams.append('col', lastCol);  // it will be undefined if lastParams is {}
+      let lastCol = lastEmployeeParams.col;
+      if (lastCol) {  // if lastCol is undefined, if(lastCol) will return false
+        reloadedParams = reloadedParams.append('col', lastCol);  // it will be undefined if lastEmployeeParams is {}
         this.currentSortedColumn = lastCol; // recover component to last status, such as previous select box's value
       }
-      let lastType = lastParams.type;
+      let lastType = lastEmployeeParams.type;
       if (lastType) {
-        reloadedParams = reloadedParams.append('type', lastParams.type);
+        reloadedParams = reloadedParams.append('type', lastEmployeeParams.type);
         this.currentSortedType = lastType;
       }
-      let lastTable = lastParams.table;
+      let lastTable = lastEmployeeParams.table;
       if (lastTable) {
-        reloadedParams = reloadedParams.append('table', lastParams.table);
+        reloadedParams = reloadedParams.append('table', lastEmployeeParams.table);
         this.currentSortedTable = lastTable;
       }
-      let lastSearch = lastParams.search;
+      let lastSearch = lastEmployeeParams.search;
       if (lastSearch) {
-        reloadedParams = reloadedParams.append('search', lastParams.search);
+        reloadedParams = reloadedParams.append('search', lastEmployeeParams.search);
         this.currentSearchText = lastSearch;
       }
-      let lastCount = lastParams.count;
+      let lastCount = lastEmployeeParams.count;
       if (lastCount) {
-        reloadedParams = reloadedParams.append('count', lastParams.count);
+        reloadedParams = reloadedParams.append('count', lastEmployeeParams.count);
         this.currentPageSize = lastCount;
       }
-      let lastPage = lastParams.page;
+      let lastPage = lastEmployeeParams.page;
       if(lastPage) {
-        reloadedParams = reloadedParams.append('page', lastParams.page);
+        reloadedParams = reloadedParams.append('page', lastEmployeeParams.page);
         this.currentPage = lastPage;
       }
       this.accountService.getUsersList(reloadedParams).subscribe(
@@ -110,7 +111,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
           } else {
             this.currentRecords = res.filtered_counts;
           }
-          this.saveCurrentStatus(lastParams);
+          this.saveCurrentStatus(lastEmployeeParams);
           console.log(res);
         }, (err: HttpErrorResponse) => {
           console.log(err);
@@ -120,13 +121,14 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
     }
 
   }
-  getUserListPerPage(sortColumn?:string, sortType?:string, sortTable?:string, searchText?:string, itemsPerPage?:number, currentPage?:number) {
+  getUserListPerPage(sortColumn?: string, sortType?: string, sortTable?: string, searchText?: string, itemsPerPage?: number, currentPage?: number) {
     let params = new HttpParams();
-    if(null == sortColumn && this.currentSortedColumn) { // if sortColumn param wasn't passed, the function will call current status of page
+    if (null == sortColumn && this.currentSortedColumn) {
+      // if sortColumn param wasn't passed, the function will call current status of page
       sortColumn = this.currentSortedColumn;
       params = params.append('col', sortColumn);
     } else {
-      if(sortColumn) {
+      if (sortColumn) {
         params = params.append('col', sortColumn); // using append need params = params*before*.append...
         console.log(sortColumn);
       }
@@ -135,7 +137,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
       sortType = this.currentSortedType;
       params = params.append('type', sortType);
     } else {
-      if(sortType) {
+      if (sortType) {
         params = params.append('type', sortType);
         console.log(sortType);
       }
@@ -144,7 +146,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
       sortTable = this.currentSortedTable;
       params = params.append('table', sortTable);
     } else {
-      if(sortTable) {
+      if (sortTable) {
         params = params.append('table', sortTable);
         console.log(sortTable);
       }
@@ -153,7 +155,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
       searchText = this.currentSearchText;
       params = params.append('search', searchText);
     } else {
-      if(searchText) {
+      if (searchText) {
         params = params.append('search', searchText);
         console.log(searchText);
       }
@@ -162,7 +164,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
       itemsPerPage = this.currentPageSize;
       params = params.append('count', itemsPerPage.toString());
     } else {
-      if(itemsPerPage) {
+      if (itemsPerPage) {
         params = params.append('count', itemsPerPage.toString());
         console.log(itemsPerPage);
       }
@@ -171,7 +173,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
       currentPage = this.currentPage;
       params = params.append('page', currentPage.toString());
     } else {
-      if(currentPage){
+      if (currentPage) {
         console.log(currentPage);
         params = params.append('page', currentPage.toString());
       }
@@ -185,8 +187,8 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
         } else {
           this.currentRecords = res.filtered_counts;
         }
-        console.log(this.totalRecords);
-        let lastParams = {
+        // console.log(this.totalRecords);
+        let lastEmployeeParams = {
           col: sortColumn,
           type: sortType,
           table: sortTable,
@@ -194,7 +196,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
           count: itemsPerPage,
           page: currentPage
         };
-        this.saveCurrentStatus(lastParams);
+        this.saveCurrentStatus(lastEmployeeParams);
         console.log(res);
       }, (err: HttpErrorResponse) => {
         console.log(err);
@@ -204,7 +206,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
   }
   // for search input
   searchOnText() {
-    if(this.currentSearchText == this.previousSearchText){
+    if (this.currentSearchText === this.previousSearchText) {
       return;
     }
     this.error = undefined;
@@ -214,15 +216,17 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
 
   // change sort direction
   changeSortType() {
-    if(this.currentSortedType == 'ASC')
+    if (this.currentSortedType === 'ASC') {
       this.currentSortedType = 'DESC';
-    else
-    this.currentSortedType ='ASC';
+    } else {
+      this.currentSortedType = 'ASC';
+    }
   }
 
   // sort on Column Name, if column belongs to tableName
-  sortOnColumn(columnName: string, tableName:string) {
-    if (this.currentSortedColumn == columnName && this.currentSortedTable == tableName) {  // check if you sort at same column => change sort direction
+  sortOnColumn(columnName: string, tableName: string) {
+    if (this.currentSortedColumn === columnName && this.currentSortedTable === tableName) {
+      // check if you sort at same column => change sort direction
       this.changeSortType();
     } else {
       this.currentSortedType = 'ASC';
@@ -236,8 +240,8 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
     // this function is called before the current page is changed to new page, so here need to take user list of newPage
     // console.log(this.currentPage);
     console.log(newPage);
-    this.getUserListPerPage(this.currentSortedColumn, this.currentSortedType,this.currentSortedTable, this.currentSearchText,
-      this.currentPageSize,newPage);
+    this.getUserListPerPage(this.currentSortedColumn, this.currentSortedType, this.currentSortedTable, this.currentSearchText,
+      this.currentPageSize, newPage);
 
   }
 
@@ -248,21 +252,21 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
   }
 
   // stay on current status after reloading page
-  saveCurrentStatus(lastParams: Object) {
+  saveCurrentStatus(lastEmployeeParams: Object) {
     // session Storage actually get cleared as the browser is closed.
-  sessionStorage.setItem('lastParams', JSON.stringify(lastParams));
+  sessionStorage.setItem('lastEmployeeParams', JSON.stringify(lastEmployeeParams));
   }
 
   // try to get previous page status
   getPreviousStatus() {
-   let lastParams = JSON.parse(sessionStorage.getItem('lastParams'));
-   console.log(lastParams);
-   return lastParams;
+   let lastEmployeeParams = JSON.parse(sessionStorage.getItem('lastEmployeeParams'));
+   console.log(lastEmployeeParams);
+   return lastEmployeeParams;
   }
 
   // remove status as route to other component in routeLinks set
    removeStatus() {
-   sessionStorage.removeItem('lastParams');
+   sessionStorage.removeItem('lastEmployeeParams');
   }
   openEditingModal(id: number) {
     const modalRef = this.modalService.open(EditingModalComponent, {centered: true});
