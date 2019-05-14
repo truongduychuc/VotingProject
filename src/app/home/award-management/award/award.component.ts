@@ -28,7 +28,7 @@ export class AwardComponent implements OnInit {
   // sharedData: for transferring successfully uploading logo message to award-management component
   constructor(private modalService: NgbModal, private sharedData: DataSharingService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    console.log(this.currentUser);
+    // console.log(this.currentUser);
   }
   ngOnInit() {
   }
