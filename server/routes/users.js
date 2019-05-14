@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const multer = require('multer');
+const nodemailer = require('nodemailer');
 
 const authorize = require('../helpers/authorize');
 
@@ -17,6 +18,8 @@ const Nominee = require('../models/nominee');
 router.use(cors());
 
 process.env.SECRET_KEY = 'secret';
+process.env.EMAIL_ADDRESS = 'electronic.voting.system.enclave@gmail.com';
+process.env.EMAIL_PASSWORD = 'enclaveit@123';
 
 Role.hasMany(User, { foreignKey: 'id_role', constraints: false });
 User.belongsTo(Role, { foreignKey: 'id_role', constraints: false });
@@ -43,6 +46,9 @@ updateProfile(admin): (put) /update/:id
 uploadAvatar: (post) /upload_avatar
 listForNominating: (get) /list_for_nominating
 listForVoting: (post) /list_for_voting
+forgotPassword: (post) /forgot_password
+resetPassword: (put) /reset_password
+
 
 deleteUser(admin): (post) /delete/:id
 
@@ -1270,45 +1276,86 @@ router.post('/delete/:id', (req, res) => {
     })
 })
 
+//REQUEST EMAIL TO CHANGE PASSWORD
+router.post('/forgot_password', (req, res) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    })
+    .then(user => {
+        if (user) {
+            const payload = {
+                id: user.id,
+                id_role: user.id_role,
+                // username: user.username,
+                // email: user.email
+            }
+            let token = jwt.sign(payload, process.env.SECRET_KEY, {
+                expiresIn: 3600
+            });
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: `${process.env.EMAIL_ADDRESS}`,
+                    pass: `${process.env.EMAIL_PASSWORD}`
+                },
+            });
+        
+            const mailOptions = {
+                from: `electronic.voting.system.enclave@gmail.com`,
+                to: req.body.email,
+                subject: `Link To Reset Password`,
+                text: `You are receiving this because you (or someone else) have requested the current password for your account. \n\n` +
+                `Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n` +
+                `http://localhost:4000/reset_password/${token}\n\n` +
+                `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+            }
+        
+            transporter.sendMail(mailOptions,(err,respone) => {
+                if (err) {
+                    console.log('Error when send email' + err);
+                } else {
+                    console.log('Send email successfully', respone, token);
+                }
+            })
+        }
+        res.status(200).send({ message: 'If your email is correct, you will receive your reset email'});
+    })
+    .catch(err => {
+            res.status(400).send({ message: err });
+        })
+});
 
-// router.post('/', (req, res) => {
-//     //To calculate Total Count use MySQL count function
-//     var query = "Select count(*) as TotalCount from ??";
-//     // Mention table from where you want to fetch records example-users
-//     var table = ["users"];
-//     query = mysql.format(query, table);
-//     connection.query(query, function(err, rows) {
-//         if (err) {
-//             return err;
-//         } else {
-
-//             //store Total count in variable
-//             let totalCount = rows[0].TotalCount
-
-//             if (req.body.start == '' || req.body.limit == '') {
-//                 let startNum = 0;
-//                 let LimitNum = 10;
-//             } else {
-//                 //parse int Convert String to number 
-//                 let startNum = parseInt(req.body.start);
-//                 let LimitNum = parseInt(req.body.limit);
-//             }
-//         }
-
-//         var query = "Select * from ?? ORDER BY created_at DESC limit ? OFFSET ?";
-//         //Mention table from where you want to fetch records example-users & send limit and start 
-//         var table = ["users", LimitNum, startNum];
-//         query = mysql.format(query, table);
-//         connection.query(query, function(err, rest) {
-//             if (err) {
-//                 res.json(err);
-//             } else {
-//                 // Total Count varibale display total Count in Db and data display the records
-//                 res.json({ "Total Count": totalCount, "data": rest })
-//             }
-//         });
-//     });
-// })
+//CHANGE TO NEW PASSWORD
+router.put('/reset_password', authorize(), (req, res) => {
+    const today = new Date()
+    User.findOne({
+        where: {
+            id: req.decoded.id
+        }
+    }).then(user => {
+        if (!user) {
+            res.status(400)({ message: 'User does not exist' });
+        } else {
+                const hash = bcrypt.hashSync(req.body.new_password, 10);
+                User.update({
+                    password: hash,
+                    updated_at: today
+                }, {
+                    where: {
+                        id: req.decoded.id
+                    }
+                }).then(() => {
+                    res.status(200).send({ message: 'Updated successfully' });
+                }).catch(err => {
+                    res.status(400).send({ message: err });
+                });
+        }
+    }).catch(err => {
+        res.status(400).send({ message: err });
+    })
+});
 
 // function verifyToken(req, res, next) {
 //     const bearerHeader = req.headers['authorization'];
