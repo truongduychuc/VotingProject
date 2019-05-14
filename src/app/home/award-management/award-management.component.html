@@ -25,9 +25,10 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body overflow-auto award-list-container">
-            <app-award-as-year *ngFor="let awardsAsYear of awardList"
-              [year]="awardsAsYear.key"
-              [awardListOfYear]="awardsAsYear.value">
+            <app-award-as-year *ngFor="let awardsAsYear of awardList; let i = index"
+                               [year]="awardsAsYear.key"
+                               [awardListOfYear]="awardsAsYear.value"
+                               [isCollapsed]="i !== 0">  <!--collapse from second year from top, only expand awards in first year-->
             </app-award-as-year>
           </div>
         </div>

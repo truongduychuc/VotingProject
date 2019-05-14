@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Award} from "../../../_models/award";
+import {Award} from '../../../_models/award';
 
 @Component({
   selector: 'app-award-as-year',
@@ -7,7 +7,7 @@ import {Award} from "../../../_models/award";
   styleUrls: ['./award-as-year.component.scss']
 })
 export class AwardAsYearComponent implements OnInit {
-  isCollapsed: false;
+  @Input() isCollapsed: boolean;
   @Input() year: number;
   @Input() awardListOfYear: Award[] = [];
   constructor() { }
