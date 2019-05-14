@@ -24,11 +24,10 @@ table{
     th {
       //border-bottom: 1px solid lightblue!important;
       //border-bottom-width: 2px!important;
-      cursor: pointer;
       position: relative;
       word-wrap: break-word;
-      i {
-        position:absolute;
+      .sort-icon {
+        position: absolute;
         right: 0;
       }
     }
@@ -53,12 +52,6 @@ table{
   }
   .btn {
     border: none;
-  }
-  .hand-cursor {
-    cursor: pointer;
-  }
-  .sort-icon {
-    position: absolute;
   }
 }
 .pagination {
