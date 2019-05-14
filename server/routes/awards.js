@@ -156,12 +156,12 @@ router.post('/create', (req, res) => {
     //         } else {
     if (check()) {
         Award.findAll({
-                where: {
-                    type: req.body.type,
-                    year: 2001
-                        //year: req.body.year
-                }
-            })
+            where: {
+                type: req.body.type,
+                year: 2001
+                //year: req.body.year
+            }
+        })
             .then(awards => {
                 if (awards.length != 0) {
                     res.status(400).send({ message: 'Award already exists.' });
@@ -231,11 +231,11 @@ router.post('/create', (req, res) => {
                             } else {
                                 for (var j = 0; j < voter.length; j++) {
                                     User.findAll({
-                                            where: {
-                                                id_role: voter[j],
-                                                is_active: 1
-                                            }
-                                        })
+                                        where: {
+                                            id_role: voter[j],
+                                            is_active: 1
+                                        }
+                                    })
                                         .then(users => {
                                             if (users.length == 0) {
                                                 res.status(400).send({ message: 'There is no user' });
@@ -252,7 +252,7 @@ router.post('/create', (req, res) => {
                                                                 permissions: 'receive,send'
                                                             });
                                                         }
-                                                        
+
                                                         //Create new asset
                                                         async function asset() {
                                                             await multichain.initiateMultichain().issue({
@@ -273,7 +273,7 @@ router.post('/create', (req, res) => {
                                                             await permission();
                                                             await asset();
                                                         }
-                                                        
+
                                                         createAsset();
 
 
@@ -300,7 +300,7 @@ router.post('/create', (req, res) => {
                                                             multichain.initiateMultichain().getNewAddress()
                                                                 .then(address2 => {
 
-                                                                    async function test() {
+                                                                    async function permissionForVoter() {
                                                                         //Grant permission for voter
                                                                         await multichain.initiateMultichain().grant({
                                                                             addresses: address2,
@@ -315,36 +315,43 @@ router.post('/create', (req, res) => {
 
                                                                     }
 
-                                                                    test();
-
-                                                                    User.findOne({
+                                                                    async function sendTokenToVoter() {
+                                                                        await User.findOne({
                                                                             where: {
                                                                                 id: id
                                                                             }
                                                                         })
-                                                                        .then(user => {
-                                                                            //Save data to stream
-                                                                            let voter_data = {
-                                                                                id: user.id,
-                                                                                first_name: user.first_name,
-                                                                                last_name: user.last_name,
-                                                                                english_name: user.english_name,
-                                                                                address: address2
-                                                                            }
+                                                                            .then(user => {
+                                                                                //Save data to stream
+                                                                                let voter_data = {
+                                                                                    id: user.id,
+                                                                                    first_name: user.first_name,
+                                                                                    last_name: user.last_name,
+                                                                                    english_name: user.english_name,
+                                                                                    address: address2
+                                                                                }
 
-                                                                            let key_name1 = 'voter';
+                                                                                let key_name1 = 'voter';
 
-                                                                            multichain.publishEmployee(stream_name, key_name1, voter_data);
+                                                                                multichain.publishEmployee(stream_name, key_name1, voter_data);
 
-                                                                            //Send token to voter
-                                                                            multichain.sendAssetFrom(address1, address2, token_name, 9);
+                                                                                //Send token to voter
+                                                                                multichain.sendAssetFrom(address1, address2, token_name, 9);
 
-                                                                            //Revoke permission
-                                                                            //multichain.revoke(address2, 'receive');
-                                                                        })
-                                                                        .catch(err => {
-                                                                            console.log('Error when send token ' + err);
-                                                                        })
+                                                                                //Revoke permission
+                                                                                //multichain.revoke(address2, 'receive');
+                                                                            })
+                                                                            .catch(err => {
+                                                                                console.log('Error when send token ' + err);
+                                                                            })
+                                                                    }
+
+                                                                    async function voter() {
+                                                                        await permissionForVoter();
+                                                                        await sendTokenToVoter();
+                                                                    }
+                                                                    voter();
+
                                                                 })
                                                                 .catch(err => {
                                                                     console.log('Error when get new address ' + err);
@@ -353,7 +360,7 @@ router.post('/create', (req, res) => {
 
                                                             //Add voter
                                                             Voter.create(voterData)
-                                                                .then(() => {})
+                                                                .then(() => { })
                                                                 .catch(err => {
                                                                     console.log('error0' + err);
                                                                     res.status(400).send({ error0: err });
@@ -379,14 +386,14 @@ router.post('/create', (req, res) => {
                             } else {
                                 for (var k = 0; k < nominee.length; k++) {
                                     User.findAll({
-                                            where: {
-                                                id: nominee[k],
-                                                is_active: 1
-                                            }
-                                        })
+                                        where: {
+                                            id: nominee[k],
+                                            is_active: 1
+                                        }
+                                    })
                                         .then(users => {
                                             if (users.length == 0) {
-                                                res.status(400).send({ message: 'User does not exist' });
+                                                // res.status(400).send({ message: 'User does not exist' });
                                             } else {
                                                 for (var i = 0; i < users.length; i++) {
                                                     nomineeData.id_team = users[i].id_team;
@@ -407,14 +414,14 @@ router.post('/create', (req, res) => {
 
                                                     //Add nominee default votes
                                                     Breakdown.create(nomineeVotes)
-                                                        .then(() => {})
+                                                        .then(() => { })
                                                         .catch(err => {
                                                             console.log('Error when add nominee to breakdown ' + err);
                                                             //res.status(400).send({ error6: err });
                                                         })
-                                                        //Add nominee
+                                                    //Add nominee
                                                     Nominee.create(nomineeData)
-                                                        .then(() => {})
+                                                        .then(() => { })
                                                         .catch(err => {
                                                             console.log('Error when add nominee to nominee ' + err);
                                                             //res.status(400).send({ error5: err });
@@ -444,10 +451,10 @@ router.post('/create', (req, res) => {
             })
     } else {
         Award_type.findAll({
-                where: {
-                    name: req.body.name
-                }
-            })
+            where: {
+                name: req.body.name
+            }
+        })
             .then(result => {
                 if (result.length != 0) {
                     res.status(400).send({ message: 'New award name is already exist' });
@@ -455,10 +462,10 @@ router.post('/create', (req, res) => {
                     Award_type.create({ name: req.body.name })
                         .then(() => {
                             Award_type.findOne({
-                                    where: {
-                                        name: req.body.name
-                                    }
-                                })
+                                where: {
+                                    name: req.body.name
+                                }
+                            })
                                 .then(award => {
                                     awardData.type = award.id;
                                     //Create award
@@ -526,11 +533,11 @@ router.post('/create', (req, res) => {
                                             } else {
                                                 for (var j = 0; j < voter.length; j++) {
                                                     User.findAll({
-                                                            where: {
-                                                                id_role: voter[j],
-                                                                is_active: 1
-                                                            }
-                                                        })
+                                                        where: {
+                                                            id_role: voter[j],
+                                                            is_active: 1
+                                                        }
+                                                    })
                                                         .then(users => {
                                                             if (users.length == 0) {
                                                                 res.status(400).send({ message: 'There is no user' });
@@ -547,11 +554,9 @@ router.post('/create', (req, res) => {
                                                                                 permissions: 'receive,send'
                                                                             });
                                                                         }
-                                                                        permission();
 
                                                                         //Create new asset
                                                                         async function asset() {
-
                                                                             await multichain.initiateMultichain().issue({
                                                                                 address: address,
                                                                                 asset: token_name,
@@ -565,7 +570,13 @@ router.post('/create', (req, res) => {
                                                                                 }
                                                                             })
                                                                         }
-                                                                        asset();
+
+                                                                        async function createAsset() {
+                                                                            await permission();
+                                                                            await asset();
+                                                                        }
+
+                                                                        createAsset();
 
                                                                         //Insert asset data
                                                                         let asset_data = {
@@ -590,7 +601,7 @@ router.post('/create', (req, res) => {
                                                                             multichain.initiateMultichain().getNewAddress()
                                                                                 .then(address2 => {
 
-                                                                                    async function test() {
+                                                                                    async function permissionForVoter() {
                                                                                         //Grant permission for voter
                                                                                         await multichain.initiateMultichain().grant({
                                                                                             addresses: address2,
@@ -605,36 +616,43 @@ router.post('/create', (req, res) => {
 
                                                                                     }
 
-                                                                                    test();
-
-                                                                                    User.findOne({
+                                                                                    async function sendTokenToVoter() {
+                                                                                        await User.findOne({
                                                                                             where: {
                                                                                                 id: id
                                                                                             }
                                                                                         })
-                                                                                        .then(user => {
-                                                                                            //Save data to stream
-                                                                                            let voter_data = {
-                                                                                                id: user.id,
-                                                                                                first_name: user.first_name,
-                                                                                                last_name: user.last_name,
-                                                                                                english_name: user.english_name,
-                                                                                                address: address2
-                                                                                            }
+                                                                                            .then(user => {
+                                                                                                //Save data to stream
+                                                                                                let voter_data = {
+                                                                                                    id: user.id,
+                                                                                                    first_name: user.first_name,
+                                                                                                    last_name: user.last_name,
+                                                                                                    english_name: user.english_name,
+                                                                                                    address: address2
+                                                                                                }
 
-                                                                                            let key_name1 = 'voter';
+                                                                                                let key_name1 = 'voter';
 
-                                                                                            multichain.publishEmployee(stream_name, key_name1, voter_data);
+                                                                                                multichain.publishEmployee(stream_name, key_name1, voter_data);
 
-                                                                                            //Send token to voter
-                                                                                            multichain.sendAssetFrom(address1, address2, token_name, 9);
+                                                                                                //Send token to voter
+                                                                                                multichain.sendAssetFrom(address1, address2, token_name, 9);
 
-                                                                                            //Revoke permission
-                                                                                            //multichain.revoke(address2, 'receive');
-                                                                                        })
-                                                                                        .catch(err => {
-                                                                                            console.log('Error when send token ' + err);
-                                                                                        })
+                                                                                                //Revoke permission
+                                                                                                //multichain.revoke(address2, 'receive');
+                                                                                            })
+                                                                                            .catch(err => {
+                                                                                                console.log('Error when send token ' + err);
+                                                                                            })
+                                                                                    }
+
+                                                                                    async function voter() {
+                                                                                        await permissionForVoter();
+                                                                                        await sendTokenToVoter();
+                                                                                    }
+
+                                                                                    voter();
                                                                                 })
                                                                                 .catch(err => {
                                                                                     console.log('Error when get new address ' + err);
@@ -643,7 +661,7 @@ router.post('/create', (req, res) => {
 
                                                                             //Add voter
                                                                             Voter.create(voterData)
-                                                                                .then(() => {})
+                                                                                .then(() => { })
                                                                                 .catch(err => {
                                                                                     console.log('error0' + err);
                                                                                     res.status(400).send({ error0: err });
@@ -669,11 +687,11 @@ router.post('/create', (req, res) => {
                                             } else {
                                                 for (var k = 0; k < nominee.length; k++) {
                                                     User.findAll({
-                                                            where: {
-                                                                id: nominee[k],
-                                                                is_active: 1
-                                                            }
-                                                        })
+                                                        where: {
+                                                            id: nominee[k],
+                                                            is_active: 1
+                                                        }
+                                                    })
                                                         .then(users => {
                                                             if (users.length == 0) {
                                                                 //res.status(400).send({ message: 'User does not exist' });
@@ -694,7 +712,7 @@ router.post('/create', (req, res) => {
 
                                                                     //Add nominee
                                                                     Nominee.create(nomineeData)
-                                                                        .then(() => {})
+                                                                        .then(() => { })
                                                                         .catch(err => {
                                                                             console.log('Error when add nominee to nominee ' + err);
                                                                             //res.status(400).send({ error5: err });
@@ -702,7 +720,7 @@ router.post('/create', (req, res) => {
 
                                                                     //Add nominee default votes
                                                                     Breakdown.create(nomineeVotes)
-                                                                        .then(() => {})
+                                                                        .then(() => { })
                                                                         .catch(err => {
                                                                             console.log('Error when add nominee to breakdown ' + err);
                                                                             res.status(400).send({ error6: err });
@@ -744,19 +762,19 @@ router.post('/create', (req, res) => {
 //LIST
 router.get('/list', (req, res) => {
     Award.findAll({
-            where: {
-                //status: 0,
-                // id: 1,
-            },
-            include: [{
-                model: Award_type,
-                required: true,
-                attributes: ['name'],
-            }],
-            order: [
-                ['date_start', 'DESC']
-            ],
-        })
+        where: {
+            //status: 0,
+            // id: 1,
+        },
+        include: [{
+            model: Award_type,
+            required: true,
+            attributes: ['name'],
+        }],
+        order: [
+            ['date_start', 'DESC']
+        ],
+    })
         .then(awards => {
             if (awards.length === 0) {
                 res.status(400).send({ message: 'There is no award' })
@@ -777,14 +795,14 @@ router.put('update/:id', (req, res) => {
         console.log('Date input wrong');
     } else {
         Award.update({
-                status: req.body.status,
-                description: req.body.description,
-                date_start: req.body.date_start,
-                date_end: req.body.date_end,
-                prize: req.body.prize,
-                item: req.body.item,
-                update_at: today
-            }, {
+            status: req.body.status,
+            description: req.body.description,
+            date_start: req.body.date_start,
+            date_end: req.body.date_end,
+            prize: req.body.prize,
+            item: req.body.item,
+            update_at: today
+        }, {
                 where: {
                     id: req.params.id
                 }
@@ -831,14 +849,14 @@ router.post('/upload_logo/:id', upload.single('logo'), (req, res, next) => {
         Award.update({
             logo_url: req.file.path
         }, {
-            where: {
-                id: req.params.id
-            }
-        }).then(() => {
-            res.status(200).send({ message: 'Uploaded logo successfully', path: req.file.path });
-        }).catch(err => {
-            res.status(400).send('err' + err);
-        })
+                where: {
+                    id: req.params.id
+                }
+            }).then(() => {
+                res.status(200).send({ message: 'Uploaded logo successfully', path: req.file.path });
+            }).catch(err => {
+                res.status(400).send('err' + err);
+            })
     }
 
 })
@@ -846,15 +864,15 @@ router.post('/upload_logo/:id', upload.single('logo'), (req, res, next) => {
 //DISPLAY AWARD
 router.get('/info/:id', (req, res) => {
     Award.findOne({
-            where: {
-                id: req.params.id
-            },
-            include: [{
-                model: Award_type,
-                required: true,
-                attributes: ['name'],
-            }],
-        })
+        where: {
+            id: req.params.id
+        },
+        include: [{
+            model: Award_type,
+            required: true,
+            attributes: ['name'],
+        }],
+    })
         .then(award => {
             if (!award) {
                 res.status(400).send({ message: 'Award does not exist' });
@@ -870,15 +888,15 @@ router.get('/info/:id', (req, res) => {
 //WINNER
 router.post('/winner', (req, res) => {
     Winner.findOne({
-            where: {
-                id_award: req.body.id_award
-            },
-            include: [{
-                model: User,
-                as: 'winner_name',
-                attributes: ['first_name', 'last_name', 'english_name', 'ava_url']
-            }]
-        })
+        where: {
+            id_award: req.body.id_award
+        },
+        include: [{
+            model: User,
+            as: 'winner_name',
+            attributes: ['first_name', 'last_name', 'english_name', 'ava_url']
+        }]
+    })
         .then(winner => {
             if (!winner) {
                 res.status(400).send({ message: 'This award has not had winner yet!' });
@@ -906,10 +924,10 @@ router.get('/past_winner/:id', (req, res) => {
     }
     console.log(table);
     Award.findOne({
-            where: {
-                id: req.params.id
-            }
-        })
+        where: {
+            id: req.params.id
+        }
+    })
         .then(award => {
             if (!award) {
                 res.status(400).send({ message: 'Award does not exist' });
@@ -920,27 +938,27 @@ router.get('/past_winner/:id', (req, res) => {
                 // console.log(1111111, award.name, award.year)
                 if (table == 'awardDetail') {
                     Award.findAll({
-                            where: {
-                                type: award.type,
-                                year: {
-                                    [Op.lt]: award.year
-                                }
-                            },
-                            attributes: ['id', 'year'],
+                        where: {
+                            type: award.type,
+                            year: {
+                                [Op.lt]: award.year
+                            }
+                        },
+                        attributes: ['id', 'year'],
+                        include: [{
+                            model: Winner,
+                            as: 'winner',
+                            attributes: ['id_winner', 'percent'],
                             include: [{
-                                model: Winner,
-                                as: 'winner',
-                                attributes: ['id_winner', 'percent'],
-                                include: [{
-                                    model: User,
-                                    as: 'winner_name',
-                                    attributes: ['first_name', 'last_name', 'english_name']
-                                }]
-                            }],
-                            order: [
-                                [col, type]
-                            ]
-                        })
+                                model: User,
+                                as: 'winner_name',
+                                attributes: ['first_name', 'last_name', 'english_name']
+                            }]
+                        }],
+                        order: [
+                            [col, type]
+                        ]
+                    })
                         .then(awards => {
                             if (awards.length == 0) {
                                 res.status(400).send({ message: 'There is no winner' });
@@ -955,27 +973,27 @@ router.get('/past_winner/:id', (req, res) => {
                     //table: finalResult -> winner, user -> winner_name
                     if (table == 'winner') {
                         Award.findAll({
-                                where: {
-                                    type: award.type,
-                                    year: {
-                                        [Op.lt]: award.year
-                                    }
-                                },
-                                attributes: ['id', 'year'],
+                            where: {
+                                type: award.type,
+                                year: {
+                                    [Op.lt]: award.year
+                                }
+                            },
+                            attributes: ['id', 'year'],
+                            include: [{
+                                model: Winner,
+                                as: 'winner',
+                                attributes: ['id_winner', 'percent'],
                                 include: [{
-                                    model: Winner,
-                                    as: 'winner',
-                                    attributes: ['id_winner', 'percent'],
-                                    include: [{
-                                        model: User,
-                                        as: 'name',
-                                        attributes: ['first_name', 'last_name', 'english_name']
-                                    }]
-                                }],
-                                order: [
-                                    [table, col, type]
-                                ]
-                            })
+                                    model: User,
+                                    as: 'name',
+                                    attributes: ['first_name', 'last_name', 'english_name']
+                                }]
+                            }],
+                            order: [
+                                [table, col, type]
+                            ]
+                        })
                             .then(awards => {
                                 if (awards.length == 0) {
                                     res.status(400).send({ message: 'There is no winner' });
@@ -989,27 +1007,27 @@ router.get('/past_winner/:id', (req, res) => {
                     } else {
                         if (table == 'winner_name') {
                             Award.findAll({
-                                    where: {
-                                        type: award.type,
-                                        year: {
-                                            [Op.lt]: award.year
-                                        }
-                                    },
-                                    attributes: ['id', 'year'],
+                                where: {
+                                    type: award.type,
+                                    year: {
+                                        [Op.lt]: award.year
+                                    }
+                                },
+                                attributes: ['id', 'year'],
+                                include: [{
+                                    model: Winner,
+                                    as: 'winner',
+                                    attributes: ['id_winner', 'percent'],
                                     include: [{
-                                        model: Winner,
-                                        as: 'winner',
-                                        attributes: ['id_winner', 'percent'],
-                                        include: [{
-                                            model: User,
-                                            as: 'winner_name',
-                                            attributes: ['first_name', 'last_name', 'english_name']
-                                        }]
-                                    }],
-                                    order: [
-                                        ['winner', table, col, type]
-                                    ]
-                                })
+                                        model: User,
+                                        as: 'winner_name',
+                                        attributes: ['first_name', 'last_name', 'english_name']
+                                    }]
+                                }],
+                                order: [
+                                    ['winner', table, col, type]
+                                ]
+                            })
                                 .then(awards => {
                                     if (awards.length == 0) {
                                         res.status(400).send({ message: 'There is no winner' });
@@ -1059,26 +1077,26 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
 
     //Check award is taking place or not
     Award.findOne({
-            where: {
-                id: req.params.id
-            }
-        })
+        where: {
+            id: req.params.id
+        }
+    })
         .then(result => {
             let status = result.status;
             Role.findOne({
-                    where: {
-                        id: req.decoded.id_role
-                    }
-                })
+                where: {
+                    id: req.decoded.id_role
+                }
+            })
                 .then(role => {
                     if (status === 2 && role.name !== 'admin') {
                         return res.status(401).json({ message: 'Unauthorized' });
                     } else {
                         Breakdown.findAndCountAll({
-                                where: {
-                                    id_award: req.params.id
-                                },
-                            })
+                            where: {
+                                id_award: req.params.id
+                            },
+                        })
                             .then(data => {
                                 if (data.count == 0) {
                                     res.status(400).send({ message: 'There is no result', total_counts: data.count });
@@ -1096,6 +1114,33 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
                                         }
                                         if (table == 'votingBreakdown') {
                                             Breakdown.findAll({
+                                                where: {
+                                                    id_award: req.params.id
+                                                },
+                                                include: [{
+                                                    model: User,
+                                                    as: 'nominee_name',
+                                                    attributes: ['first_name', 'last_name', 'english_name']
+                                                }],
+                                                order: [
+                                                    [col, type]
+                                                ],
+                                                limit: limit,
+                                                offset: offset,
+                                            }).then(breakdown => {
+                                                if (breakdown.length == 0) {
+                                                    res.status(400).send({ message: 'There is no result' });
+                                                } else {
+                                                    res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                }
+                                            })
+                                                .catch(err => {
+                                                    res.status(400).send({ message: err });
+                                                })
+                                        } else {
+                                            //table user -> nominee_name
+                                            if (table == 'nominee_name') {
+                                                Breakdown.findAll({
                                                     where: {
                                                         id_award: req.params.id
                                                     },
@@ -1105,7 +1150,7 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
                                                         attributes: ['first_name', 'last_name', 'english_name']
                                                     }],
                                                     order: [
-                                                        [col, type]
+                                                        [table, col, type]
                                                     ],
                                                     limit: limit,
                                                     offset: offset,
@@ -1116,33 +1161,6 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
                                                         res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
                                                     }
                                                 })
-                                                .catch(err => {
-                                                    res.status(400).send({ message: err });
-                                                })
-                                        } else {
-                                            //table user -> nominee_name
-                                            if (table == 'nominee_name') {
-                                                Breakdown.findAll({
-                                                        where: {
-                                                            id_award: req.params.id
-                                                        },
-                                                        include: [{
-                                                            model: User,
-                                                            as: 'nominee_name',
-                                                            attributes: ['first_name', 'last_name', 'english_name']
-                                                        }],
-                                                        order: [
-                                                            [table, col, type]
-                                                        ],
-                                                        limit: limit,
-                                                        offset: offset,
-                                                    }).then(breakdown => {
-                                                        if (breakdown.length == 0) {
-                                                            res.status(400).send({ message: 'There is no result' });
-                                                        } else {
-                                                            res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                                                        }
-                                                    })
                                                     .catch(err => {
                                                         res.status(400).send({ message: err });
                                                     })
@@ -1153,55 +1171,55 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
                                     } else {
                                         // search != '' && search != null
                                         Breakdown.findAndCountAll({
-                                                where: {
-                                                    id_award: req.params.id,
-                                                    [Op.or]: [{
-                                                            rank: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            first_votes: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            second_votes: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            third_votes: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            total_points: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            '$nominee_name.first_name$': {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            '$nominee_name.last_name$': {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            '$nominee_name.english_name$': {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                    ]
+                                            where: {
+                                                id_award: req.params.id,
+                                                [Op.or]: [{
+                                                    rank: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
                                                 },
-                                                include: [{
-                                                    model: User,
-                                                    as: 'nominee_name'
-                                                }],
-                                            })
+                                                {
+                                                    first_votes: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    second_votes: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    third_votes: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    total_points: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    '$nominee_name.first_name$': {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    '$nominee_name.last_name$': {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    '$nominee_name.english_name$': {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                ]
+                                            },
+                                            include: [{
+                                                model: User,
+                                                as: 'nominee_name'
+                                            }],
+                                        })
                                             .then(data1 => {
                                                 if (data1.count == 0) {
                                                     res.status(400).send({ message: 'There is no result', count: data1.count });
@@ -1215,48 +1233,116 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
                                                     //console.log(data1, page, pages, offset, limit);
                                                     if (table == 'votingBreakdown') {
                                                         Breakdown.findAll({
+                                                            where: {
+                                                                id_award: req.params.id,
+                                                                [Op.or]: [{
+                                                                    rank: {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                {
+                                                                    first_votes: {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                {
+                                                                    second_votes: {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                {
+                                                                    third_votes: {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                {
+                                                                    total_points: {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                {
+                                                                    '$nominee_name.first_name$': {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                {
+                                                                    '$nominee_name.last_name$': {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                {
+                                                                    '$nominee_name.english_name$': {
+                                                                        [Op.like]: '%' + search + '%'
+                                                                    }
+                                                                },
+                                                                ]
+                                                            },
+                                                            include: [{
+                                                                model: User,
+                                                                as: 'nominee_name',
+                                                                attributes: ['first_name', 'last_name', 'english_name']
+                                                            }],
+                                                            order: [
+                                                                [col, type]
+                                                            ],
+                                                            limit: limit,
+                                                            offset: offset,
+                                                        }).then(breakdown => {
+                                                            if (breakdown.length == 0) {
+                                                                res.status(400).send({ message: 'There is no result' });
+                                                            } else {
+                                                                res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
+                                                            }
+                                                        })
+                                                            .catch(err => {
+                                                                res.status(400).send({ message: err });
+                                                            })
+                                                    } else {
+                                                        //table user -> nominee_name
+                                                        if (table == 'nominee_name') {
+                                                            Breakdown.findAll({
                                                                 where: {
                                                                     id_award: req.params.id,
                                                                     [Op.or]: [{
-                                                                            rank: {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            first_votes: {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            second_votes: {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            third_votes: {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            total_points: {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            '$nominee_name.first_name$': {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            '$nominee_name.last_name$': {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            '$nominee_name.english_name$': {
-                                                                                [Op.like]: '%' + search + '%'
-                                                                            }
-                                                                        },
+                                                                        rank: {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        first_votes: {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        second_votes: {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        third_votes: {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        total_points: {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        '$nominee_name.first_name$': {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        '$nominee_name.last_name$': {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        '$nominee_name.english_name$': {
+                                                                            [Op.like]: '%' + search + '%'
+                                                                        }
+                                                                    },
                                                                     ]
                                                                 },
                                                                 include: [{
@@ -1265,7 +1351,7 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
                                                                     attributes: ['first_name', 'last_name', 'english_name']
                                                                 }],
                                                                 order: [
-                                                                    [col, type]
+                                                                    [table, col, type]
                                                                 ],
                                                                 limit: limit,
                                                                 offset: offset,
@@ -1276,74 +1362,6 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
                                                                     res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
                                                                 }
                                                             })
-                                                            .catch(err => {
-                                                                res.status(400).send({ message: err });
-                                                            })
-                                                    } else {
-                                                        //table user -> nominee_name
-                                                        if (table == 'nominee_name') {
-                                                            Breakdown.findAll({
-                                                                    where: {
-                                                                        id_award: req.params.id,
-                                                                        [Op.or]: [{
-                                                                                rank: {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                first_votes: {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                second_votes: {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                third_votes: {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                total_points: {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                '$nominee_name.first_name$': {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                '$nominee_name.last_name$': {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                '$nominee_name.english_name$': {
-                                                                                    [Op.like]: '%' + search + '%'
-                                                                                }
-                                                                            },
-                                                                        ]
-                                                                    },
-                                                                    include: [{
-                                                                        model: User,
-                                                                        as: 'nominee_name',
-                                                                        attributes: ['first_name', 'last_name', 'english_name']
-                                                                    }],
-                                                                    order: [
-                                                                        [table, col, type]
-                                                                    ],
-                                                                    limit: limit,
-                                                                    offset: offset,
-                                                                }).then(breakdown => {
-                                                                    if (breakdown.length == 0) {
-                                                                        res.status(400).send({ message: 'There is no result' });
-                                                                    } else {
-                                                                        res.status(200).json({ 'data': breakdown, 'total_counts': data.count, 'filtered_counts': data1.count, 'offset': offset, 'limit': limit, 'pages': pages });
-                                                                    }
-                                                                })
                                                                 .catch(err => {
                                                                     res.status(400).send({ message: err });
                                                                 })
@@ -1369,9 +1387,9 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
             res.status(400).send({ message: err });
         })
 
-    .catch(err => {
-        res.status(400).send({ message: err });
-    })
+        .catch(err => {
+            res.status(400).send({ message: err });
+        })
 })
 
 
@@ -1384,21 +1402,21 @@ router.post('/voting_award', authorize(), (req, res) => {
     let third_vote = req.body.third_vote;
 
     Award.findOne({
-            where: {
-                id: id_award,
-                // status: 2,
-            }
-        })
+        where: {
+            id: id_award,
+            // status: 2,
+        }
+    })
         .then(award => {
             if (!award) {
                 res.status(400).send({ message: 'There is no award' });
             } else {
                 Voter.findOne({
-                        where: {
-                            id_award: id_award,
-                            id_user: req.decoded.id
-                        }
-                    })
+                    where: {
+                        id_award: id_award,
+                        id_user: req.decoded.id
+                    }
+                })
                     .then(voter => {
                         if (!voter) {
                             res.status(400).send({ message: 'You are not allowed to vote this award' });
@@ -1418,12 +1436,12 @@ router.post('/voting_award', authorize(), (req, res) => {
                                 let key_name1 = 'nominee_' + data.id_nominee_first;
                                 let key_name2 = 'nominee_' + data.id_nominee_second;
                                 let key_name3 = 'nominee_' + data.id_nominee_third;
-                                
+
                                 //List voter
                                 multichain.initiateMultichain().listStreamKeyItems({
-                                        stream: stream_name,
-                                        key: 'voter'
-                                    })
+                                    stream: stream_name,
+                                    key: 'voter'
+                                })
                                     .then(voters => {
                                         console.log('Get list voter successfully');
                                         for (var i = 0; i < voters.length; i++) {
@@ -1431,9 +1449,9 @@ router.post('/voting_award', authorize(), (req, res) => {
                                             let txid = voters[i].txid;
                                             //Check id voter
                                             multichain.initiateMultichain().getStreamItem({
-                                                    stream: stream_name,
-                                                    txid: txid
-                                                })
+                                                stream: stream_name,
+                                                txid: txid
+                                            })
                                                 .then(voter => {
                                                     let id_voter = voter.data.json.id;
                                                     if (data.id_voter == id_voter) {
@@ -1443,9 +1461,9 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                         }).then(qty => {
                                                             if (qty.length == 0) {
                                                                 Voter.update({
-                                                                        vote_status: 0,
-                                                                        updated_at: today
-                                                                    }, {
+                                                                    vote_status: 0,
+                                                                    updated_at: today
+                                                                }, {
                                                                         where: {
                                                                             id_award: id_award,
                                                                             id_user: req.decoded.id
@@ -1461,17 +1479,17 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                                     multichain.grant(address1, 'receive,send');
                                                                     console.log('Get info voter successfully', address1);
                                                                     multichain.initiateMultichain().listStreamKeyItems({
-                                                                            stream: stream_name,
-                                                                            key: 'nominee'
-                                                                        })
+                                                                        stream: stream_name,
+                                                                        key: 'nominee'
+                                                                    })
                                                                         .then(nominees => {
                                                                             console.log('Get list nominee successfully');
                                                                             for (var i = 0; i <= nominees.length; i++) {
                                                                                 let txid1 = nominees[i].txid;
                                                                                 multichain.initiateMultichain().getStreamItem({
-                                                                                        stream: stream_name,
-                                                                                        txid: txid1
-                                                                                    })
+                                                                                    stream: stream_name,
+                                                                                    txid: txid1
+                                                                                })
                                                                                     .then(nominee => {
                                                                                         console.log('Get info nominee successfully');
                                                                                         let id_nominee = nominee.data.json.id;
@@ -1483,18 +1501,18 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                                                             console.log('Determined first_vote user');
                                                                                             // console.log(address1, address2, token_name, amount);
                                                                                             multichain.initiateMultichain().sendAssetFrom({
-                                                                                                    from: address1,
-                                                                                                    to: address2,
-                                                                                                    asset: token_name,
-                                                                                                    qty: amount
-                                                                                                })
+                                                                                                from: address1,
+                                                                                                to: address2,
+                                                                                                asset: token_name,
+                                                                                                qty: amount
+                                                                                            })
                                                                                                 .then(() => {
                                                                                                     console.log('Send token to first_vote user successfully');
                                                                                                     multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                            stream: stream_name,
-                                                                                                            key: key_name1,
-                                                                                                            mode: 'jsonobjectmerge'
-                                                                                                        })
+                                                                                                        stream: stream_name,
+                                                                                                        key: key_name1,
+                                                                                                        mode: 'jsonobjectmerge'
+                                                                                                    })
                                                                                                         .then(votes => {
                                                                                                             let voteChange = votes.json.first_votes + 1;
                                                                                                             multichain.initiateMultichain().publish({
@@ -1521,30 +1539,30 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                                                             amount = 3;
                                                                                             console.log('Determined second_vote user');
                                                                                             multichain.initiateMultichain().sendAssetFrom({
-                                                                                                    from: address1,
-                                                                                                    to: address2,
-                                                                                                    asset: token_name,
-                                                                                                    qty: amount
-                                                                                                })
+                                                                                                from: address1,
+                                                                                                to: address2,
+                                                                                                asset: token_name,
+                                                                                                qty: amount
+                                                                                            })
                                                                                                 .then(() => {
                                                                                                     console.log('Send token to second_vote user successfully');
 
                                                                                                     multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                            stream: stream_name,
-                                                                                                            key: key_name2,
-                                                                                                            mode: 'jsonobjectmerge'
-                                                                                                        })
+                                                                                                        stream: stream_name,
+                                                                                                        key: key_name2,
+                                                                                                        mode: 'jsonobjectmerge'
+                                                                                                    })
                                                                                                         .then(votes => {
                                                                                                             let voteChange = votes.json.second_votes + 1;
                                                                                                             multichain.initiateMultichain().publish({
-                                                                                                                    stream: stream_name,
-                                                                                                                    key: key_name2,
-                                                                                                                    data: {
-                                                                                                                        "json": {
-                                                                                                                            "second_votes": voteChange,
-                                                                                                                        }
+                                                                                                                stream: stream_name,
+                                                                                                                key: key_name2,
+                                                                                                                data: {
+                                                                                                                    "json": {
+                                                                                                                        "second_votes": voteChange,
                                                                                                                     }
                                                                                                                 }
+                                                                                                            }
 
                                                                                                             )
                                                                                                         })
@@ -1564,19 +1582,19 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                                                             amount = 1;
                                                                                             console.log('Determined third_vote user');
                                                                                             multichain.initiateMultichain().sendAssetFrom({
-                                                                                                    from: address1,
-                                                                                                    to: address2,
-                                                                                                    asset: token_name,
-                                                                                                    qty: amount
-                                                                                                })
+                                                                                                from: address1,
+                                                                                                to: address2,
+                                                                                                asset: token_name,
+                                                                                                qty: amount
+                                                                                            })
                                                                                                 .then(() => {
                                                                                                     console.log('Send token to third_vote user successfully');
 
                                                                                                     multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                            stream: stream_name,
-                                                                                                            key: key_name3,
-                                                                                                            mode: 'jsonobjectmerge'
-                                                                                                        })
+                                                                                                        stream: stream_name,
+                                                                                                        key: key_name3,
+                                                                                                        mode: 'jsonobjectmerge'
+                                                                                                    })
                                                                                                         .then(votes => {
                                                                                                             let voteChange = votes.json.third_votes + 1;
                                                                                                             multichain.initiateMultichain().publish({
@@ -1649,13 +1667,13 @@ router.get('/award_type', (req, res) => {
 //Find an award
 router.post('/find_an_award', (req, res) => {
     Award.findAll({
-            where: {
-                type: req.body.type
-            },
-            order: [
-                ['year', 'DESC']
-            ]
-        })
+        where: {
+            type: req.body.type
+        },
+        order: [
+            ['year', 'DESC']
+        ]
+    })
         .then(awards => {
             const data = awards[0];
             res.status(200).send({ award: data });
@@ -1669,12 +1687,12 @@ router.post('/find_an_award', (req, res) => {
 router.get('/get_award', authorize(), (req, res) => {
     const today = new Date();
     Award.findAll({
-            where: {
-                status: {
-                    [Op.gte]: 1,
-                }
+        where: {
+            status: {
+                [Op.gte]: 1,
             }
-        })
+        }
+    })
         .then(awards => {
             if (awards.length == 0) {
                 res.status(200).send('There is no award for voting');
@@ -1689,10 +1707,10 @@ router.get('/get_award', authorize(), (req, res) => {
                                 status: 2,
                                 updated_at: today
                             }, {
-                                where: {
-                                    id: awards[i].id
-                                }
-                            })
+                                    where: {
+                                        id: awards[i].id
+                                    }
+                                })
                         }
                     }
 
@@ -1704,24 +1722,24 @@ router.get('/get_award', authorize(), (req, res) => {
                                 status: 0,
                                 updated_at: today
                             }, {
-                                where: {
-                                    id: awards[i].id
-                                }
-                            })
+                                    where: {
+                                        id: awards[i].id
+                                    }
+                                })
                         }
                     }
                 }
 
                 Award.findAll({
-                        where: {
-                            status: 2
-                        },
-                        attributes: ['id', 'year', 'logo_url'],
-                        include: [{
-                            model: Award_type,
-                            attributes: ['name'],
-                        }]
-                    })
+                    where: {
+                        status: 2
+                    },
+                    attributes: ['id', 'year', 'logo_url'],
+                    include: [{
+                        model: Award_type,
+                        attributes: ['name'],
+                    }]
+                })
                     .then(results => {
                         if (results.length == 0) {
                             res.status(200).send('There is no award for voting');
@@ -1765,9 +1783,9 @@ router.post('/check_status_voter', authorize(), (req, res) => {
 
     //List voter
     multichain.initiateMultichain().listStreamKeyItems({
-            stream: stream_name,
-            key: 'voter'
-        })
+        stream: stream_name,
+        key: 'voter'
+    })
         .then(voters => {
             console.log('Get list voter successfully');
             for (var i = 0; i < voters.length; i++) {
@@ -1775,9 +1793,9 @@ router.post('/check_status_voter', authorize(), (req, res) => {
                 let txid = voters[i].txid;
                 //Check id voter
                 multichain.initiateMultichain().getStreamItem({
-                        stream: stream_name,
-                        txid: txid
-                    })
+                    stream: stream_name,
+                    txid: txid
+                })
                     .then(voter => {
                         let id_voter = voter.data.json.id;
                         if (voter1 == id_voter) {
@@ -1790,11 +1808,11 @@ router.post('/check_status_voter', authorize(), (req, res) => {
                                         vote_status: 0,
                                         updated_at: today
                                     }, {
-                                        where: {
-                                            id_award: id_award,
-                                            id_user: req.decoded.id
-                                        }
-                                    })
+                                            where: {
+                                                id_award: id_award,
+                                                id_user: req.decoded.id
+                                            }
+                                        })
                                     res.status(400).send({ message: 'You already vote for this award' });
                                 } else {
                                     res.status(200).send({ message: 'You can vote for this award' });
@@ -1814,28 +1832,28 @@ async function updateResult(id) {
     const stream_name = 'award_' + id_award;
 
     await Breakdown.findAll({
-            where: {
-                id_award: id_award
-            }
-        })
+        where: {
+            id_award: id_award
+        }
+    })
         .then(nominees => {
             for (var i = 0; i < nominees.length; i++) {
                 let id_nominee = nominees[i].id_nominee;
                 let key_name = 'nominee_' + id_nominee;
                 multichain.initiateMultichain().getStreamKeySummary({
-                        stream: stream_name,
-                        key: key_name,
-                        mode: 'jsonobjectmerge'
-                    })
+                    stream: stream_name,
+                    key: key_name,
+                    mode: 'jsonobjectmerge'
+                })
                     .then(result => {
                         let total_points = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
                         Breakdown.update({
-                                first_votes: result.json.first_votes,
-                                second_votes: result.json.second_votes,
-                                third_votes: result.json.third_votes,
-                                total_points: total_points,
-                                updated_at: today
-                            }, {
+                            first_votes: result.json.first_votes,
+                            second_votes: result.json.second_votes,
+                            third_votes: result.json.third_votes,
+                            total_points: total_points,
+                            updated_at: today
+                        }, {
                                 where: {
                                     id_award: id_award,
                                     id_nominee: id_nominee
@@ -1861,10 +1879,10 @@ async function updateResult(id) {
 function updateCurrentResult() {
     const today = new Date();
     Award.findAll({
-            where: {
-                status: 2
-            }
-        })
+        where: {
+            status: 2
+        }
+    })
         .then(awards => {
             if (awards.length == 0) {
                 console.log('There is no award for updating right now');
@@ -1873,28 +1891,28 @@ function updateCurrentResult() {
                     let id_award = awards[j].id;
                     let stream_name = 'award_' + id_award;
                     Breakdown.findAll({
-                            where: {
-                                id_award: id_award
-                            }
-                        })
+                        where: {
+                            id_award: id_award
+                        }
+                    })
                         .then(nominees => {
                             for (var i = 0; i < nominees.length; i++) {
                                 let id_nominee = nominees[i].id_nominee;
                                 let key_name = 'nominee_' + id_nominee;
                                 multichain.initiateMultichain().getStreamKeySummary({
-                                        stream: stream_name,
-                                        key: key_name,
-                                        mode: 'jsonobjectmerge'
-                                    })
+                                    stream: stream_name,
+                                    key: key_name,
+                                    mode: 'jsonobjectmerge'
+                                })
                                     .then(result => {
                                         let total_points = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
                                         Breakdown.update({
-                                                first_votes: result.json.first_votes,
-                                                second_votes: result.json.second_votes,
-                                                third_votes: result.json.third_votes,
-                                                total_points: total_points,
-                                                updated_at: today
-                                            }, {
+                                            first_votes: result.json.first_votes,
+                                            second_votes: result.json.second_votes,
+                                            third_votes: result.json.third_votes,
+                                            total_points: total_points,
+                                            updated_at: today
+                                        }, {
                                                 where: {
                                                     id_award: id_award,
                                                     id_nominee: id_nominee
@@ -1929,10 +1947,10 @@ async function updatePercent(id) {
     const id_award = id;
     let sum = 0;
     await Breakdown.findAll({
-            where: {
-                id_award: id_award
-            }
-        })
+        where: {
+            id_award: id_award
+        }
+    })
         .then(nominees => {
             for (var i = 0; i < nominees.length; i++) {
                 sum = sum + nominees[i].total_points;
@@ -1945,11 +1963,11 @@ async function updatePercent(id) {
                     percent: percent,
                     updated_at: today
                 }, {
-                    where: {
-                        id_award: id_award,
-                        id_nominee: id_nominee
-                    }
-                })
+                        where: {
+                            id_award: id_award,
+                            id_nominee: id_nominee
+                        }
+                    })
 
             }
             console.log('Update percent successfully');
@@ -1961,16 +1979,16 @@ async function updatePercent(id) {
 
 
 
- function calculate(id) {
+function calculate(id) {
     const award_id = id;
-     Breakdown.findAll({
-            where: {
-                id_award: award_id
-            },
-            order: [
-                ['total_points', 'DESC']
-            ]
-        })
+    Breakdown.findAll({
+        where: {
+            id_award: award_id
+        },
+        order: [
+            ['total_points', 'DESC']
+        ]
+    })
         .then(data => {
 
             for (var i = 0; i < data.length; i++) {
@@ -2027,10 +2045,10 @@ function updateRank(i, id_nominee) {
     Breakdown.update({
         rank: i
     }, {
-        where: {
-            id_nominee: id_nominee
-        }
-    })
+            where: {
+                id_nominee: id_nominee
+            }
+        })
 }
 
 function checkVoteValid(id, first_vote, second_vote, third_vote) {
@@ -2047,11 +2065,11 @@ function checkVoteValid(id, first_vote, second_vote, third_vote) {
 async function chooseWinner(id) {
     const id_award = id;
     await Breakdown.findOne({
-            where: {
-                id_award: id_award,
-                rank: 1
-            }
-        })
+        where: {
+            id_award: id_award,
+            rank: 1
+        }
+    })
         .then(result => {
             const winner_data = {
                 id_award: id_award,
@@ -2059,10 +2077,10 @@ async function chooseWinner(id) {
                 percent: result.percent
             }
             Winner.findOne({
-                    where: {
-                        id_award: id_award
-                    }
-                })
+                where: {
+                    id_award: id_award
+                }
+            })
                 .then(data => {
                     if (!data) {
                         Winner.create(winner_data);
@@ -2071,10 +2089,10 @@ async function chooseWinner(id) {
                             id_winner: winner_data.id_winner,
                             percent: winner_data.percent
                         }, {
-                            where: {
-                                id_award: id_award
-                            }
-                        })
+                                where: {
+                                    id_award: id_award
+                                }
+                            })
                     }
                 })
             console.log('Choose winner successfully');
@@ -2101,9 +2119,9 @@ function finishAward(id) {
     let today = new Date();
     const award_id = id;
     Award.update({
-            status: 0,
-            updated_at: today,
-        }, {
+        status: 0,
+        updated_at: today,
+    }, {
             where: {
                 id: award_id
             }
@@ -2113,30 +2131,30 @@ function finishAward(id) {
             const asset_name = 'asset_' + award_id;
             const token_name = 'token_' + award_id;
             multichain.initiateMultichain().listStreamKeyItems({
-                    stream: stream_name,
-                    key: asset_name
-                })
+                stream: stream_name,
+                key: asset_name
+            })
                 .then(asset => {
                     let asset_txid = asset[0].txid;
                     console.log(asset_txid);
                     multichain.initiateMultichain().getStreamItem({
-                            stream: stream_name,
-                            txid: asset_txid
-                        })
+                        stream: stream_name,
+                        txid: asset_txid
+                    })
                         .then(result => {
                             //Get address of asset
                             let address1 = result.data.json.address;
                             multichain.initiateMultichain().listStreamKeyItems({
-                                    stream: stream_name,
-                                    key: 'voter',
-                                })
+                                stream: stream_name,
+                                key: 'voter',
+                            })
                                 .then(voters => {
                                     for (var i = 0; i < voters.length; i++) {
                                         let voter_txid = voters[i].txid;
                                         multichain.initiateMultichain().getStreamItem({
-                                                stream: stream_name,
-                                                txid: voter_txid
-                                            })
+                                            stream: stream_name,
+                                            txid: voter_txid
+                                        })
                                             .then(result1 => {
                                                 let address2 = result1.data.json.address;
                                                 grant(address2, 'receive');
@@ -2157,12 +2175,12 @@ function finishAward(id) {
 function checkDateAward() {
     let today = new Date();
     Award.findAll({
-            where: {
-                status: {
-                    [Op.gte]: 1,
-                }
+        where: {
+            status: {
+                [Op.gte]: 1,
             }
-        })
+        }
+    })
         .then(awards => {
             if (awards.length == 0) {
                 console.log('There is no award for voting');
@@ -2175,9 +2193,9 @@ function checkDateAward() {
                             console.log(awards[i].date_start, today);
                             let id_award = awards[i].id;
                             Award.update({
-                                    status: 2,
-                                    updated_at: today
-                                }, {
+                                status: 2,
+                                updated_at: today
+                            }, {
                                     where: {
                                         id: awards[i].id
                                     }
@@ -2193,9 +2211,9 @@ function checkDateAward() {
                         if (awards[i].date_end <= today) {
                             let id_award1 = awards[i].id;
                             Award.update({
-                                    status: 0,
-                                    updated_at: today
-                                }, {
+                                status: 0,
+                                updated_at: today
+                            }, {
                                     where: {
                                         id: id_award1
                                     }
@@ -2235,7 +2253,7 @@ router.get('/get/123', (req, res) => {
 
 
 console.log('Before job instantiation');
-const checkAward = new CronJob('0,30 * * * * *', function() {
+const checkAward = new CronJob('0,30 * * * * *', function () {
     const d = new Date();
     var a = moment.tz(d, "Asia/Ho_Chi_Minh");
     checkDateAward();
@@ -2245,7 +2263,7 @@ const checkAward = new CronJob('0,30 * * * * *', function() {
     // console.log('Now: ', a.ict().format());
 });
 
-const updateAward = new CronJob('0,30 * * * * *', function() {
+const updateAward = new CronJob('0,30 * * * * *', function () {
     const d = new Date();
     var a = moment.tz(d, "Asia/Ho_Chi_Minh");
     updateCurrentResult();
