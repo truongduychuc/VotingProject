@@ -9,6 +9,7 @@
 <div id="collapseExample" [ngbCollapse]="isCollapsed">
   <app-award *ngFor="let award of awardListOfYear"
              [awardId]="award.id"
+             [status]="award.status"
              [awardLogoURL]="award.logo_url"
              [dateStart]="award.date_start"
              [dateEnd]="award.date_end"
