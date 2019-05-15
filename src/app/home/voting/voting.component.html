@@ -13,7 +13,7 @@
               </div>
               <div class="card-body">
                 <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="form-group">
                       <label class="col-form-label">Choose an award:</label>
                       <select formControlName="id" (change)="loadNomineesCorresponding(voting.controls['id'].value)" class="form-control">
@@ -52,6 +52,11 @@
                       </select>
                     </div>
                   </div>
+                  <div *ngIf="formControls['first_vote'].value" class="col-12 d-flex justify-content-center">
+                    <div class="rounded img-thumbnail nominee-avatar">
+                      <img class="img-fluid" [src]="serverURL + getNomineeAvaUrl(formControls['first_vote'].value)" alt="Avatar">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -76,6 +81,11 @@
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
                       </select>
+                    </div>
+                  </div>
+                  <div *ngIf="formControls['second_vote'].value" class="col-12 d-flex justify-content-center">
+                    <div class="rounded img-thumbnail nominee-avatar">
+                      <img class="img-fluid" [src]="serverURL + getNomineeAvaUrl(formControls['second_vote'].value)" alt="Avatar">
                     </div>
                   </div>
                 </div>
@@ -104,14 +114,19 @@
                       </select>
                     </div>
                   </div>
+                  <div *ngIf="formControls['third_vote'].value" class="col-12 d-flex justify-content-center">
+                    <div class="rounded img-thumbnail nominee-avatar">
+                      <img class="img-fluid" [src]="serverURL + getNomineeAvaUrl(formControls['third_vote'].value)" alt="Avatar">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="mt-4 d-flex justify-content-center flex-wrap">
-          <button [disabled]="voting.invalid" type="submit" [ngClass]="voting.invalid ? 'btn-dark': 'btn-success'" class="btn btn-rounded m-2">Vote</button>
-          <button (click)="resetAllSelections()" type="button" class="btn btn-danger btn-rounded m-2">Reset</button>
+          <button [disabled]="voting.invalid" type="submit" class="btn btn-success btn-rounded m-2">Vote</button>
+          <button (click)="resetAllSelections()" type="button" class="btn btn-outline-success btn-rounded m-2">Reset</button>
         </div>
       </form>
     </div>
