@@ -26,6 +26,9 @@ import { AwardDetailComponent } from './award-management/award-detail/award-deta
 import { UploadLogoComponent } from './award-management/upload-logo/upload-logo.component';
 import { EditingAwardModalComponent } from './award-management/editing-award-modal/editing-award-modal.component';
 import { VotingBreakdownComponent } from './award-management/voting-breakdown/voting-breakdown.component';
+import {DateFormatPipe} from '../_pipes/date-format.pipe';
+import DateTimeFormat = Intl.DateTimeFormat;
+import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
 
 @NgModule({
   declarations: [
@@ -49,7 +52,9 @@ import { VotingBreakdownComponent } from './award-management/voting-breakdown/vo
     AwardDetailComponent,
     UploadLogoComponent,
     EditingAwardModalComponent,
-    VotingBreakdownComponent
+    VotingBreakdownComponent,
+    DateFormatPipe,
+    DatetimeFormatPipe
   ],
   imports: [
     CommonModule,
