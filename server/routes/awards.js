@@ -1513,8 +1513,11 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                                                             let address2 = nominee.data.json.address;
                                                                                             //First vote
                                                                                             if (data.id_nominee_first == id_nominee) {
+                                                                                                let amount = 5;
 
-                                                                                                amount = 5;
+                                                                                                //Update result to database
+                                                                                                // vote(data.id_nominee_first, amount);
+
                                                                                                 console.log('Determined first_vote user');
                                                                                                 // console.log(address1, address2, token_name, amount);
                                                                                                 multichain.initiateMultichain().sendAssetFrom({
@@ -1553,7 +1556,11 @@ router.post('/voting_award', authorize(), (req, res) => {
 
                                                                                             //Second vote
                                                                                             if (data.id_nominee_second == id_nominee) {
-                                                                                                amount = 3;
+                                                                                                let amount = 3;
+
+                                                                                                //Update result to database
+                                                                                                // vote(data.id_nominee_second, amount);
+
                                                                                                 console.log('Determined second_vote user');
                                                                                                 multichain.initiateMultichain().sendAssetFrom({
                                                                                                     from: address1,
@@ -1596,7 +1603,11 @@ router.post('/voting_award', authorize(), (req, res) => {
 
                                                                                             // Third_vote
                                                                                             if (data.id_nominee_third == id_nominee) {
-                                                                                                amount = 1;
+                                                                                                let amount = 1;
+
+                                                                                                //Update result to database
+                                                                                                // vote(data.id_nominee_third, amount);
+
                                                                                                 console.log('Determined third_vote user');
                                                                                                 multichain.initiateMultichain().sendAssetFrom({
                                                                                                     from: address1,
@@ -2267,6 +2278,41 @@ router.get('/get/123', (req, res) => {
         res.json({ liststream: info });
     })
 })
+
+function vote(id, amount) {
+    Breakdown.findOne({
+        where: {
+            id_nominee: id
+        }
+    })
+        .then(currentResult => {
+            let pointChange = currentResult.total_points + amount;
+            if (amount == 5) {
+                let voteChange = currentResult.first_votes + 1;
+                Breakdown.update({
+                    first_votes: voteChange,
+                    total_points: pointChange
+                })
+            }
+            if (amount == 3) {
+                let voteChange = currentResult.second_votes + 1;
+                Breakdown.update({
+                    first_votes: voteChange,
+                    total_points: pointChange
+                })
+            }
+            if (amount == 1) {
+                let voteChange = currentResult.third_votes + 1;
+                Breakdown.update({
+                    first_votes: voteChange,
+                    total_points: pointChange
+                })
+            }
+        })
+        .catch(err => {
+            console.log('Error when update result to database ', err)
+        })
+}
 
 
 console.log('Before job instantiation');
