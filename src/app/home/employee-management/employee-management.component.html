@@ -1,7 +1,7 @@
 
 <div class="card shadow">
   <div class="card-header">
-        <h3>EMPLOYEE MANAGEMENT</h3>
+        <h3>{{isAdmin ? 'EMPLOYEE MANAGEMENT' : 'EMPLOYEE LIST'}}</h3>
   </div>
       <div class="card-body">
         <div class="row">
@@ -55,9 +55,9 @@
                   <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
                   <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
                   <td *ngIf="isAdmin">
-                    <div class="badge-pill" [ngClass]="user?.is_active ? 'badge-info' : 'badge-danger' ">
+                    <span class="badge-pill" [ngClass]="user?.is_active ? 'badge-info' : 'badge-danger' ">
                       {{user?.is_active ? 'Active' : 'Inactive'}}
-                    </div>
+                    </span>
                   </td>
                   <td>{{user.role?.name}}</td>
                   <td>{{user.team?.name}}</td>
