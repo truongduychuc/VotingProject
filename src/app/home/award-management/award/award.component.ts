@@ -13,7 +13,7 @@ export class AwardComponent implements OnInit {
   @Input() awardId: number;
   @Input() awardName: string;
   @Input() year: number;
-  @Input() status: boolean;
+  @Input() status: number;
   @Input() description: string;
   @Input() nominees: Nominee[];
   @Input() nominee: Nominee;
@@ -28,12 +28,35 @@ export class AwardComponent implements OnInit {
   // sharedData: for transferring successfully uploading logo message to award-management component
   constructor(private modalService: NgbModal, private sharedData: DataSharingService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    console.log(this.status);
     // console.log(this.currentUser);
   }
   ngOnInit() {
   }
   get isAdmin() {
     return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
+  }
+  get statusName() {
+    if (this.status === 0) {
+      return 'Finished';
+    }
+    if (this.status === 1) {
+      return 'Pending';
+    }
+    if (this.status === 2) {
+      return 'Voting';
+    }
+  }
+  get statusCssClass() {
+    if (this.status === 0) {
+      return 'badge-info';
+    }
+    if (this.status === 1) {
+      return 'badge-warning';
+    }
+    if (this.status === 2) {
+      return 'badge-success';
+    }
   }
   openUploadingLogoModal() {
     const modalRef = this.modalService.open(UploadLogoComponent);

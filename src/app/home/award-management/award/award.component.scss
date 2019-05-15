@@ -1,40 +1,48 @@
+$award-status-padding: 7.2px;
 .award {
+  border: 1px solid #f9e3e3;
   margin-top: 10px;
-  background-color: #eec0c6;
-  background-image: linear-gradient(315deg, #eec0c6 0%, #7ee8fa 74%);
+  border-radius: 7px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  //box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  //-webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  //-moz-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   .card-body {
     padding: 1rem 1.81rem;
-    color: white;
     .row {
       .information {
         font-size: 0.75rem;
         border-radius: 3px;
-        background-color: #ffffff;
-        color: black;
         .p {
           font-size: 0.75rem;
         }
-      }
-      .award-title {
-        font-weight: bold;
-      }
-      .btn-edit {
-
-        background-color: #4e94e4;
-        color: #ffffff;
-        &:hover {
-          background-color: white;
-          color: #4b99e3;
-          border-style: outset;
+        &.status {
+          @media (max-width: 768px) {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            h6 {
+              margin: 0 1em 0 0;
+            }
+          }
+          @media (min-width: 769px) {
+            h6 {
+              padding: 0 $award-status-padding;
+            }
+          }
         }
       }
-      .btn-detail {
-        background-color: #2e383e;
-        color: #ffffff;
-        &:hover {
-          border-style: outset;
-          background-color: white;
-          color: #2e383e;
+      .award-title-container {
+        .date-time {
+          color: #846b6b!important;
+        }
+        @media (max-width: 768px) {
+          text-align: center;
+        }
+        .award-title {
+          font-weight: bold;
+          text-transform: uppercase;
         }
       }
     }

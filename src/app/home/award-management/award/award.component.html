@@ -7,18 +7,19 @@
         </div>
       </div>
       <div class="col-md-3">
-        <div class="p-1">
+        <div class="p-1 award-title-container">
           <h5 class="award-title text-wrap">{{awardName}}</h5>
-          <p class="text-wrap">{{dateStart | date: 'shortDate'}} - {{dateEnd | date: 'shortDate'}}</p>
+          <p class="text-wrap date-time text-small">Start: {{dateStart | dateTimeFormat}}</p>
+          <p class="text-wrap date-time text-small">End: {{dateEnd | dateTimeFormat}}</p>
         </div>
       </div>
       <div class="col-md-2">
-        <div class="information overflow-auto p-1 m-1 m-md-0">
-          <h6 class="text-wrap">Nominees:</h6>
-          <ng-container *ngIf="nominees">
-            <p *ngFor="let nominee of nominees">{{nominee.nominee_name.english_name}}</p>
-          </ng-container>
-          <p *ngIf="nominee">{{nominee.nominee_name.english_name}}</p>
+        <div class="p-1 m-1 m-md-0 information status">
+          <h6>Status:</h6>
+          <!--[ngClass]="{'badge-info': status === 0, 'badge-warning': status === 1, 'badge-success': status === 2}"-->
+          <span class="badge-pill" [ngClass]="statusCssClass">
+            {{statusName}}
+          </span>
         </div>
       </div>
       <div class="col-md-4">
@@ -29,8 +30,8 @@
       </div>
       <div class="col-md-2">
         <div class="d-flex flex-wrap flex-column">
-          <button *ngIf="isAdmin" class="btn btn-edit btn-block btn-rounded">Edit</button>
-          <button class="btn btn-detail btn-block btn-rounded" routerLink="/home/award-detail/{{awardId}}">Detail</button>
+          <button *ngIf="isAdmin" class="btn btn-primary btn-rounded m-1">Edit</button>
+          <button class="btn btn-detail btn-outline-primary btn-rounded m-1" routerLink="/home/award-detail/{{awardId}}">Detail</button>
         </div>
       </div>
     </div>
