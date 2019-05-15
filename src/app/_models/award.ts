@@ -6,7 +6,7 @@ export interface Award {
   awardType?: AwardType;
   name?: string;
   year: number;
-  status: boolean;
+  status: number;
   description: string;
   date_start: Date;
   date_end: Date;
