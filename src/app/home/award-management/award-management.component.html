@@ -3,23 +3,22 @@
     <h3>AWARDS</h3>
   </div>
   <div class="card-body">
-    <div class="row">
-      <div class="col-sm-6">
-
-      </div>
-      <div class="col-sm-6 d-flex justify-content-sm-end">
-        <div *ngIf="isAdmin" class="form-group">
-          <button (click)="openAddingAward()" class="btn btn-add-award"><i class="fas fa-plus-circle fa-2x"></i></button>
-        </div>
-        <!-- <div class="form-group">
-          <select class="form-control" style="margin-top: 0.56rem">
-            <option hidden >Find an award</option>
-            <option>text 1</option>
-            <option>text 2</option>
-            <option>text 3</option>
-          </select>
-        </div> -->
-      </div>
+    <div class="row award-header">
+            <div class="col-sm-6 align-items-center d-flex justify-content-sm-start justify-content-center">
+              <div class="form-group">
+                <select class="form-control rounded-pill">
+                  <option class="rounded-pill" hidden >Find an award</option>
+                  <option>text 1</option>
+                  <option>text 2</option>
+                  <option>text 3</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-sm-6 d-flex justify-content-sm-end align-items-center justify-content-center">
+              <div *ngIf="isAdmin" class="form-group">
+                <button (click)="openAddingAward()" class="btn btn-primary btn-rounded"><i class="fas fa-plus"></i>New award</button>
+              </div>
+            </div>
     </div>
     <div class="row">
       <div class="col-12">
