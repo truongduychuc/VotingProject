@@ -27,10 +27,17 @@ export class PersonalInformationComponent implements OnInit {
       phone: '',
       address: '',
       other: ''
-    })
+    });
+  }
+  get isDisabledButton() {
+    if ('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.other.value) {
+      return true;
+    } else {
+      return false;
+    }
   }
   updateInfo() {
-    if('' == this.formControl.phone.value &&'' == this.formControl.address.value &&'' == this.formControl.other.value) {
+    if('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.other.value) {
       console.log(this.personalUpdating.value);
       return;
     } else {
@@ -41,7 +48,7 @@ export class PersonalInformationComponent implements OnInit {
         }, error1 => {
           console.log(error1);
         }
-      )
+      );
     }
   }
   get formControl() {
