@@ -2,6 +2,8 @@ import {Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AwardService} from '../../_services/award.service';
 import {AccountService} from '../../_services/account.service';
+import {Award} from '../../_models/award';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
   selector: 'app-voting',
@@ -28,9 +30,7 @@ export class VotingComponent implements OnInit {
       third_vote: [null, Validators.required]
     }, {
       validators: [
-        this.duplicatedSelect('first_vote', 'second_vote'),
-        this.duplicatedSelect('first_vote', 'third_vote'),
-        this.duplicatedSelect('second_vote', 'third_vote'),
+        this.duplicatedSelect('first_vote', 'second_vote', 'third_vote')
       ]
     });
   }
@@ -78,30 +78,68 @@ export class VotingComponent implements OnInit {
       console.log(err);
     });
   }
-  duplicatedSelect(firstControl: string, secondControl: string) {
+  // validation for duplicated selection
+  duplicatedSelect(firstControl: string, secondControl: string, third_control: string) {
     return (formGroup: FormGroup) => {
       const first = formGroup.controls[firstControl];
       const second = formGroup.controls[secondControl];
+      const third = formGroup.controls[third_control];
       if (first.errors && !first.errors.duplicated) {
         return;
+      } else {
+        if (first.value === second.value) {
+          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
+        if (first.value === third.value) {
+          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
       }
       if (second.errors && !second.errors.duplicated) {
         return;
-      }
-      if (first.value !== second.value) {
-       first.setErrors(null);
-       second.setErrors(null);
       } else {
-        first.setErrors({duplicated: true, message: 'Duplicated selection!'});
-        second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        if (second.value === third.value) {
+          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
+        if (first.value === second.value) {
+          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
+      }
+      if (third.errors && !third.errors.duplicated) {
+        return;
+      } else {
+        if (second.value === third.value) {
+          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
+        if (first.value === third.value) {
+          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
+      }
+      if (first.value !== second.value && second.value !== third.value && first.value !== third.value) {
+        first.setErrors(null);
+        second.setErrors(null);
+        third.setErrors(null);
       }
     };
+  }
+  getAward(id: number): Award {
+    const selectedAward = this.listAwards.find(award => award.id === id);
+    if (!selectedAward) {
+      console.log('Error when finding award!');
+      return null;
+    }
+    return selectedAward;
   }
   // get avatar url
   getNomineeAvaUrl(id: number): string {
     const selectedNominee = this.listNominees.find( nominee => nominee.id_nominee === id);
     if (!selectedNominee) {
-      console.log('Error when finding avatar!');
+      console.log('Error when finding nominee!');
       return null;
     } else {
       if (!selectedNominee.hasOwnProperty('nominee_name_1')) {
@@ -109,6 +147,22 @@ export class VotingComponent implements OnInit {
         return null;
       }
       return selectedNominee.nominee_name_1.ava_url;
+    }
+  }
+  getNomineeFullName(id: number): string {
+    const selectedNominee = this.listNominees.find( nominee => nominee.id_nominee === id);
+    if (!selectedNominee) {
+      console.log('Error when finding nominee!');
+      return null;
+    } else {
+      if (!selectedNominee.hasOwnProperty('nominee_name_1')) {
+        console.log('Error with nominee_name');
+        return null;
+      }
+      return selectedNominee.nominee_name_1.first_name
+        + ' (' + selectedNominee.nominee_name_1.english_name +
+        ') '
+        + selectedNominee.nominee_name_1.last_name;
     }
   }
   resetAllSelections() {
@@ -125,5 +179,8 @@ export class VotingComponent implements OnInit {
     this.voting.controls['first_vote'].setValue(null);
     this.voting.controls['second_vote'].setValue(null);
     this.voting.controls['third_vote'].setValue(null);
+  }
+  test() {
+    console.log(this.voting.controls);
   }
 }
