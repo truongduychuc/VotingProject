@@ -12,8 +12,8 @@
     <div class="col-12">
       <form (ngSubmit)="onSubmit()" [formGroup]="uploadAvatar">
         <div class="row">
-          <div class="col-12 image-container d-flex justify-content-center">
-            <img *ngIf="tempDisplaying" class="img-thumbnail" [src]="tempDisplaying" alt="Avatar image">
+          <div *ngIf="tempDisplaying" class="col-12 image-container d-flex justify-content-center">
+            <img class="img-thumbnail" [src]="tempDisplaying" alt="Avatar image">
           </div>
           <div class="col-12 justify-content-center d-flex m-2">
             <input (change)="onFileChange($event)" id="gettingFileInput" accept="image/jpeg, image/png" type="file" class="d-none">
