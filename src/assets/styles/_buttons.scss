@@ -78,7 +78,12 @@
       border-color: #308ee0;
     }
   }
-  &.btn-info,
+  &.btn-info {
+    &:hover {
+      background-color: #8862e0;
+      border-color: #8862e0;
+    }
+  }
   &.btn-teal,
   &.btn-warning {
 
