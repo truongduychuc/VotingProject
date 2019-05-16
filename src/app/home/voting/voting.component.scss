@@ -1,5 +1,36 @@
 $voting-header-radius: 7px;
 .voting-custom {
+  .d-flex {
+    // for other browser
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: -webkit-box;
+  }
+  .col-md-4 {
+      .card {
+        width: 100%;
+      }
+  }
+  .col-md-8 {
+    .award-container {
+      .award-logo {
+        width: 45%;
+        height: 200px;
+        @media (min-width: 1366px) {
+          width: 30%;
+          margin-left: 20%;
+        }
+        img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+        }
+      }
+      .award-title {
+        padding: 10px 5%;
+      }
+    }
+  }
   .card {
     margin-top: 2rem;
     border-radius: $voting-header-radius;
@@ -18,21 +49,31 @@ $voting-header-radius: 7px;
     .card-body {
       padding-top: 2rem;
       .nominee-avatar {
+        height: 200px;
         @media (min-width: 1366px) {
-          max-width: 50%;
+          width: 50%;
         }
         @media (min-width: 768px) {
-          min-height: 150px;
         }
         @media (min-width: 576px) and (max-width: 767px)
         {
-          max-width: 50%;
+          width: 50%;
+          height: 250px;
         }
         @media (min-width: 384px) and (max-width: 575px) {
-          max-width: 75%;
+          width: 75%;
         }
         @media (max-width: 383px) {
           width: 100%;
+          height: 120px;
+        }
+        .text-small {
+          font-weight: 300;
+        }
+        .avatar {
+          width: 100%;
+          height: 100%;
+          object-fit: cover; //resize while still covering div area and keeping scale
         }
       }
     }
