@@ -214,6 +214,7 @@ router.post('/create', (req, res) => {
                                 })
 
                             }
+
                             subscribe();
 
                             //Add infomation
@@ -231,15 +232,13 @@ router.post('/create', (req, res) => {
                                         "updated_at": awardData.updated_at
                                     }
                                 }
-                            }, (err, info) => {
+                            }, (err) => {
                                 if (err) {
                                     console.log(err);
                                 } else {
                                     console.log('Input infomation of award to stream successfully');
                                 }
                             });
-
-
 
                             //Find voter with role
                             const voter = req.body.id_role_voter;
@@ -255,13 +254,10 @@ router.post('/create', (req, res) => {
                                     })
                                         .then(users => {
                                             if (users.length == 0) {
-                                                res.status(400).send({ message: 'There is no user' });
+                                                res.status(400).send({ message: 'There is user does not exist' });
                                             } else {
                                                 multichain.initiateMultichain().getNewAddress()
                                                     .then(address => {
-
-                                                        //const asset_address = address;
-
                                                         //Grant permission for asset
                                                         async function permission() {
                                                             await multichain.initiateMultichain().grant({
@@ -290,7 +286,7 @@ router.post('/create', (req, res) => {
                                                             await permission();
                                                             await asset();
                                                         }
-
+                                                        setTimeout(function () { }, 1000);
                                                         //Insert asset data
                                                         let asset_data = {
                                                             id: 0,
@@ -312,14 +308,13 @@ router.post('/create', (req, res) => {
                                                                 const address1 = address;
 
                                                                 //Get new address
-                                                                multichain.initiateMultichain().getNewAddress()
+                                                                await multichain.initiateMultichain().getNewAddress()
                                                                     .then(address2 => {
-
                                                                         async function permissionForVoter() {
                                                                             //Grant permission for voter
                                                                             await multichain.initiateMultichain().grant({
                                                                                 addresses: address2,
-                                                                                permissions: 'receive'
+                                                                                permissions: 'receive,send'
                                                                             }, (err) => {
                                                                                 if (err) {
                                                                                     console.log(err);
@@ -510,7 +505,6 @@ router.post('/create', (req, res) => {
                                             nomineeVotes.id_award = award.id;
 
                                             //Subscribe
-                                            //multichain.subscribe(stream_name);
                                             async function subscribe() {
                                                 await multichain.initiateMultichain().subscribe({
                                                     stream: stream_name
@@ -548,8 +542,6 @@ router.post('/create', (req, res) => {
                                                 }
                                             });
 
-
-
                                             //Find voter with role
                                             const voter = req.body.id_role_voter;
                                             if (voter.length == 0) {
@@ -568,9 +560,6 @@ router.post('/create', (req, res) => {
                                                             } else {
                                                                 multichain.initiateMultichain().getNewAddress()
                                                                     .then(address => {
-
-                                                                        //const asset_address = address;
-
                                                                         //Grant permission for asset
                                                                         async function permission() {
                                                                             await multichain.initiateMultichain().grant({
@@ -621,14 +610,14 @@ router.post('/create', (req, res) => {
                                                                                 const address1 = address;
 
                                                                                 //Get new address
-                                                                                multichain.initiateMultichain().getNewAddress()
+                                                                                await multichain.initiateMultichain().getNewAddress()
                                                                                     .then(address2 => {
 
                                                                                         async function permissionForVoter() {
                                                                                             //Grant permission for voter
                                                                                             await multichain.initiateMultichain().grant({
                                                                                                 addresses: address2,
-                                                                                                permissions: 'receive'
+                                                                                                permissions: 'receive,send'
                                                                                             }, (err) => {
                                                                                                 if (err) {
                                                                                                     console.log(err);
