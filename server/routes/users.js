@@ -21,6 +21,14 @@ process.env.SECRET_KEY = 'secret';
 process.env.EMAIL_ADDRESS = 'electronic.voting.system.enclave@gmail.com';
 process.env.EMAIL_PASSWORD = 'enclaveit@123';
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: `${process.env.EMAIL_ADDRESS}`,
+        pass: `${process.env.EMAIL_PASSWORD}`
+    },
+});
+
 Role.hasMany(User, { foreignKey: 'id_role', constraints: false });
 User.belongsTo(Role, { foreignKey: 'id_role', constraints: false });
 Team.hasMany(User, { foreignKey: 'id_team', constraints: false });
@@ -77,10 +85,10 @@ router.post('/register', (req, res) => {
     };
 
     User.findOne({
-            where: {
-                username: req.body.username
-            }
-        })
+        where: {
+            username: req.body.username
+        }
+    })
         //TODO bcrypt
         .then(user => {
             if (!user) {
@@ -106,13 +114,13 @@ router.post('/register', (req, res) => {
 //LOGIN
 router.post('/authenticate', (req, res) => {
     User.findOne({
-            where: {
-                username: req.body.username
-            },
-            include: [{
-                model: Role
-            }]
-        })
+        where: {
+            username: req.body.username
+        },
+        include: [{
+            model: Role
+        }]
+    })
         .then(user => {
             if (!user) {
                 res.status(404).send({ message: 'Username or password is not correct!' })
@@ -208,20 +216,20 @@ router.get('/team', (req, res) => {
 router.get('/profile', authorize(), (req, res) => {
     //var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
     User.findOne({
-            where: {
-                id: req.decoded.id
-            },
-            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'other',
-                'ava_url'
-            ],
-            include: [{
-                model: Role,
-                //attributes: ['name']
-            }, {
-                model: Team,
-                //attributes: ['name']
-            }]
-        })
+        where: {
+            id: req.decoded.id
+        },
+        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'other',
+            'ava_url'
+        ],
+        include: [{
+            model: Role,
+            //attributes: ['name']
+        }, {
+            model: Team,
+            //attributes: ['name']
+        }]
+    })
         .then(user => {
             if (!user) {
                 res.status(400).send({ message: 'User does not exist' });
@@ -230,12 +238,12 @@ router.get('/profile', authorize(), (req, res) => {
                     res.status(200).send({ user, message: 'User has not had a team yet' });
                 } else {
                     User.findOne({
-                            where: {
-                                id_team: user.team.id,
-                                id_role: 2
-                            },
-                            attributes: ['first_name', 'last_name', 'english_name'],
-                        })
+                        where: {
+                            id_team: user.team.id,
+                            id_role: 2
+                        },
+                        attributes: ['first_name', 'last_name', 'english_name'],
+                    })
                         .then(directManager => {
                             if (!directManager) {
                                 res.status(200).send({ user, message: 'This user has no direct manager' });
@@ -267,20 +275,20 @@ router.get('/profile/:id', authorize(), (req, res) => {
             return res.status(401).json({ message: 'Unauthorized' });
         } else {
             User.findOne({
-                    where: {
-                        id: req.params.id
-                    },
-                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'is_active', 'address', 'other',
-                        'ava_url'
-                    ],
-                    include: [{
-                        model: Role,
-                        //attributes: ['name']
-                    }, {
-                        model: Team,
-                        //attributes: ['name']
-                    }]
-                })
+                where: {
+                    id: req.params.id
+                },
+                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'is_active', 'address', 'other',
+                    'ava_url'
+                ],
+                include: [{
+                    model: Role,
+                    //attributes: ['name']
+                }, {
+                    model: Team,
+                    //attributes: ['name']
+                }]
+            })
                 .then(user => {
                     if (!user) {
                         res.status(400).send({ message: 'User does not exist' });
@@ -289,12 +297,12 @@ router.get('/profile/:id', authorize(), (req, res) => {
                             res.status(200).send({ user, message: 'User has not had a team yet' });
                         } else {
                             User.findOne({
-                                    where: {
-                                        id_team: user.team.id,
-                                        id_role: 2
-                                    },
-                                    attributes: ['first_name', 'last_name', 'english_name'],
-                                })
+                                where: {
+                                    id_team: user.team.id,
+                                    id_role: 2
+                                },
+                                attributes: ['first_name', 'last_name', 'english_name'],
+                            })
                                 .then(directManager => {
                                     if (!directManager) {
                                         res.status(200).send({ user, message: 'This user has no direct manager' });
@@ -346,15 +354,15 @@ router.get('/list', (req, res) => {
 
     //Count total entries
     User.findAndCountAll({
-            where: {
-                id_role: {
-                    [Op.gt]: [1]
-                },
-                is_active: {
-                    [Op.gte]: [1]
-                }
+        where: {
+            id_role: {
+                [Op.gt]: [1]
+            },
+            is_active: {
+                [Op.gte]: [1]
             }
-        })
+        }
+    })
         .then(data => {
             if (data.count == 0) {
                 res.status(400).send({ message: 'There is no user', total_counts: data.count })
@@ -373,33 +381,33 @@ router.get('/list', (req, res) => {
                     if (table == 'user') {
                         console.log(111111);
                         User.findAll({
-                                where: {
-                                    id_role: {
-                                        [Op.gt]: [1]
-                                    },
-                                    is_active: {
-                                        [Op.gte]: [1]
-                                    }
+                            where: {
+                                id_role: {
+                                    [Op.gt]: [1]
                                 },
-                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                include: [{
-                                        model: Role,
-                                        required: true,
-                                        //attributes: ['name']  
-                                    },
-                                    {
-                                        model: Team,
-                                        // required: true,
-                                        //attributes: ['name']
-                                    }
-                                ],
-                                order: [
-                                    [col, type]
-                                ],
-                                limit: limit,
-                                offset: offset,
-                                //$sort: { id: 1 }
-                            })
+                                is_active: {
+                                    [Op.gte]: [1]
+                                }
+                            },
+                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                            include: [{
+                                model: Role,
+                                required: true,
+                                //attributes: ['name']  
+                            },
+                            {
+                                model: Team,
+                                // required: true,
+                                //attributes: ['name']
+                            }
+                            ],
+                            order: [
+                                [col, type]
+                            ],
+                            limit: limit,
+                            offset: offset,
+                            //$sort: { id: 1 }
+                        })
                             .then(users => {
                                 if (users.length == 0) {
                                     res.status(400).send({ message: 'There is no user' });
@@ -413,33 +421,33 @@ router.get('/list', (req, res) => {
                     } else {
                         if (table == 'role' || table == 'team') {
                             User.findAll({
-                                    where: {
-                                        id_role: {
-                                            [Op.gt]: [1]
-                                        },
-                                        is_active: {
-                                            [Op.gte]: [1]
-                                        }
+                                where: {
+                                    id_role: {
+                                        [Op.gt]: [1]
                                     },
-                                    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                    include: [{
-                                            model: Role,
-                                            required: true,
-                                            //attributes: ['name']  
-                                        },
-                                        {
-                                            model: Team,
-                                            // required: true,
-                                            //attributes: ['name']
-                                        }
-                                    ],
-                                    order: [
-                                        [table, col, type]
-                                    ],
-                                    limit: limit,
-                                    offset: offset,
-                                    //$sort: { id: 1 }
-                                })
+                                    is_active: {
+                                        [Op.gte]: [1]
+                                    }
+                                },
+                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                include: [{
+                                    model: Role,
+                                    required: true,
+                                    //attributes: ['name']  
+                                },
+                                {
+                                    model: Team,
+                                    // required: true,
+                                    //attributes: ['name']
+                                }
+                                ],
+                                order: [
+                                    [table, col, type]
+                                ],
+                                limit: limit,
+                                offset: offset,
+                                //$sort: { id: 1 }
+                            })
                                 .then(users => {
                                     if (users.length == 0) {
                                         res.status(400).send({ message: 'There is no user' });
@@ -459,55 +467,55 @@ router.get('/list', (req, res) => {
                 else {
                     console.log(2222);
                     User.findAndCountAll({
-                            where: {
-                                id_role: {
-                                    [Op.gt]: [1]
-                                },
-                                is_active: {
-                                    [Op.gte]: [1]
-                                },
-                                [Op.or]: [{
-                                        first_name: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        last_name: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        english_name: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        email: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        '$role.name$': {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        '$team.name$': {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    }
-                                ]
+                        where: {
+                            id_role: {
+                                [Op.gt]: [1]
                             },
-                            include: [{
-                                    model: Role,
-                                    required: true,
-                                },
-                                {
-                                    model: Team,
-                                    // required: true,
+                            is_active: {
+                                [Op.gte]: [1]
+                            },
+                            [Op.or]: [{
+                                first_name: {
+                                    [Op.like]: '%' + search + '%'
                                 }
-                            ],
-                        })
+                            },
+                            {
+                                last_name: {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                english_name: {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                email: {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                '$role.name$': {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                '$team.name$': {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            }
+                            ]
+                        },
+                        include: [{
+                            model: Role,
+                            required: true,
+                        },
+                        {
+                            model: Team,
+                            // required: true,
+                        }
+                        ],
+                    })
                         .then(data1 => {
                             if (data1.count == 0) {
                                 res.status(400).send({ message: 'There is no result', count: data1.count })
@@ -521,62 +529,62 @@ router.get('/list', (req, res) => {
                                 //console.log(data1, page, pages, offset, limit);
                                 if (table == 'user') {
                                     User.findAll({
-                                            where: {
-                                                id_role: {
-                                                    [Op.gt]: [1]
-                                                },
-                                                is_active: {
-                                                    [Op.gte]: [1]
-                                                },
-                                                [Op.or]: [{
-                                                        first_name: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        last_name: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        english_name: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        email: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        '$role.name$': {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        '$team.name$': {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    }
-                                                ]
+                                        where: {
+                                            id_role: {
+                                                [Op.gt]: [1]
                                             },
-                                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                            include: [{
-                                                    model: Role,
-                                                    required: true,
-                                                },
-                                                {
-                                                    model: Team,
-                                                    // required: true,
+                                            is_active: {
+                                                [Op.gte]: [1]
+                                            },
+                                            [Op.or]: [{
+                                                first_name: {
+                                                    [Op.like]: '%' + search + '%'
                                                 }
-                                            ],
-                                            order: [
-                                                [col, type]
-                                            ],
-                                            limit: limit,
-                                            offset: offset,
-                                            //$sort: { id: 1 }
-                                        })
+                                            },
+                                            {
+                                                last_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                english_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                email: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                '$role.name$': {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                '$team.name$': {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            }
+                                            ]
+                                        },
+                                        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                        include: [{
+                                            model: Role,
+                                            required: true,
+                                        },
+                                        {
+                                            model: Team,
+                                            // required: true,
+                                        }
+                                        ],
+                                        order: [
+                                            [col, type]
+                                        ],
+                                        limit: limit,
+                                        offset: offset,
+                                        //$sort: { id: 1 }
+                                    })
                                         .then(users => {
                                             if (users.length == 0) {
                                                 res.status(400).send({ message: 'There is no user' });
@@ -590,64 +598,64 @@ router.get('/list', (req, res) => {
                                 } else {
                                     if (table == 'role' || table == 'team') {
                                         User.findAll({
-                                                where: {
-                                                    id_role: {
-                                                        [Op.gt]: [1]
-                                                    },
-                                                    is_active: {
-                                                        [Op.gte]: [1]
-                                                    },
-                                                    [Op.or]: [{
-                                                            first_name: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            last_name: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            english_name: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            email: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            '$role.name$': {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            '$team.name$': {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        }
-                                                    ]
+                                            where: {
+                                                id_role: {
+                                                    [Op.gt]: [1]
                                                 },
-                                                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                                include: [{
-                                                        model: Role,
-                                                        required: true,
-                                                        //attributes: ['name']  
-                                                    },
-                                                    {
-                                                        model: Team,
-                                                        // required: true,
-                                                        //attributes: ['name']
+                                                is_active: {
+                                                    [Op.gte]: [1]
+                                                },
+                                                [Op.or]: [{
+                                                    first_name: {
+                                                        [Op.like]: '%' + search + '%'
                                                     }
-                                                ],
-                                                order: [
-                                                    [table, col, type]
-                                                ],
-                                                limit: limit,
-                                                offset: offset,
-                                                //$sort: { id: 1 }
-                                            })
+                                                },
+                                                {
+                                                    last_name: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    english_name: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    email: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    '$role.name$': {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    '$team.name$': {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                }
+                                                ]
+                                            },
+                                            attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                            include: [{
+                                                model: Role,
+                                                required: true,
+                                                //attributes: ['name']  
+                                            },
+                                            {
+                                                model: Team,
+                                                // required: true,
+                                                //attributes: ['name']
+                                            }
+                                            ],
+                                            order: [
+                                                [table, col, type]
+                                            ],
+                                            limit: limit,
+                                            offset: offset,
+                                            //$sort: { id: 1 }
+                                        })
                                             .then(users => {
                                                 if (users.length == 0) {
                                                     res.status(400).send({ message: 'There is no user' });
@@ -703,15 +711,15 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
 
     //Count total entries
     User.findAndCountAll({
-            // where: {
-            //     id_role: {
-            //         [Op.gt]: [1]
-            //     },
-            //     is_active: {
-            //         [Op.gte]: [1]
-            //     }
-            // }
-        })
+        // where: {
+        //     id_role: {
+        //         [Op.gt]: [1]
+        //     },
+        //     is_active: {
+        //         [Op.gte]: [1]
+        //     }
+        // }
+    })
         .then(data => {
             if (data.count == 0) {
                 res.status(400).send({ message: 'There is no user', total_counts: data.count })
@@ -730,33 +738,33 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                     if (table == 'user') {
                         console.log(111111);
                         User.findAll({
-                                // where: {
-                                //     id_role: {
-                                //         [Op.gt]: [1]
-                                //     },
-                                //     is_active: {
-                                //         [Op.gte]: [1]
-                                //     }
-                                // },
-                                attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                include: [{
-                                        model: Role,
-                                        required: true,
-                                        //attributes: ['name']  
-                                    },
-                                    {
-                                        model: Team,
-                                        //required: true,
-                                        //attributes: ['name']
-                                    }
-                                ],
-                                order: [
-                                    [col, type]
-                                ],
-                                limit: limit,
-                                offset: offset,
-                                //$sort: { id: 1 }
-                            })
+                            // where: {
+                            //     id_role: {
+                            //         [Op.gt]: [1]
+                            //     },
+                            //     is_active: {
+                            //         [Op.gte]: [1]
+                            //     }
+                            // },
+                            attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                            include: [{
+                                model: Role,
+                                required: true,
+                                //attributes: ['name']  
+                            },
+                            {
+                                model: Team,
+                                //required: true,
+                                //attributes: ['name']
+                            }
+                            ],
+                            order: [
+                                [col, type]
+                            ],
+                            limit: limit,
+                            offset: offset,
+                            //$sort: { id: 1 }
+                        })
                             .then(users => {
                                 if (users.length == 0) {
                                     res.status(400).send({ message: 'There is no user' });
@@ -770,33 +778,33 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                     } else {
                         if (table == 'role' || table == 'team') {
                             User.findAll({
-                                    // where: {
-                                    //     id_role: {
-                                    //         [Op.gt]: [1]
-                                    //     },
-                                    //     is_active: {
-                                    //         [Op.gte]: [1]
-                                    //     }
-                                    // },
-                                    attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                    include: [{
-                                            model: Role,
-                                            required: true,
-                                            //attributes: ['name']  
-                                        },
-                                        {
-                                            model: Team,
-                                            //required: true,
-                                            //attributes: ['name']
-                                        }
-                                    ],
-                                    order: [
-                                        [table, col, type]
-                                    ],
-                                    limit: limit,
-                                    offset: offset,
-                                    //$sort: { id: 1 }
-                                })
+                                // where: {
+                                //     id_role: {
+                                //         [Op.gt]: [1]
+                                //     },
+                                //     is_active: {
+                                //         [Op.gte]: [1]
+                                //     }
+                                // },
+                                attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                include: [{
+                                    model: Role,
+                                    required: true,
+                                    //attributes: ['name']  
+                                },
+                                {
+                                    model: Team,
+                                    //required: true,
+                                    //attributes: ['name']
+                                }
+                                ],
+                                order: [
+                                    [table, col, type]
+                                ],
+                                limit: limit,
+                                offset: offset,
+                                //$sort: { id: 1 }
+                            })
                                 .then(users => {
                                     if (users.length == 0) {
                                         res.status(400).send({ message: 'There is no user' });
@@ -817,57 +825,57 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                     console.log(2222);
                     // let totalCount = data.count;
                     User.findAndCountAll({
-                            where: {
-                                // id_role: {
-                                //     [Op.gt]: [1]
-                                // },
-                                // is_active: {
-                                //     [Op.gte]: [1]
-                                // },
-                                [Op.or]: [{
-                                        first_name: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        last_name: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        english_name: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        email: {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        '$role.name$': {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    },
-                                    {
-                                        '$team.name$': {
-                                            [Op.like]: '%' + search + '%'
-                                        }
-                                    }
-                                ]
-                            },
-                            include: [{
-                                    model: Role,
-                                    required: true,
-                                    //attributes: ['name']  
-                                },
-                                {
-                                    model: Team,
-                                    //required: true,
-                                    //attributes: ['name']
+                        where: {
+                            // id_role: {
+                            //     [Op.gt]: [1]
+                            // },
+                            // is_active: {
+                            //     [Op.gte]: [1]
+                            // },
+                            [Op.or]: [{
+                                first_name: {
+                                    [Op.like]: '%' + search + '%'
                                 }
-                            ],
-                        })
+                            },
+                            {
+                                last_name: {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                english_name: {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                email: {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                '$role.name$': {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            },
+                            {
+                                '$team.name$': {
+                                    [Op.like]: '%' + search + '%'
+                                }
+                            }
+                            ]
+                        },
+                        include: [{
+                            model: Role,
+                            required: true,
+                            //attributes: ['name']  
+                        },
+                        {
+                            model: Team,
+                            //required: true,
+                            //attributes: ['name']
+                        }
+                        ],
+                    })
                         .then(data1 => {
                             if (data1.count == 0) {
                                 res.status(400).send({ message: 'There is no result', total_counts: data1.count })
@@ -880,64 +888,64 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                 console.log(data1, page, pages, offset, limit);
                                 if (table == 'user') {
                                     User.findAll({
-                                            where: {
-                                                // id_role: {
-                                                //     [Op.gt]: [1]
-                                                // },
-                                                // is_active: {
-                                                //     [Op.gte]: [1]
-                                                // },
-                                                [Op.or]: [{
-                                                        first_name: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        last_name: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        english_name: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        email: {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        '$role.name$': {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    },
-                                                    {
-                                                        '$team.name$': {
-                                                            [Op.like]: '%' + search + '%'
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                            include: [{
-                                                    model: Role,
-                                                    required: true,
-                                                    //attributes: ['name']  
-                                                },
-                                                {
-                                                    model: Team,
-                                                    //required: true,
-                                                    //attributes: ['name']
+                                        where: {
+                                            // id_role: {
+                                            //     [Op.gt]: [1]
+                                            // },
+                                            // is_active: {
+                                            //     [Op.gte]: [1]
+                                            // },
+                                            [Op.or]: [{
+                                                first_name: {
+                                                    [Op.like]: '%' + search + '%'
                                                 }
-                                            ],
-                                            order: [
-                                                [col, type]
-                                            ],
-                                            limit: limit,
-                                            offset: offset,
-                                            //$sort: { id: 1 }
-                                        })
+                                            },
+                                            {
+                                                last_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                english_name: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                email: {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                '$role.name$': {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            },
+                                            {
+                                                '$team.name$': {
+                                                    [Op.like]: '%' + search + '%'
+                                                }
+                                            }
+                                            ]
+                                        },
+                                        attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                        include: [{
+                                            model: Role,
+                                            required: true,
+                                            //attributes: ['name']  
+                                        },
+                                        {
+                                            model: Team,
+                                            //required: true,
+                                            //attributes: ['name']
+                                        }
+                                        ],
+                                        order: [
+                                            [col, type]
+                                        ],
+                                        limit: limit,
+                                        offset: offset,
+                                        //$sort: { id: 1 }
+                                    })
                                         .then(users => {
                                             if (users.length == 0) {
                                                 res.status(400).send({ message: 'There is no result' });
@@ -951,64 +959,64 @@ router.get('/list/admin', authorize('admin'), (req, res) => {
                                 } else {
                                     if (table == 'role' || table == 'team') {
                                         User.findAll({
-                                                where: {
-                                                    // id_role: {
-                                                    //     [Op.gt]: [1]
-                                                    // },
-                                                    // is_active: {
-                                                    //     [Op.gte]: [1]
-                                                    // },
-                                                    [Op.or]: [{
-                                                            first_name: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            last_name: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            english_name: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            email: {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            '$role.name$': {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        },
-                                                        {
-                                                            '$team.name$': {
-                                                                [Op.like]: '%' + search + '%'
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
-                                                include: [{
-                                                        model: Role,
-                                                        required: true,
-                                                        //attributes: ['name']  
-                                                    },
-                                                    {
-                                                        model: Team,
-                                                        //required: true,
-                                                        //attributes: ['name']
+                                            where: {
+                                                // id_role: {
+                                                //     [Op.gt]: [1]
+                                                // },
+                                                // is_active: {
+                                                //     [Op.gte]: [1]
+                                                // },
+                                                [Op.or]: [{
+                                                    first_name: {
+                                                        [Op.like]: '%' + search + '%'
                                                     }
-                                                ],
-                                                order: [
-                                                    [table, col, type]
-                                                ],
-                                                limit: limit,
-                                                offset: offset,
-                                                //$sort: { id: 1 }
-                                            })
+                                                },
+                                                {
+                                                    last_name: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    english_name: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    email: {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    '$role.name$': {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                },
+                                                {
+                                                    '$team.name$': {
+                                                        [Op.like]: '%' + search + '%'
+                                                    }
+                                                }
+                                                ]
+                                            },
+                                            attributes: ['id', 'is_active', 'first_name', 'last_name', 'english_name', 'email', 'ava_url'],
+                                            include: [{
+                                                model: Role,
+                                                required: true,
+                                                //attributes: ['name']  
+                                            },
+                                            {
+                                                model: Team,
+                                                //required: true,
+                                                //attributes: ['name']
+                                            }
+                                            ],
+                                            order: [
+                                                [table, col, type]
+                                            ],
+                                            limit: limit,
+                                            offset: offset,
+                                            //$sort: { id: 1 }
+                                        })
                                             .then(users => {
                                                 if (users.length == 0) {
                                                     res.status(400).send({ message: 'There is no user' });
@@ -1053,14 +1061,14 @@ router.put('/change_password', authorize(), (req, res) => {
                     password: hash,
                     updated_at: today
                 }, {
-                    where: {
-                        id: req.decoded.id
-                    }
-                }).then(() => {
-                    res.status(200).send({ message: 'Updated successfully' });
-                }).catch(err => {
-                    res.status(400).send({ message: err });
-                });
+                        where: {
+                            id: req.decoded.id
+                        }
+                    }).then(() => {
+                        res.status(200).send({ message: 'Updated successfully' });
+                    }).catch(err => {
+                        res.status(400).send({ message: err });
+                    });
             } else {
                 res.status(400).send({ message: 'Incorrect old password' });
             }
@@ -1086,14 +1094,14 @@ router.put('/reset_password/:id', authorize('admin'), (req, res) => {
                 password: hash,
                 updated_at: today
             }, {
-                where: {
-                    id: req.params.id
-                }
-            }).then(() => {
-                res.status(200).send({ message: 'Reset password successfully' });
-            }).catch(err => {
-                res.status(400).send({ message1: err });
-            })
+                    where: {
+                        id: req.params.id
+                    }
+                }).then(() => {
+                    res.status(200).send({ message: 'Reset password successfully' });
+                }).catch(err => {
+                    res.status(400).send({ message1: err });
+                })
         }
     }).catch(err => {
         res.status(400).send({ message2: err });
@@ -1129,14 +1137,14 @@ router.put('/update/:id', authorize('admin'), (req, res) => {
                 other: req.body.other,
                 updated_at: today
             }, {
-                where: {
-                    id: req.params.id
-                }
-            }).then(() => {
-                res.status(200).send({ message: 'Updated successfully' });
-            }).catch(err => {
-                res.status(400).send({ message1: err });
-            })
+                    where: {
+                        id: req.params.id
+                    }
+                }).then(() => {
+                    res.status(200).send({ message: 'Updated successfully' });
+                }).catch(err => {
+                    res.status(400).send({ message1: err });
+                })
         }
     }).catch(err => {
         res.status(400).send({ message2: err });
@@ -1153,14 +1161,14 @@ router.put('/update_profile', authorize(), (req, res) => {
         other: req.body.other,
         updated_at: today
     }, {
-        where: {
-            id: req.decoded.id
-        }
-    }).then(() => {
-        res.status(200).send({ message: 'Updated successfully' });
-    }).catch(err => {
-        res.status(400).send({ message: err });
-    })
+            where: {
+                id: req.decoded.id
+            }
+        }).then(() => {
+            res.status(200).send({ message: 'Updated successfully' });
+        }).catch(err => {
+            res.status(400).send({ message: err });
+        })
 })
 
 //UPLOAD AVATAR
@@ -1196,14 +1204,14 @@ router.post('/upload_avatar', authorize(), upload.single('avatar'), (req, res, n
         User.update({
             ava_url: req.file.path
         }, {
-            where: {
-                id: req.decoded.id
-            }
-        }).then(() => {
-            res.status(200).send({ message: 'Uploaded avatar successfully', path: req.file.path });
-        }).catch(err => {
-            res.status(400).send('err' + err);
-        })
+                where: {
+                    id: req.decoded.id
+                }
+            }).then(() => {
+                res.status(200).send({ message: 'Uploaded avatar successfully', path: req.file.path });
+            }).catch(err => {
+                res.status(400).send('err' + err);
+            })
     }
 
 })
@@ -1211,15 +1219,15 @@ router.post('/upload_avatar', authorize(), upload.single('avatar'), (req, res, n
 //LIST USER FOR NOMINATING
 router.get('/list_for_nominating', (req, res) => {
     User.findAll({
-            where: {
-                is_active: 1,
-                id_role: {
-                    [Op.gt]: [1]
-                }
-            },
+        where: {
+            is_active: 1,
+            id_role: {
+                [Op.gt]: [1]
+            }
+        },
 
-            attributes: ['id', 'english_name', 'id_team']
-        })
+        attributes: ['id', 'english_name', 'id_team']
+    })
         .then(data => {
             if (data.length == 0) {
                 res.status(200).send({ message: 'There is no nominee' });
@@ -1236,17 +1244,17 @@ router.get('/list_for_nominating', (req, res) => {
 //LIST USER FOR VOTING
 router.post('/list_for_voting', (req, res) => {
     Nominee.findAll({
-            where: {
-                id_award: req.body.id_award
-            },
-            attributes: ['id_nominee'],
-            include: {
-                model: User,
-                // Change name when get name for nominee
-                as: 'nominee_name_1',
-                attributes: ['first_name', 'last_name', 'english_name', 'id_team', 'ava_url']
-            }
-        })
+        where: {
+            id_award: req.body.id_award
+        },
+        attributes: ['id_nominee'],
+        include: {
+            model: User,
+            // Change name when get name for nominee
+            as: 'nominee_name_1',
+            attributes: ['first_name', 'last_name', 'english_name', 'id_team', 'ava_url']
+        }
+    })
         .then(data => {
             if (data.length == 0) {
                 res.status(200).send({ message: 'There is no nominee for this award' });
@@ -1276,53 +1284,59 @@ router.post('/delete/:id', (req, res) => {
     })
 })
 
+
+
 //REQUEST EMAIL TO CHANGE PASSWORD
 router.post('/forgot_password', (req, res) => {
     User.findOne({
         where: {
-            email: req.body.email
+            email: req.body.email,
         }
     })
-    .then(user => {
-        if (user) {
-            const payload = {
-                id: user.id,
-                id_role: user.id_role,
-                // username: user.username,
-                // email: user.email
-            }
-            let token = jwt.sign(payload, process.env.SECRET_KEY, {
-                expiresIn: 3600
-            });
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: `${process.env.EMAIL_ADDRESS}`,
-                    pass: `${process.env.EMAIL_PASSWORD}`
-                },
-            });
-        
-            const mailOptions = {
-                from: `electronic.voting.system.enclave@gmail.com`,
-                to: req.body.email,
-                subject: `Link To Reset Password`,
-                text: `You are receiving this because you (or someone else) have requested the current password for your account. \n\n` +
-                `Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n` +
-                `http://localhost:4000/reset_password/${token}\n\n` +
-                `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
-            }
-        
-            transporter.sendMail(mailOptions,(err,respone) => {
-                if (err) {
-                    console.log('Error when send email' + err);
-                } else {
-                    console.log('Send email successfully', respone, token);
+        .then(user => {
+            if (user.is_active == 0) {
+                res.status(200).send({ message: 'Your account has been suspended, please send email to electronic.voting.system.enclave@gmail.com for more information' });
+            } else {
+                if (user) {
+                    const payload = {
+                        id: user.id,
+                        id_role: user.id_role,
+                        // username: user.username,
+                        // email: user.email
+                    }
+                    let token = jwt.sign(payload, process.env.SECRET_KEY, {
+                        expiresIn: 3600
+                    });
+                    const mailOptions = {
+                        from: `electronic.voting.system.enclave@gmail.com`,
+                        to: req.body.email,
+                        subject: `Link To Reset Password`,
+                        html: `Dear Mr/Ms <strong>${user.username}</strong>, <br></br>` +
+                            `You are receiving this because you (or someone else) have requested to change password of your account. <br></br>` +
+                            `Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:<br></br>` +
+                            `Click <a href = "http://localhost:4000/reset_password/${token}">here</a> <br></br>` +
+                            `If you did not request this, please ignore this email and your password will remain unchanged.<br></br>` +
+                            `Thanks and best regard! <br></br>` +
+                            `Electronic Voting system. <br></br>` +
+                            `-------------------------------------------------------------------------- <br></br>` +
+                            `<ul style="color:red;font-size:15px">
+                                        <li><i>This email is sent automatically by Electronic Voting system. You do not need to reply this email.</i> </li>
+                                        <li><i>If you can not access to system, please send contact admin to: electronic.voting.system.enclave@gmail.com</i></li>
+                            </ul>`
+                    }
+
+                    transporter.sendMail(mailOptions, (err, respone) => {
+                        if (err) {
+                            console.log('Error when send email' + err);
+                        } else {
+                            console.log('Send email successfully', respone, token);
+                        }
+                    })
                 }
-            })
-        }
-        res.status(200).send({ message: 'If your email is correct, you will receive your reset email'});
-    })
-    .catch(err => {
+                res.status(200).send({ message: 'If your email is correct, you will receive your reset email' });
+            }
+        })
+        .catch(err => {
             res.status(400).send({ message: err });
         })
 });
@@ -1338,11 +1352,11 @@ router.put('/reset_password', authorize(), (req, res) => {
         if (!user) {
             res.status(400)({ message: 'User does not exist' });
         } else {
-                const hash = bcrypt.hashSync(req.body.new_password, 10);
-                User.update({
-                    password: hash,
-                    updated_at: today
-                }, {
+            const hash = bcrypt.hashSync(req.body.new_password, 10);
+            User.update({
+                password: hash,
+                updated_at: today
+            }, {
                     where: {
                         id: req.decoded.id
                     }

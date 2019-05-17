@@ -6,6 +6,8 @@ const cors = require('cors');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 var CronJob = require('cron').CronJob;
+const nodemailer = require('nodemailer');
+
 
 const authorize = require('../helpers/authorize');
 
@@ -19,6 +21,18 @@ const Breakdown = require('../models/breakdown');
 const Award_type = require('../models/award_type');
 const multichain = require('../helpers/multichain');
 
+process.env.SECRET_KEY = 'secret';
+process.env.EMAIL_ADDRESS = 'electronic.voting.system.enclave@gmail.com';
+process.env.EMAIL_PASSWORD = 'enclaveit@123';
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: `${process.env.EMAIL_ADDRESS}`,
+        pass: `${process.env.EMAIL_PASSWORD}`
+    },
+});
+
 router.use(cors());
 
 Award.hasOne(Winner, { foreignKey: 'id_award', as: 'winner', constraints: false });
@@ -30,6 +44,9 @@ User.hasOne(Winner, { foreignKey: 'id_winner', as: 'winner_name', constraints: f
 Breakdown.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name', constraints: false });
 
 Nominee.belongsTo(User, { foreignKey: 'id_nominee', as: 'nominee_name', constraints: false });
+
+Award.hasOne(Voter, { foreignKey: 'id_award', constraints: false })
+Voter.belongsTo(Award, { foreignKey: 'id_award', constraints: false })
 
 Award_type.hasMany(Award, { foreignKey: 'id', constraints: false });
 Award.belongsTo(Award_type, { foreignKey: 'type', constraints: false });
@@ -2215,6 +2232,7 @@ function checkDateAward() {
             } else {
                 //Check date
                 for (var i = 0; i < awards.length; i++) {
+
                     //Start award
                     if (awards[i].status == 1) {
                         if (awards[i].date_start <= today) {
@@ -2264,20 +2282,53 @@ function checkDateAward() {
         })
 }
 
-
-router.get('/get/123', (req, res) => {
-    multichain.initiateMultichain().getStreamKeySummary({
-        stream: "award_150",
-        key: "nominee_1",
-        mode: "jsonobjectmerge"
-    }, (err, info) => {
-        console.log('Response: ' + JSON.stringify(info));
-
-        res.header("Content-Type", 'application/json');
-
-        res.json({ liststream: info });
+function informUpcomingAward() {
+    let today = new Date();
+    Award.findAll({
+        where: {
+            status: {
+                [Op.eq]: 1,
+            }
+        }
     })
-})
+        .then(awards => {
+            if (awards.length == 0) {
+                console.log('There is no award for voting');
+            } else {
+                for (var i = 0; i < awards.length; i++) {
+                    let dayBefore = moment(awards[i].date_start).subtract(1, 'days').utc().format();
+                    if (moment(dayBefore).isBefore(today)) {
+                        sendEmailWhenStart(awards[i].id);
+                    }
+                }
+            }
+
+        })
+}
+
+function informAwardEndSoon() {
+    let today = new Date();
+    Award.findAll({
+        where: {
+            status: {
+                [Op.eq]: 2,
+            }
+        }
+    })
+        .then(awards => {
+            if (awards.length == 0) {
+                console.log('There is no award for voting');
+            } else {
+                for (var i = 0; i < awards.length; i++) {
+                    let dayBefore = moment(awards[i].date_end).subtract(1, 'days').utc().format();
+                    if (moment(dayBefore).isBefore(today)) {
+                        sendEmailWhenEnd(awards[i].id);
+                    }
+                }
+            }
+
+        })
+}
 
 function vote(id, amount) {
     Breakdown.findOne({
@@ -2314,7 +2365,187 @@ function vote(id, amount) {
         })
 }
 
+function sendEmailWhenStart(id) {
+    Voter.findAll({
+        where: {
+            id_award: id
+        },
+        include: [{
+            model: Award,
+            required: true,
+            attributes: ['year', 'date_start', 'date_end'],
+            include: [{
+                model: Award_type,
+                required: true,
+                attributes: ['name']
+            }]
+        }]
+    })
+        .then(voters => {
+            if (voters.length == 0) {
+                console.log('There is no voter');
+            } else {
+                const year = voters[0].awardDetail.year;
+                const date_start = voters[0].awardDetail.date_start;
+                const date_end = voters[0].awardDetail.date_end;
+                const name = voters[0].awardDetail.awardType.name;
+                for (i = 0; i < voters.length; i++) {
+                    User.findOne({
+                        where: {
+                            id: voters[i].id_user
+                        }
+                    })
+                        .then(user => {
+                            let mailOptions = {
+                                from: `electronic.voting.system.enclave@gmail.com`,
+                                to: user.email,
+                                subject: `A New Upcoming Award `,
+                                html: `Dear Mr/Ms <strong>${user.username}</strong>, <br></br>` +
+                                    `<strong>The ${year} ${name} Awards </strong>is coming and you have been chosen to be one of the people who determine the winner. <br></br>` +
+                                    `<strong>Valid time: </strong> <i>${date_start}</i> <strong>to </strong> <i>${date_end}</i>. <br></br>` +
+                                    `We welcome you to join in this award. Please take your time and click <a href = "http://localhost:4000/index">here</a> to vote for your favorite person. <br></br>` +
+                                    `Thanks and best regard! <br></br>` +
+                                    `Electronic Voting system.<br></br>` +
+                                    `--------------------------------------------------------------------------` +
+                                    `<ul style="color:red;font-size:15px">
+                                        <li><i>This email is sent automatically by Electronic Voting system. You do not need to reply this email.</i> </li>
+                                        <li><i>If you can not access to system, please send contact admin to: electronic.voting.system.enclave@gmail.com</i></li>
+                                    </ul>`
+                            }
 
+                            transporter.sendMail(mailOptions, (err, respone) => {
+                                if (err) {
+                                    console.log('Error when send email' + err);
+                                } else {
+                                    console.log('Send email successfully');
+                                }
+                            })
+                        })
+                        .catch(err => {
+                            console.log('Error' + err);
+                        })
+                }
+            }
+        })
+}
+
+function sendEmailWhenEnd(id) {
+    Voter.findAll({
+        where: {
+            id_award: id
+        },
+        include: [{
+            model: Award,
+            required: true,
+            attributes: ['year', 'date_start', 'date_end'],
+            include: [{
+                model: Award_type,
+                required: true,
+                attributes: ['name']
+            }]
+        }]
+    })
+        .then(voters => {
+            if (voters.length == 0) {
+                console.log('There is no voter');
+            } else {
+                const year = voters[0].awardDetail.year;
+                //const date_start = voters[0].awardDetail.date_start;
+                const date_end = voters[0].awardDetail.date_end;
+                const name = voters[0].awardDetail.awardType.name;
+                for (i = 0; i < voters.length; i++) {
+                    User.findOne({
+                        where: {
+                            id: voters[i].id_user
+                        }
+                    })
+                        .then(user => {
+                            let mailOptions = {
+                                from: `electronic.voting.system.enclave@gmail.com`,
+                                to: user.email,
+                                subject: `An Award Will End Soon `,
+                                html: `Dear Mr/Ms <strong>${user.username}</strong>, <br></br>` +
+                                    `<strong>The ${year} ${name} Awards </strong>is supposed to be end soon. <br></br>` +
+                                    `Please cast your vote before <strong>${date_end}</strong>. <br></br>` +
+                                    `Click <a href = "http://localhost:4000/index">here</a> to vote for your favorite person. <br></br>` +
+                                    `If you already voted for this award, please ignore this email.<br></br>` +
+                                    `Thanks and best regard! <br></br>` +
+                                    `Electronic Voting system. <br></br>` +
+                                    `-------------------------------------------------------------------------- <br></br>` +
+                                    `<ul style="color:red;font-size:15px">
+                                        <li><i>This email is sent automatically by Electronic Voting system. You do not need to reply this email.</i> </li>
+                                        <li><i>If you can not access to system, please send contact admin to: electronic.voting.system.enclave@gmail.com</i></li>
+                                    </ul>`
+                            }
+                            transporter.sendMail(mailOptions, (err, respone) => {
+                                if (err) {
+                                    console.log('Error when send email' + err);
+                                } else {
+                                    console.log('Send email successfully');
+                                }
+                            })
+                        })
+                        .catch(err => {
+                            console.log('Error' + err);
+                        })
+                }
+            }
+        })
+}
+
+
+
+// router.get('/test', (req, res) => {
+//     Voter.findAll({
+//         where: {
+//             id_award: 80
+//         },
+//         include: [{
+//             model: Award,
+//             required: true,
+//             attributes: ['year'],
+//             include: [{
+//                 model: Award_type,
+//                 required: true,
+//                 attributes: ['name']
+//             }]
+//         }]
+//     })
+//         .then(voters => {
+//             res.status(200).send(voters);
+//             if (voters.length == 0) {
+//                 console.log('There is no voter');
+//             } else {
+//                 for (i = 0; i < voters.length; i++) {
+//                     User.findOne({
+//                         where: {
+//                             id: voters[i].id_user
+//                         }
+//                     })
+//                         .then(user => {
+//                             let mailOptions = {
+//                                 from: `electronic.voting.system.enclave@gmail.com`,
+//                                 to: user.email,
+//                                 subject: `New Award Has Been Started`,
+//                                 html: `Dear Mr/Ms <strong>${user.username}</strong>, <br></br>` +
+//                                     ``
+//                             }
+
+//                             // transporter.sendMail(mailOptions, (err, respone) => {
+//                             //     if (err) {
+//                             //         console.log('Error when send email' + err);
+//                             //     } else {
+//                             //         console.log('Send email successfully');
+//                             //     }
+//                             // })
+//                         })
+//                         .catch(err => {
+//                             console.log('Error' + err);
+//                         })
+//                 }
+//             }
+//         })
+// })
 console.log('Before job instantiation');
 const checkAward = new CronJob('0,30 * * * * *', function () {
     const d = new Date();
@@ -2323,7 +2554,7 @@ const checkAward = new CronJob('0,30 * * * * *', function () {
     console.log('--------------');
     console.log('Midnight:', d);
     console.log('Now: ', a.format());
-    // console.log('Now: ', a.ict().format());
+
 });
 
 const updateAward = new CronJob('0,30 * * * * *', function () {
@@ -2335,8 +2566,16 @@ const updateAward = new CronJob('0,30 * * * * *', function () {
     console.log('Now: ', a.format());
 });
 
+const informAward = new CronJob('0 0 0 * * *', function () {
+    // informUpcomingAward();
+    // informAwardEndSoon();
+    console.log('--------------');
+});
+
 console.log('After job instantiation');
 // checkAward.start();
 // checkAward.stop();
 // updateAward.start();
+// informAward.start();
+// informAward.stop();
 module.exports = router;

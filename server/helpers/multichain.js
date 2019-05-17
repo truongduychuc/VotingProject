@@ -1,9 +1,9 @@
-initiateMultichain = function() {
+initiateMultichain = function () {
     let multichain = require("multichain-node")({
-        port: 9736,
+        port: 6740,
         host: '127.0.0.1',
         user: "multichainrpc",
-        pass: "GLn6pJfAu2aFQrdJVh9XmtFFng9NHw7WukCLyGSqZSgQ"
+        pass: "HnegVBBLV2Jt3osLHQx2vFE5KuHPsEWdUSqrUr3eXNdL"
     });
     return multichain;
 }
@@ -148,17 +148,17 @@ function setAsset(stream_name, asset_name, token_name, total_voter) {
 
 function sendTokenToVoter(stream_name, asset_name, token_name, id) {
     multichain.listStreamKeyItems({
-            stream: stream_name,
-            key: asset_name,
-            verbose: true
-        })
+        stream: stream_name,
+        key: asset_name,
+        verbose: true
+    })
         .then(asset => {
             let asset_txid = asset[0].txid;
             console.log('123 ' + asset_txid);
             multichain.getStreamItem({
-                    stream: stream_name,
-                    txid: asset_txid
-                })
+                stream: stream_name,
+                txid: asset_txid
+            })
                 .then(result => {
                     //Get address of asset
                     address1 = result.data.json.address;
@@ -253,9 +253,9 @@ function test() {
 function getVoterInfo(data) {
     let stream_name = 'award_' + data.id;
     multichain.listStreamKeyItems({
-            stream: stream_name,
-            key: 'voter'
-        })
+        stream: stream_name,
+        key: 'voter'
+    })
         .then(voters => {
             console.log('Get list voter successfully');
             for (var i = 0; i < voters.length; i++) {
@@ -263,16 +263,16 @@ function getVoterInfo(data) {
                 let txid = voters[i].txid;
                 //Check id voter
                 multichain.getStreamItem({
-                        stream: stream_name,
-                        txid: txid
-                    })
+                    stream: stream_name,
+                    txid: txid
+                })
                     .then(voter => {
                         let id_voter = voter.data.json.id;
                         if (data.id_voter == id_voter) {
                             let address = voter.data.json.address;
                             multichain.getAddressBalances({
-                                    address: address
-                                })
+                                address: address
+                            })
                                 .then(data => {
                                     console.log(data)
                                     if (!data) {
@@ -624,9 +624,9 @@ function sendAssetFrom(address1, address2, token_name, amount) {
 
 function listStreamItems(stream_name) {
     multichain.listStreamItems({
-            stream: stream_name,
-            verbose: true
-        })
+        stream: stream_name,
+        verbose: true
+    })
         .then(list => {
             console.log(list)
             return list;
