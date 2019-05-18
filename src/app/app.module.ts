@@ -12,7 +12,6 @@ import {LoginModalComponent} from './default/login-modal/login-modal.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
-import { ConfirmModalComponent } from './modals/confirm-modal/confirm-modal.component';
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -59,8 +58,7 @@ const customNotifierOptions: NotifierOptions = {
     AppComponent,
     DefaultComponent,
     LoginModalComponent,
-    PageNotFoundComponent,
-    ConfirmModalComponent
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
