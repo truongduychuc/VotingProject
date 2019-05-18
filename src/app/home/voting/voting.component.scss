@@ -14,8 +14,11 @@ $voting-header-radius: 7px;
   .col-md-8 {
     .award-container {
       .award-logo {
-        width: 45%;
+        width: 50%;
         height: 200px;
+        @media (min-width: 768px) {
+          width: 45%;
+        }
         @media (min-width: 1366px) {
           width: 30%;
           margin-left: 20%;

@@ -3,7 +3,6 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AwardService} from '../../_services/award.service';
 import {AccountService} from '../../_services/account.service';
 import {Award} from '../../_models/award';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
   selector: 'app-voting',
@@ -15,6 +14,7 @@ export class VotingComponent implements OnInit {
   voting: FormGroup;
   listAwards: any[];
   listNominees: any[];
+  errorMessage: string;
   constructor(private formBuilder: FormBuilder, private awardService: AwardService, private userService: AccountService) { }
 
   ngOnInit() {
@@ -68,14 +68,18 @@ export class VotingComponent implements OnInit {
   // onSubmit
   // send the result after finishing up choosing nominee for all places
   sendVotingElection() {
-    console.log(this.voting.value);
     if (this.voting.invalid) {
       return;
     }
     this.awardService.vote(this.voting.value).subscribe( successMes => {
       alert(successMes);
     }, err => {
-      console.log(err);
+      // display error message to alert, the message is returned from error interceptor
+      if (typeof err !== 'string') {
+        console.log('Error was not handled properly by interceptor: ' + err);
+        return;
+      }
+      this.errorMessage = err;
     });
   }
   // validation for duplicated selection
@@ -87,36 +91,57 @@ export class VotingComponent implements OnInit {
       if (first.errors && !first.errors.duplicated) {
         return;
       } else {
-        if (first.value === second.value) {
+        if (first.value === second.value && first.value !== third.value) {
           first.setErrors({duplicated: true, message: 'Duplicated selection!'});
           second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          third.setErrors(null);
         }
-        if (first.value === third.value) {
+        if (first.value === third.value && first.value !== second.value) {
           first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          second.setErrors(null);
+          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
+        if (first.value === third.value && first.value === second.value && second.value === third.value) {
+          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
           third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
       }
       if (second.errors && !second.errors.duplicated) {
         return;
       } else {
-        if (second.value === third.value) {
+        if (second.value === third.value && second.value !== first.value) {
+          first.setErrors(null);
           second.setErrors({duplicated: true, message: 'Duplicated selection!'});
           third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
-        if (first.value === second.value) {
+        if (first.value === second.value && second.value !== third.value) {
           first.setErrors({duplicated: true, message: 'Duplicated selection!'});
           second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          third.setErrors(null);
+        }
+        if (first.value === third.value && first.value === second.value && second.value === third.value) {
+          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
       }
       if (third.errors && !third.errors.duplicated) {
         return;
       } else {
-        if (second.value === third.value) {
+        if (second.value === third.value && third.value !== first.value) {
+          first.setErrors(null);
           second.setErrors({duplicated: true, message: 'Duplicated selection!'});
           third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
-        if (first.value === third.value) {
+        if (first.value === third.value && third.value !== second.value) {
           first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          second.setErrors(null);
+          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        }
+        if (first.value === third.value && first.value === second.value && second.value === third.value) {
+          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
           third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
       }
@@ -170,17 +195,16 @@ export class VotingComponent implements OnInit {
     this.voting.controls['id'].setValue(null);
     // refresh list of awards
     this.getListAwardForVoting();
-    this.voting.controls['first_vote'].setValue(null);
-    this.voting.controls['second_vote'].setValue(null);
-    this.voting.controls['third_vote'].setValue(null);
+    this.resetNomineeSelections();
   }
   resetNomineeSelections() {
     // refresh selections without refreshing awards
+    this.errorMessage = null;
     this.voting.controls['first_vote'].setValue(null);
     this.voting.controls['second_vote'].setValue(null);
     this.voting.controls['third_vote'].setValue(null);
   }
-  test() {
-    console.log(this.voting.controls);
-  }
+  // test() {
+  //   console.log(this.voting.controls);
+  // }
 }

@@ -4,7 +4,14 @@
   </div>
   <div class="card-body">
     <div class="voting-custom">
-      <form (ngSubmit)="sendVotingElection()" [formGroup]="voting">
+      <div *ngIf="!listAwards" class="row">
+        <div class="col-12 pl-5 pr-5">
+          <ngb-alert [dismissible]="false" type="danger">
+            There is no available award for voting, please come back later!
+          </ngb-alert>
+        </div>
+      </div>
+      <form *ngIf="listAwards" (ngSubmit)="sendVotingElection()" [formGroup]="voting">
         <div class="row">
           <div class="col-12">
             <div class="card shadow">
@@ -31,7 +38,7 @@
                         <div *ngIf="getAward(formControls['id'].value).logo_url" class="award-logo img-thumbnail">
                           <img [src]="serverURL + getAward(formControls['id'].value).logo_url">
                         </div>
-                        <div class="award-title d-flex flex-column ml-4">
+                        <div class="award-title d-flex flex-column ml-md-4">
                           <h5 class="award-name">
                             {{getAward(formControls['id'].value).awardType.name | uppercase}}
                           </h5>
@@ -147,7 +154,7 @@
                   <div class="col-12">
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
-                      <select (change)="test()" formControlName="third_vote" class="form-control">
+                      <select formControlName="third_vote" class="form-control">
                         <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
@@ -172,7 +179,15 @@
             </div>
           </div>
         </div>
+        <div *ngIf="errorMessage" class="row mt-4 justify-content-center">
+          <div class="col-12">
+            <ngb-alert class="alert-danger alert" (close)="errorMessage = null" type="danger">
+              {{errorMessage}}
+            </ngb-alert>
+          </div>
+        </div>
         <div class="mt-4 d-flex justify-content-center flex-wrap">
+          <!--[disabled]="voting.invalid"-->
           <button [disabled]="voting.invalid" type="submit" class="btn btn-success btn-rounded m-2">Vote</button>
           <button (click)="resetAllSelections()" type="button" class="btn btn-outline-success btn-rounded m-2">Reset</button>
         </div>
