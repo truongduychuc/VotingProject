@@ -6,6 +6,8 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditingModalComponent} from './editing-modal/editing-modal.component';
 import {CreatingUserModalComponent} from './creating-user-modal/creating-user-modal.component';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.component';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-employee-list',
@@ -29,7 +31,7 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
   // for determining whether the current user is admin
   currentUser: User;
   previousSearchText: string;
-  constructor(private accountService: AccountService, private authService: AuthenticationService, private modalService: NgbModal) {
+  constructor(private accountService: AccountService, private authService: AuthenticationService, private modalService: NgbModal, private notifier: NotifierService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   get isAdmin() {
@@ -39,23 +41,26 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
     this.reloadPreviousStatus();
   }
   deleteUser(id: number) {
-    console.log(id);
-    this.accountService.deleteUser(id).subscribe(
-      (res: any) => {
-        alert(res.message);
-        this.getUserListPerPage(); // reload table
-      },
-      (deletingError: any) => {
-        console.log(deletingError);
-      }
-    );
+    const modalRef = this.modalService.open(ConfirmModalComponent, {size: 'sm'});
+    modalRef.result.then( () => {
+      this.accountService.deleteUser(id).subscribe(
+        (res: any) => {
+          this.getUserListPerPage(); // reload table
+          this.notifier.notify('info', 'User deleted successfully');
+        },
+        (deletingError: any) => {
+          this.notifier.notify('error', 'There was an error!');
+          console.log(deletingError);
+        }
+      );
+    });
   }
 
   resetPassword(id: number) {
     this.accountService.resetPassword(id).subscribe(
       (res: any) => {
-        alert(res.message);
         this.getUserListPerPage();
+        this.notifier.notify('info', 'Password reset successfully!');
       }, err => {
         console.log(err);
       }
@@ -268,21 +273,21 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
    removeStatus() {
    sessionStorage.removeItem('lastEmployeeParams');
   }
+  // edit a specific user
   openEditingModal(id: number) {
     const modalRef = this.modalService.open(EditingModalComponent, {centered: true});
     modalRef.componentInstance.id = id;
-    modalRef.result.then(value => {
+    modalRef.result.then(successMessage => {
       this.getUserListPerPage();
-    }, reason => {
-      console.log(reason);
+      this.notifier.notify('info', successMessage);
     });
   }
+  // create new user
   openCreatingModal() {
     const modalRef = this.modalService.open(CreatingUserModalComponent, {centered: true, backdrop: 'static'});
-    modalRef.result.then(value => {  // had created successfully
+    modalRef.result.then(successMessage => {  // had created successfully
       this.getUserListPerPage();
-    }, reason => {
-      console.log(reason);
+      this.notifier.notify('info', successMessage);
     });
   }
 

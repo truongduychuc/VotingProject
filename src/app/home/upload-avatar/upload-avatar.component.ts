@@ -56,7 +56,7 @@ export class UploadAvatarComponent implements OnInit {
     }
     this.imageService.uploadAvatar(this.uploadAvatar.controls['file'].value)
       .subscribe( () => {
-        this.activeModal.close('Updated avatar successfully!');
+        this.activeModal.close('Avatar uploaded successfully!');
       }, errUploading => {
         console.log(errUploading);
       });

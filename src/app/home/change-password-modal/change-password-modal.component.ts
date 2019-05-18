@@ -32,9 +32,8 @@ export class ChangePasswordModalComponent implements OnInit {
     let new_password = this.changingPasswordForm.controls['newPassword'].value;
     console.log(old_password + ' ' + new_password);
     this.accountService.changePassword(old_password, new_password).subscribe(
-      (successMessageObj:any) => {
-        console.log(successMessageObj);
-        alert(successMessageObj.message);
+      (successMessageObj: any) => {
+        this.activeModal.close('Password changed successfully!');
       }, error1 => {
         console.log(JSON.stringify(error1));
       }

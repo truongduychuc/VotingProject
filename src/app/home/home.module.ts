@@ -28,8 +28,48 @@ import { EditingAwardModalComponent } from './award-management/editing-award-mod
 import { VotingBreakdownComponent } from './award-management/voting-breakdown/voting-breakdown.component';
 import {DateFormatPipe} from '../_pipes/date-format.pipe';
 import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
-import {NotifierModule} from 'angular-notifier';
-
+import {ConfirmModalComponent} from '../modals/confirm-modal/confirm-modal.component';
+import {NotifierModule, NotifierOptions} from 'angular-notifier';
+const customNotifierOptions: NotifierOptions = {
+  position: {
+    horizontal: {
+      position: 'left',
+      distance: 12
+    },
+    vertical: {
+      position: 'bottom',
+      distance: 12,
+      gap: 10
+    }
+  },
+  theme: 'material',
+  behaviour: {
+    autoHide: 5000,
+    onClick: 'hide',
+    onMouseover: 'pauseAutoHide',
+    showDismissButton: true,
+    stacking: 4
+  },
+  animations: {
+    enabled: true,
+    show: {
+      preset: 'slide',
+      speed: 300,
+      easing: 'ease'
+    },
+    hide: {
+      preset: 'fade',
+      speed: 300,
+      easing: 'ease',
+      offset: 50
+    },
+    shift: {
+      speed: 300,
+      easing: 'ease'
+    },
+    overlap: 150
+  }
+};
 @NgModule({
   declarations: [
     ChangePasswordModalComponent,
@@ -54,7 +94,8 @@ import {NotifierModule} from 'angular-notifier';
     EditingAwardModalComponent,
     VotingBreakdownComponent,
     DateFormatPipe,
-    DatetimeFormatPipe
+    DatetimeFormatPipe,
+    ConfirmModalComponent
   ],
   imports: [
     CommonModule,
@@ -64,7 +105,7 @@ import {NotifierModule} from 'angular-notifier';
     HomeRoutingModule,
     NgbModule,
     NgSelectModule,
-    NotifierModule
+    NotifierModule.withConfig(customNotifierOptions)
   ],
   providers: [
     NgbActiveModal,
@@ -76,7 +117,8 @@ import {NotifierModule} from 'angular-notifier';
     AddAwardModalComponent,
     ChangePasswordModalComponent,
     UploadAvatarComponent,
-    UploadLogoComponent
+    UploadLogoComponent,
+    ConfirmModalComponent
   ]
 })
 export class HomeModule { }

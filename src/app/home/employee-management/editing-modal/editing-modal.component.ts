@@ -52,15 +52,14 @@ export class EditingModalComponent implements OnInit {
       this.generateForm();
       if(!userProfileRes.hasOwnProperty('directManager')) {
         this.message = userProfileRes.message;
-        console.log(userProfileRes.message);
-      }
-      else {
-        console.log('Has direct manager!');
+        // console.log(userProfileRes.message);
+      } else {
+        // console.log('Has direct manager!');
         this.directManager = userProfileRes.directManager;
       }
     }, (err: HttpErrorResponse) => {
       console.log(err);
-    })
+    });
   }
   getAllRoles() {
     this.roleService.getAllRoles().subscribe((rolesRes: Role[]) => {
@@ -75,13 +74,12 @@ export class EditingModalComponent implements OnInit {
       this.teams = teamsRes;
     }, error1 => {
       console.log(error1);
-    })
+    });
   }
   updateUserProfile() {
     this.accountService.updateProfileForId(this.editingUser.value, this.id).subscribe(
-      (res:any) => {
-        this.activeModal.close('Success');
-        alert(res.message);
+      (res: any) => {
+        this.activeModal.close('User updated successfully!');
       },
       error1 => {
         console.log(error1);

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AccountService} from '../../../_services/account.service';
-import {Router} from "@angular/router";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {TeamService} from "../../../_services/team.service";
-import {Team} from "../../../_models/team";
+import {Router} from '@angular/router';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {TeamService} from '../../../_services/team.service';
+import {Team} from '../../../_models/team';
 
 @Component({
   selector: 'app-create-user-form',
@@ -51,14 +51,14 @@ export class CreatingUserModalComponent implements OnInit {
       return;
     }
     // if position field was not chosen, it would be assigned 99 automatically
-    if(this.createUser.controls['id_role'].value === undefined || this.createUser.controls['id_role'].value === null) {
+    if (this.createUser.controls['id_role'].value === undefined || this.createUser.controls['id_role'].value === null) {
       this.createUser.controls['id_role'].setValue('');
     }
     console.log(this.createUser.value);
   // using service send post method, and retrieve message and error
     this.accountService.registerNewUser(this.createUser.value).subscribe(data => {
       alert(data.message);
-      this.activeModal.close('Created user successfully!');
+      this.activeModal.close('User created successfully!');
 
     }, error1 => console.log(error1));
   }

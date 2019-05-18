@@ -36,23 +36,30 @@ export class NavbarComponent implements OnInit {
   }
   getCurrentUserProfile() {
     this.accountService.getPersonalProfile().subscribe(
-      res => {
+      (res: any) => {
+        if (!res.hasOwnProperty('user')) {
+          console.log('There\'s no property user in response profile!');
+          return;
+        }
         this.currentUserProfile = res.user;
-        console.log(res.user);
+        // console.log(res.user);
       }, error1 => {
         console.log(error1);
       }
     );
   }
   openChangingPasswordModal() {
-    this.modalService.open(ChangePasswordModalComponent);
+    const modalRef = this.modalService.open(ChangePasswordModalComponent);
+    modalRef.result.then(successMessage => {
+      this.notifier.notify('info', successMessage);
+    });
   }
   openUploadingAvatarModal() {
     const modalRef = this.modalService.open(UploadAvatarComponent);
     modalRef.componentInstance.current_avt_url = this.currentUserProfile.ava_url;
-    modalRef.result.then(finished => {
+    modalRef.result.then((success) => {
+      this.notifier.notify('info', success);
       this.getCurrentUserProfile();
-      this.notifier.notify('info', finished);
     }, reason => {
       console.log(reason);
     });
