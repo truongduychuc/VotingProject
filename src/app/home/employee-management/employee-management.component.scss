@@ -57,6 +57,33 @@ table{
   }
   td {
     word-wrap: break-word;
+    .action-btn {
+      cursor: pointer;
+      padding: 0.6em 1em;
+      margin: 0 0.2em;
+      background-color: transparent;
+      &.edit {
+        i {
+          color: #308ee0;
+        }
+      }
+      &.delete {
+        i {
+          color: #ff3547;
+        }
+      }
+      &.reset {
+        i {
+          color: #2a2b32;
+        }
+      }
+      i {
+        &:hover {
+          color: gray;
+          box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.18), 0 9px 15px 0 rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
   }
   .btn {
     border: none;
