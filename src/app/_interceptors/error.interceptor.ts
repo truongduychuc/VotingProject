@@ -29,7 +29,6 @@ export class ErrorInterceptor implements HttpInterceptor{
       }
       if (err.status === 400) {
         console.log(err.error.message);
-        alert(err.error.message);
       }
       if (err.status === 404) {
         console.log(err.error.message);
