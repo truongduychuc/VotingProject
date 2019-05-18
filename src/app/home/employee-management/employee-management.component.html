@@ -5,7 +5,7 @@
   </div>
       <div class="card-body">
         <div class="row">
-          <div class="col-sm-6 d-flex justify-content-start mb-2 mb-sm-0">
+          <div class="col-sm-6 d-flex justify-content-center justify-content-md-start mb-2 mb-sm-0">
             <div class="form-group">
             <label class="col-form-label">
                   Show
@@ -16,7 +16,7 @@
                 </label>
             </div>
           </div>
-          <div class="col-sm-6 d-flex justify-content-start justify-content-md-end mt-2 mt-sm-0">
+          <div class="col-sm-6 d-flex justify-content-center justify-content-md-end mt-2 mt-sm-0">
             <button class="btn btn-rounded btn-info mr-1" *ngIf="isAdmin" (click)="openCreatingModal()" title="Create new user"><i class="fas fa-user-plus"></i> <span class="text-small d-none d-xl-inline-block">New</span></button>
             <div class="form-group">
                 <input type="text" id="search" class="form-control rounded-pill" (keyup)="searchOnText()" [(ngModel)]="currentSearchText" placeholder="Search...">
@@ -27,7 +27,7 @@
 
 
 <!--        table-->
-        <div class="row">
+        <div *ngIf="!error" class="row">
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead>
@@ -51,7 +51,7 @@
                   <th *ngIf="isAdmin" class="text-center" align="center" scope="col">Action</th>
                 </tr>
                 </thead>
-                <tbody *ngIf="!error"> <!--There's result from search operator-->
+                <tbody> <!--There's result from search operator-->
                 <tr *ngFor="let user of usersList">
                   <td *ngIf="user?.first_name?.toUpperCase() === 'ADMIN'">Admin</td>
                   <td *ngIf="user?.first_name?.toUpperCase() !== 'ADMIN'">{{user.first_name}} ({{user.english_name}}) {{user.last_name|uppercase}}</td>
@@ -71,13 +71,17 @@
                   </td>
                 </tr>
                 </tbody>
-                <tfoot *ngIf="error">
-                <!--If search result is empty-->
-                <h4 class="text-danger">No result matched</h4>
-                </tfoot>
               </table>
             </div>
           </div>
+        <div class="row" *ngIf="error">
+          <div class="col-12">
+            <!--If search result is empty-->
+            <ngb-alert (close)="error = null; currentSearchText = ''" type="danger">
+              No record matched!
+            </ngb-alert>
+          </div>
+        </div>
         <!--Pagination -->
         <div *ngIf="!error" class="row">
           <div class="col-sm-6 d-flex justify-content-sm-start p-0">
