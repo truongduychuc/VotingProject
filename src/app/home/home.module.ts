@@ -28,6 +28,7 @@ import { EditingAwardModalComponent } from './award-management/editing-award-mod
 import { VotingBreakdownComponent } from './award-management/voting-breakdown/voting-breakdown.component';
 import {DateFormatPipe} from '../_pipes/date-format.pipe';
 import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
+import {NotifierModule} from 'angular-notifier';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
     FormsModule,
     HomeRoutingModule,
     NgbModule,
-    NgSelectModule
+    NgSelectModule,
+    NotifierModule
   ],
   providers: [
     NgbActiveModal,
