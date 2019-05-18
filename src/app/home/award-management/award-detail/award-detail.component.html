@@ -9,14 +9,17 @@
                 {{awardDetail?.year}}
               </div>
               <h4 class="mb-0 ml-2">{{awardDetail?.awardType.name | uppercase}}</h4>
-              <small class="ml-1" *ngIf="awardDetail?.status > 1">
-                <em>(Is taking place)</em>
-                <a class="text-info ml-1" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
-              </small>
             </div>
             <div class="col-md-6 d-flex justify-content-center p-sm-2 p-0 justify-content-md-end">
               <button *ngIf="isAdmin" class="btn btn-success btn-rounded mr-2">EDIT</button>
               <button class="btn btn-outline-success btn-rounded ml-2" routerLink="/home/award-management">BACK TO LIST</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 d-flex justify-content-center justify-content-sm-start">
+              <p class="mt-1 text-small text-gray" *ngIf="awardDetail?.status > 1">This award is taking place.
+                <a class="text-info ml-1" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
+              </p>
             </div>
           </div>
         </div>
@@ -34,14 +37,14 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <th (click)="sortOnColumn('year','awardDetail')">Year
+                <th class="hand-cursor" title="Click to change sort direction" (click)="sortOnColumn('year','awardDetail')">Year
                   <!--Change icon by sort direction-->
                   <i class="sort-icon" [hidden]="!(currentSortedColumn == 'year')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
                 </th>
-                <th (click)="sortOnColumn('first_name', 'winner_name')">Winner
+                <th class="hand-cursor" title="Click to change sort direction" (click)="sortOnColumn('first_name', 'winner_name')">Winner
                   <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
                 </th>
-                <th (click)="sortOnColumn('percent', 'winner')">% of total votes
+                <th class="hand-cursor" title="Click to change sort direction" (click)="sortOnColumn('percent', 'winner')">% of total votes
                   <i class="sort-icon" [hidden]="!(currentSortedColumn == 'percent')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
                 </th>
                 <th>Result</th>
@@ -58,7 +61,7 @@
                 }}
               </td>
               <td>{{pastWinner?.winner?.percent}}</td>
-              <td><a class="small" routerLink="/home/voting-breakdown/{{pastWinner.id}}">View Result</a></td>
+              <td><a class="text-info" [routerLink]="['/home/voting-breakdown/', pastWinner.id]">View Result</a></td> <!--Another way of /home/voting-breakdown/{{id}}-->
             </tr>
             </tbody>
           </table>
