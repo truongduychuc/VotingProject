@@ -6,6 +6,7 @@ import {AuthenticationService} from '../../_services/authentication.service';
 import {User} from '../../_models/user';
 import {ChangePasswordModalComponent} from '../change-password-modal/change-password-modal.component';
 import {UploadAvatarComponent} from '../upload-avatar/upload-avatar.component';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +18,8 @@ export class NavbarComponent implements OnInit {
   currentUserProfile: User;
   public sidebarOpened = false;
   constructor(private authService: AuthenticationService, private accountService: AccountService,
-              private router: Router, config: NgbDropdownConfig, private modalService: NgbModal) {
+              private router: Router, config: NgbDropdownConfig, private modalService: NgbModal,
+              private notifier: NotifierService) {
     config.placement = 'bottom';
   }
   toggleOffcanvas() {
@@ -50,6 +52,7 @@ export class NavbarComponent implements OnInit {
     modalRef.componentInstance.current_avt_url = this.currentUserProfile.ava_url;
     modalRef.result.then(finished => {
       this.getCurrentUserProfile();
+      this.notifier.notify('info', finished);
     }, reason => {
       console.log(reason);
     });
