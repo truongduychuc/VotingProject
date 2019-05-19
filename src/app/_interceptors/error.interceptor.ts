@@ -10,11 +10,12 @@ import {
 import {Observable, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {AuthenticationService} from '../_services/authentication.service';
 
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor{
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthenticationService) {
   }
  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(tap(evt => {
@@ -28,8 +29,9 @@ export class ErrorInterceptor implements HttpInterceptor{
     }), catchError((err: HttpErrorResponse) => {
       if (err.status === 401) {
         console.log(err.error.message);
+        this.authService.logout();
         // this.notifier.notify('error', err.error.message);
-        this.router.navigate(['default']);
+        this.router.navigate(['start-page']);
       }
       if (err.status === 400) {
         // this.notifier.notify('error', err.error.message);
