@@ -1,3 +1,10 @@
-<p>
-  confirm-modal works!
-</p>
+<div [ngClass]="themeColor" class="modal-header justify-content-center">
+  <p class="heading">{{title}}</p>
+</div>
+<div class="modal-body">
+  <small>{{content}}</small>
+</div>
+<div class="modal-footer justify-content-center">
+  <button [ngClass]="'btn-outline-' + buttonColor" class="btn btn-rounded m-sm-3 m-1" (click)="activeModal.close('Yes!')">YES</button>
+  <button [ngClass]="'btn-' + buttonColor" class="btn btn-rounded m-sm-3 m-1" (click)="activeModal.dismiss('Cancel!')">NO</button>
+</div>
