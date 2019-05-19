@@ -3,6 +3,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AwardService} from '../../_services/award.service';
 import {AccountService} from '../../_services/account.service';
 import {Award} from '../../_models/award';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.component';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-voting',
@@ -15,7 +18,8 @@ export class VotingComponent implements OnInit {
   listAwards: any[];
   listNominees: any[];
   errorMessage: string;
-  constructor(private formBuilder: FormBuilder, private awardService: AwardService, private userService: AccountService) { }
+  constructor(private formBuilder: FormBuilder, private awardService: AwardService,
+              private userService: AccountService, private modalService: NgbModal, private notifier: NotifierService) { }
 
   ngOnInit() {
     this.getListAwardForVoting();
@@ -71,15 +75,23 @@ export class VotingComponent implements OnInit {
     if (this.voting.invalid) {
       return;
     }
-    this.awardService.vote(this.voting.value).subscribe( successMes => {
-      alert(successMes);
-    }, err => {
-      // display error message to alert, the message is returned from error interceptor
-      if (typeof err !== 'string') {
-        console.log('Error was not handled properly by interceptor: ' + err);
-        return;
-      }
-      this.errorMessage = err;
+    const modalRef = this.modalService.open(ConfirmModalComponent, {size: 'sm'});
+    modalRef.componentInstance.title = 'Confirmation';
+    modalRef.componentInstance.content = 'Are you sure with your voting selections?'
+    modalRef.componentInstance.type = 'primary';
+    modalRef.result.then( accept => {
+      this.awardService.vote(this.voting.value).subscribe( (successMes: string) => {
+        this.notifier.notify('info', 'Voted successfully!');
+      }, err => {
+        // display error message to alert, the message is returned from error interceptor
+        if (typeof err !== 'string') {
+          console.log('Error was not handled properly by interceptor: ' + err);
+          return;
+        }
+        this.errorMessage = err;
+      });
+    }, cancel => {
+      return;
     });
   }
   // validation for duplicated selection

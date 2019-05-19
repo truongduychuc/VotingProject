@@ -42,6 +42,8 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
   }
   deleteUser(id: number) {
     const modalRef = this.modalService.open(ConfirmModalComponent, {size: 'sm'});
+    modalRef.componentInstance.title = 'Confirmation';
+    modalRef.componentInstance.content = 'Are you sure to delete this user?';
     modalRef.result.then( () => {
       this.accountService.deleteUser(id).subscribe(
         (res: any) => {
@@ -53,6 +55,9 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
           console.log(deletingError);
         }
       );
+    }, dismiss => { // cancelled deleting user
+      // console.log(dismiss);
+      return;
     });
   }
 
