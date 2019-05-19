@@ -25,7 +25,6 @@ export class AccountService {
       old_password: current_password,
       new_password: new_password
     }
-    console.log(changePasswordObj);
     return this.httpClient.put(this.serverURL + 'users/change_password', changePasswordObj);
   }
   getUserProfileById(id: number): Observable<any>{ // for role admin
@@ -43,7 +42,6 @@ export class AccountService {
   getUsersList(params?: HttpParams): Observable<any> {
     const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
     // passed
-      console.log(params);
       let apiURL: string;
       if (currentUser.position.toUpperCase() === 'ADMIN') {
         apiURL = 'users/list/admin';
