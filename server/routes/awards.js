@@ -1507,154 +1507,174 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                                         })
                                                                             .then(nominees => {
                                                                                 console.log('Get list nominee successfully');
-                                                                                for (var i = 0; i < nominees.length; i++) {
-                                                                                    let txid1 = nominees[i].txid;
-                                                                                    multichain.initiateMultichain().getStreamItem({
-                                                                                        stream: stream_name,
-                                                                                        txid: txid1
-                                                                                    })
-                                                                                        .then(nominee => {
-                                                                                            console.log('Get info nominee successfully');
-                                                                                            let id_nominee = nominee.data.json.id;
-                                                                                            let address2 = nominee.data.json.address;
-                                                                                            //First vote
-                                                                                            if (data.id_nominee_first == id_nominee) {
-                                                                                                let amount = 5;
-
-                                                                                                //Update result to database
-                                                                                                // vote(data.id_nominee_first, amount);
-
-                                                                                                console.log('Determined first_vote user');
-                                                                                                // console.log(address1, address2, token_name, amount);
-                                                                                                multichain.initiateMultichain().sendAssetFrom({
-                                                                                                    from: address1,
-                                                                                                    to: address2,
-                                                                                                    asset: token_name,
-                                                                                                    qty: amount
-                                                                                                })
-                                                                                                    .then(() => {
-                                                                                                        console.log('Send token to first_vote user successfully');
-                                                                                                        multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                            stream: stream_name,
-                                                                                                            key: key_name1,
-                                                                                                            mode: 'jsonobjectmerge'
-                                                                                                        })
-                                                                                                            .then(votes => {
-                                                                                                                let voteChange = votes.json.first_votes + 1;
-                                                                                                                multichain.initiateMultichain().publish({
-                                                                                                                    stream: stream_name,
-                                                                                                                    key: key_name1,
-                                                                                                                    data: {
-                                                                                                                        "json": {
-                                                                                                                            "first_votes": voteChange,
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                })
-                                                                                                            })
-                                                                                                            .catch(err => {
-                                                                                                                console.log('Error when merge votes ' + err);
-                                                                                                            })
-                                                                                                    })
-                                                                                                    .catch(err => {
-                                                                                                        console.log('Error when send token ' + err);
-                                                                                                    })
-                                                                                            }
-
-                                                                                            //Second vote
-                                                                                            if (data.id_nominee_second == id_nominee) {
-                                                                                                let amount = 3;
-
-                                                                                                //Update result to database
-                                                                                                // vote(data.id_nominee_second, amount);
-
-                                                                                                console.log('Determined second_vote user');
-                                                                                                multichain.initiateMultichain().sendAssetFrom({
-                                                                                                    from: address1,
-                                                                                                    to: address2,
-                                                                                                    asset: token_name,
-                                                                                                    qty: amount
-                                                                                                })
-                                                                                                    .then(() => {
-                                                                                                        console.log('Send token to second_vote user successfully');
-
-                                                                                                        multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                            stream: stream_name,
-                                                                                                            key: key_name2,
-                                                                                                            mode: 'jsonobjectmerge'
-                                                                                                        })
-                                                                                                            .then(votes => {
-                                                                                                                let voteChange = votes.json.second_votes + 1;
-                                                                                                                multichain.initiateMultichain().publish({
-                                                                                                                    stream: stream_name,
-                                                                                                                    key: key_name2,
-                                                                                                                    data: {
-                                                                                                                        "json": {
-                                                                                                                            "second_votes": voteChange,
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                }
-
-                                                                                                                )
-                                                                                                            })
-                                                                                                            .catch(err => {
-                                                                                                                console.log('Error when merge votes ' + err);
-                                                                                                                // res.status(400).send({ message: 'Error when merge token ' });
-                                                                                                            })
-                                                                                                    })
-                                                                                                    .catch(err => {
-                                                                                                        console.log('Error when send token ' + err);
-                                                                                                        //res.status(400).send({ message: 'Error when send token ' });
-                                                                                                    })
-                                                                                            }
-
-                                                                                            // Third_vote
-                                                                                            if (data.id_nominee_third == id_nominee) {
-                                                                                                let amount = 1;
-
-                                                                                                //Update result to database
-                                                                                                // vote(data.id_nominee_third, amount);
-
-                                                                                                console.log('Determined third_vote user');
-                                                                                                multichain.initiateMultichain().sendAssetFrom({
-                                                                                                    from: address1,
-                                                                                                    to: address2,
-                                                                                                    asset: token_name,
-                                                                                                    qty: amount
-                                                                                                })
-                                                                                                    .then(() => {
-                                                                                                        console.log('Send token to third_vote user successfully');
-
-                                                                                                        multichain.initiateMultichain().getStreamKeySummary({
-                                                                                                            stream: stream_name,
-                                                                                                            key: key_name3,
-                                                                                                            mode: 'jsonobjectmerge'
-                                                                                                        })
-                                                                                                            .then(votes => {
-                                                                                                                let voteChange = votes.json.third_votes + 1;
-                                                                                                                multichain.initiateMultichain().publish({
-                                                                                                                    stream: stream_name,
-                                                                                                                    key: key_name3,
-                                                                                                                    data: {
-                                                                                                                        "json": {
-                                                                                                                            "third_votes": voteChange,
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                })
-                                                                                                            })
-                                                                                                            .catch(err => {
-                                                                                                                console.log('Error when merge votes ' + err);
-                                                                                                            })
-                                                                                                    })
-                                                                                                    .catch(err => {
-                                                                                                        console.log('Error when send token ' + err);
-                                                                                                    })
-                                                                                            }
+                                                                                async function sendTokenToNominee() {
+                                                                                    for (var i = 0; i < nominees.length; i++) {
+                                                                                        let txid1 = nominees[i].txid;
+                                                                                        await multichain.initiateMultichain().getStreamItem({
+                                                                                            stream: stream_name,
+                                                                                            txid: txid1
                                                                                         })
-                                                                                        .catch(err => {
-                                                                                            console.log('Error when get info nominee ' + err);
+                                                                                            .then(nominee => {
+                                                                                                console.log('Get info nominee successfully');
+                                                                                                let id_nominee = nominee.data.json.id;
+                                                                                                let address2 = nominee.data.json.address;
+                                                                                                //First vote
+                                                                                                if (data.id_nominee_first == id_nominee) {
+                                                                                                    let amount = 5;
+
+                                                                                                    //Update result to database
+                                                                                                    // vote(data.id_nominee_first, amount);
+
+                                                                                                    console.log('Determined first_vote user');
+                                                                                                    // console.log(address1, address2, token_name, amount);
+                                                                                                    multichain.initiateMultichain().sendAssetFrom({
+                                                                                                        from: address1,
+                                                                                                        to: address2,
+                                                                                                        asset: token_name,
+                                                                                                        qty: amount
+                                                                                                    })
+                                                                                                        .then(() => {
+                                                                                                            console.log('Send token to first_vote user successfully');
+                                                                                                            multichain.initiateMultichain().getStreamKeySummary({
+                                                                                                                stream: stream_name,
+                                                                                                                key: key_name1,
+                                                                                                                mode: 'jsonobjectmerge'
+                                                                                                            })
+                                                                                                                .then(votes => {
+                                                                                                                    let voteChange = votes.json.first_votes + 1;
+                                                                                                                    multichain.initiateMultichain().publish({
+                                                                                                                        stream: stream_name,
+                                                                                                                        key: key_name1,
+                                                                                                                        data: {
+                                                                                                                            "json": {
+                                                                                                                                "first_votes": voteChange,
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    })
+                                                                                                                })
+                                                                                                                .catch(err => {
+                                                                                                                    console.log('Error when merge votes ' + err);
+                                                                                                                })
+                                                                                                        })
+                                                                                                        .catch(err => {
+                                                                                                            console.log('Error when send token ' + err);
+                                                                                                        })
+                                                                                                }
+
+                                                                                                //Second vote
+                                                                                                if (data.id_nominee_second == id_nominee) {
+                                                                                                    let amount = 3;
+
+                                                                                                    //Update result to database
+                                                                                                    // vote(data.id_nominee_second, amount);
+
+                                                                                                    console.log('Determined second_vote user');
+                                                                                                    multichain.initiateMultichain().sendAssetFrom({
+                                                                                                        from: address1,
+                                                                                                        to: address2,
+                                                                                                        asset: token_name,
+                                                                                                        qty: amount
+                                                                                                    })
+                                                                                                        .then(() => {
+                                                                                                            console.log('Send token to second_vote user successfully');
+
+                                                                                                            multichain.initiateMultichain().getStreamKeySummary({
+                                                                                                                stream: stream_name,
+                                                                                                                key: key_name2,
+                                                                                                                mode: 'jsonobjectmerge'
+                                                                                                            })
+                                                                                                                .then(votes => {
+                                                                                                                    let voteChange = votes.json.second_votes + 1;
+                                                                                                                    multichain.initiateMultichain().publish({
+                                                                                                                        stream: stream_name,
+                                                                                                                        key: key_name2,
+                                                                                                                        data: {
+                                                                                                                            "json": {
+                                                                                                                                "second_votes": voteChange,
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+
+                                                                                                                    )
+                                                                                                                })
+                                                                                                                .catch(err => {
+                                                                                                                    console.log('Error when merge votes ' + err);
+                                                                                                                    // res.status(400).send({ message: 'Error when merge token ' });
+                                                                                                                })
+                                                                                                        })
+                                                                                                        .catch(err => {
+                                                                                                            console.log('Error when send token ' + err);
+                                                                                                            //res.status(400).send({ message: 'Error when send token ' });
+                                                                                                        })
+                                                                                                }
+
+                                                                                                // Third_vote
+                                                                                                if (data.id_nominee_third == id_nominee) {
+                                                                                                    let amount = 1;
+
+                                                                                                    //Update result to database
+                                                                                                    // vote(data.id_nominee_third, amount);
+
+                                                                                                    console.log('Determined third_vote user');
+                                                                                                    multichain.initiateMultichain().sendAssetFrom({
+                                                                                                        from: address1,
+                                                                                                        to: address2,
+                                                                                                        asset: token_name,
+                                                                                                        qty: amount
+                                                                                                    })
+                                                                                                        .then(() => {
+                                                                                                            console.log('Send token to third_vote user successfully');
+
+                                                                                                            multichain.initiateMultichain().getStreamKeySummary({
+                                                                                                                stream: stream_name,
+                                                                                                                key: key_name3,
+                                                                                                                mode: 'jsonobjectmerge'
+                                                                                                            })
+                                                                                                                .then(votes => {
+                                                                                                                    let voteChange = votes.json.third_votes + 1;
+                                                                                                                    multichain.initiateMultichain().publish({
+                                                                                                                        stream: stream_name,
+                                                                                                                        key: key_name3,
+                                                                                                                        data: {
+                                                                                                                            "json": {
+                                                                                                                                "third_votes": voteChange,
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    })
+                                                                                                                })
+                                                                                                                .catch(err => {
+                                                                                                                    console.log('Error when merge votes ' + err);
+                                                                                                                })
+                                                                                                        })
+                                                                                                        .catch(err => {
+                                                                                                            console.log('Error when send token ' + err);
+                                                                                                        })
+                                                                                                }
+                                                                                            })
+                                                                                            .catch(err => {
+                                                                                                console.log('Error when get info nominee ' + err);
+                                                                                            })
+                                                                                    }
+                                                                                }
+
+                                                                                async function voteSuccess() {
+                                                                                    Voter.update({
+                                                                                        vote_status: 0,
+                                                                                        updated_at: today
+                                                                                    }, {
+                                                                                            where: {
+                                                                                                id_award: id_award,
+                                                                                                id_user: req.decoded.id
+                                                                                            }
                                                                                         })
                                                                                 }
 
+                                                                                async function vote() {
+                                                                                    await sendTokenToNominee();
+                                                                                    await voteSuccess();
+                                                                                }
+
+                                                                                vote();
                                                                             })
                                                                             .catch(err => {
                                                                                 console.log('Error when get list nominee ' + err);
@@ -1786,6 +1806,19 @@ router.get('/get_award', authorize(), (req, res) => {
         .catch(err => {
             res.status(400).send('Error when get award for vote', err);
         })
+})
+
+//Get 
+router.get('/get_award_voter', authorize(), (req, res) => {
+    const today = new Date();
+    Voter.findAll({
+        where: {
+            id_user: req.decoded.id
+        },
+        include: [{
+            model: Award
+        }]
+    })
 })
 
 //Update result
@@ -2482,59 +2515,6 @@ function sendEmailWhenEnd(id) {
         })
 }
 
-
-
-// router.get('/test', (req, res) => {
-//     Voter.findAll({
-//         where: {
-//             id_award: 80
-//         },
-//         include: [{
-//             model: Award,
-//             required: true,
-//             attributes: ['year'],
-//             include: [{
-//                 model: Award_type,
-//                 required: true,
-//                 attributes: ['name']
-//             }]
-//         }]
-//     })
-//         .then(voters => {
-//             res.status(200).send(voters);
-//             if (voters.length == 0) {
-//                 console.log('There is no voter');
-//             } else {
-//                 for (i = 0; i < voters.length; i++) {
-//                     User.findOne({
-//                         where: {
-//                             id: voters[i].id_user
-//                         }
-//                     })
-//                         .then(user => {
-//                             let mailOptions = {
-//                                 from: `electronic.voting.system.enclave@gmail.com`,
-//                                 to: user.email,
-//                                 subject: `New Award Has Been Started`,
-//                                 html: `Dear Mr/Ms <strong>${user.username}</strong>, <br></br>` +
-//                                     ``
-//                             }
-
-//                             // transporter.sendMail(mailOptions, (err, respone) => {
-//                             //     if (err) {
-//                             //         console.log('Error when send email' + err);
-//                             //     } else {
-//                             //         console.log('Send email successfully');
-//                             //     }
-//                             // })
-//                         })
-//                         .catch(err => {
-//                             console.log('Error' + err);
-//                         })
-//                 }
-//             }
-//         })
-// })
 console.log('Before job instantiation');
 const checkAward = new CronJob('0,30 * * * * *', function () {
     const d = new Date();
