@@ -63,7 +63,7 @@ export class AwardComponent implements OnInit {
     modalRef.result.then( () => {
       this.sharedData.changeMessage('Updated logo successfully!');
     }, dismiss => {
-      console.log(dismiss);
+      // console.log(dismiss);
     });
   }
 
