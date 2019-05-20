@@ -5,6 +5,7 @@ import {AwardService} from '../../../_services/award.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Team} from '../../../_models/team';
 import {NgbTime} from '@ng-bootstrap/ng-bootstrap/timepicker/ngb-time';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-add-award',
@@ -25,7 +26,8 @@ export class AddAwardModalComponent implements OnInit {
 
 
   constructor(public activeModal: NgbActiveModal, private teamService: TeamService, private awardService: AwardService,
-              private formBuilder: FormBuilder, private calendar: NgbCalendar, private dateNative: NgbDateNativeAdapter) { }
+              private formBuilder: FormBuilder, private calendar: NgbCalendar, private dateNative: NgbDateNativeAdapter,
+              private notifier: NotifierService) { }
 
   ngOnInit() {
     this.getListNominees();
@@ -135,9 +137,12 @@ export class AddAwardModalComponent implements OnInit {
       this.formControl['date_end'].setValue(endDateTime);
       console.log(this.addAward.value);
       this.awardService.createNewAward(this.addAward.value).subscribe(() => { // success
-        this.activeModal.close('Success!');
+        this.activeModal.close('Award created successfully!');
       }, err => {
-        console.log(err);
+        // console.log(err);
+        if (typeof err === 'string') {
+          this.notifier.notify('error', err);
+        }
       });
     }
   }

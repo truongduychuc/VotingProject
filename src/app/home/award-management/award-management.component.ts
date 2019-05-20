@@ -5,6 +5,7 @@ import {AwardService} from '../../_services/award.service';
 import {GroupByPipe} from '../../_pipes/group-by.pipe';
 import {User} from '../../_models/user';
 import {DataSharingService} from '../../_shared/data-sharing.service';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-award-list',
@@ -16,7 +17,7 @@ export class AwardManagementComponent implements OnInit {
   currentUser: User;
   // sharedData: for transferring successfully uploading logo message from upload-logo.component
   constructor(private modalService: NgbModal, private awardService: AwardService, private groupByPipe: GroupByPipe,
-              private  sharedData: DataSharingService) {
+              private  sharedData: DataSharingService, private notifier: NotifierService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
@@ -40,10 +41,11 @@ export class AwardManagementComponent implements OnInit {
   }
   openAddingAward() {
     const modalRef =  this.modalService.open(AddAwardModalComponent, {windowClass: 'myCustomModalClass', backdrop: 'static'});
-    modalRef.result.then(success => {
+    modalRef.result.then((successMes: string) => {
       this.getAwardList();
-    }, dismiss => {
-      console.log(dismiss);
+      this.notifier.notify('info', successMes);
+    }, dismissReason => {
+      // console.log(dismiss);
     });
   }
 
