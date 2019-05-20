@@ -154,7 +154,6 @@ router.post('/create', (req, res) => {
     // }
 
     //Check year and name for award
-
     // multichain.initiateMultichain().listStreamKeyItems({
     //     stream: "award_150",
     //     key: "nominee_1",
@@ -187,7 +186,9 @@ router.post('/create', (req, res) => {
 
                     //awardData.year = year;
                     //awardData.year = req.body.year;
-
+                    console.log('---------------');
+                    console.log(awardData);
+                    console.log('---------------');
                     Award.create(awardData)
                         .then(award => {
                             let stream_name = 'award_' + award.id;
@@ -245,57 +246,61 @@ router.post('/create', (req, res) => {
                             if (voter.length == 0) {
                                 res.status(400).send({ message: 'There is no voter' });
                             } else {
-                                for (var j = 0; j < voter.length; j++) {
-                                    User.findAll({
-                                        where: {
-                                            id_role: voter[j],
-                                            is_active: 1
+                                multichain.initiateMultichain().getNewAddress()
+                                    .then(address => {
+                                        //Grant permission for asset
+                                        async function permission() {
+                                            await multichain.initiateMultichain().grant({
+                                                addresses: address,
+                                                permissions: 'receive,send'
+                                            });
                                         }
-                                    })
-                                        .then(users => {
-                                            if (users.length == 0) {
-                                                res.status(400).send({ message: 'There is user does not exist' });
-                                            } else {
-                                                multichain.initiateMultichain().getNewAddress()
-                                                    .then(address => {
-                                                        //Grant permission for asset
-                                                        async function permission() {
-                                                            await multichain.initiateMultichain().grant({
-                                                                addresses: address,
-                                                                permissions: 'receive,send'
-                                                            });
-                                                        }
 
-                                                        //Create new asset
-                                                        async function asset() {
-                                                            await multichain.initiateMultichain().issue({
-                                                                address: address,
-                                                                asset: token_name,
-                                                                qty: users.length * 9,
-                                                                units: 0.1
-                                                            }, (err) => {
-                                                                if (err) {
-                                                                    console.log(err);
-                                                                } else {
-                                                                    console.log('Create asset successfully');
-                                                                }
-                                                            })
-                                                        }
+                                        //Create new asset
+                                        async function asset() {
+                                            await multichain.initiateMultichain().issue({
+                                                address: address,
+                                                asset: token_name,
+                                                qty: 100 * 9,
+                                                units: 0.1
+                                            }, (err) => {
+                                                if (err) {
+                                                    console.log(err);
+                                                } else {
+                                                    console.log('Create asset successfully');
+                                                }
+                                            })
+                                        }
 
-                                                        async function createAsset() {
-                                                            await permission();
-                                                            await asset();
-                                                        }
-                                                        setTimeout(function () { }, 1000);
-                                                        //Insert asset data
-                                                        let asset_data = {
-                                                            id: 0,
-                                                            address: address
-                                                        }
-                                                        multichain.publish(stream_name, asset_name, asset_data);
-                                                        //console.log('Input asset data to stream successfully');
+                                        async function createAsset() {
+                                            await permission();
+                                            await asset();
+                                        }
 
-                                                        async function createVoter() {
+                                        //Insert asset data
+                                        let asset_data = {
+                                            id: 0,
+                                            address: address
+                                        }
+                                        multichain.publish(stream_name, asset_name, asset_data);
+                                        //console.log('Input asset data to stream successfully');
+
+                                        async function addVoterAndSendToken() {
+                                            for (var j = 0; j < voter.length; j++) {
+                                                await User.findAll({
+                                                    where: {
+                                                        id_role: voter[j],
+                                                        is_active: 1
+                                                    }
+                                                })
+                                                    .then(users => {
+                                                        if (users.length == 0) {
+                                                            res.status(400).send({ message: 'There is user does not exist' });
+                                                        } else {
+                                                            console.log('------------------');
+                                                            console.log('123');
+                                                            console.log('------------------');
+                                                            // async function createVoter() {
                                                             for (var i = 0; i < users.length; i++) {
                                                                 voterData.id_user = users[i].id;
                                                                 let id = users[i].id;
@@ -308,7 +313,7 @@ router.post('/create', (req, res) => {
                                                                 const address1 = address;
 
                                                                 //Get new address
-                                                                await multichain.initiateMultichain().getNewAddress()
+                                                                multichain.initiateMultichain().getNewAddress()
                                                                     .then(address2 => {
                                                                         async function permissionForVoter() {
                                                                             //Grant permission for voter
@@ -372,29 +377,35 @@ router.post('/create', (req, res) => {
                                                                 Voter.create(voterData)
                                                                     .then(() => { })
                                                                     .catch(err => {
-                                                                        console.log('error0' + err);
-                                                                        res.status(400).send({ error0: err });
+                                                                        console.log('error0 ' + err);
+                                                                        // res.status(400).send({ error0: err });
                                                                     })
                                                             }
                                                         }
 
-                                                        async function test() {
-                                                            await createAsset();
-                                                            await createVoter();
-                                                        }
-
-                                                        test();
-
+                                                        // async function test() {
+                                                        //     // await createAsset();
+                                                        //     await createVoter();
+                                                        // }
+                                                        // test();
+                                                        // }
                                                     })
                                                     .catch(err => {
-                                                        console.log('Error when set new address ' + err);
+                                                        res.status(400).send({ error1: err })
                                                     })
                                             }
-                                        })
-                                        .catch(err => {
-                                            res.status(400).send({ error1: err })
-                                        })
-                                }
+                                        }
+
+                                        async function run() {
+                                            await createAsset();
+                                            await addVoterAndSendToken();
+                                        }
+                                        run();
+
+                                    })
+                                    .catch(err => {
+                                        console.log('Error when set new address ' + err);
+                                    })
                             }
 
 
@@ -429,8 +440,6 @@ router.post('/create', (req, res) => {
                                                     multichain.setNominee(stream_name, nominee_data);
                                                     multichain.setNomineeVote(stream_name, nominee_data);
 
-
-
                                                     //Add nominee default votes
                                                     Breakdown.create(nomineeVotes)
                                                         .then(() => { })
@@ -445,8 +454,6 @@ router.post('/create', (req, res) => {
                                                             console.log('Error when add nominee to nominee ' + err);
                                                             //res.status(400).send({ error5: err });
                                                         })
-
-
                                                 }
                                             }
                                         })
@@ -547,57 +554,61 @@ router.post('/create', (req, res) => {
                                             if (voter.length == 0) {
                                                 res.status(400).send({ message: 'There is no voter' });
                                             } else {
-                                                for (var j = 0; j < voter.length; j++) {
-                                                    User.findAll({
-                                                        where: {
-                                                            id_role: voter[j],
-                                                            is_active: 1
+                                                multichain.initiateMultichain().getNewAddress()
+                                                    .then(address => {
+                                                        //Grant permission for asset
+                                                        async function permission() {
+                                                            await multichain.initiateMultichain().grant({
+                                                                addresses: address,
+                                                                permissions: 'receive,send'
+                                                            });
                                                         }
-                                                    })
-                                                        .then(users => {
-                                                            if (users.length == 0) {
-                                                                res.status(400).send({ message: 'There is no user' });
-                                                            } else {
-                                                                multichain.initiateMultichain().getNewAddress()
-                                                                    .then(address => {
-                                                                        //Grant permission for asset
-                                                                        async function permission() {
-                                                                            await multichain.initiateMultichain().grant({
-                                                                                addresses: address,
-                                                                                permissions: 'receive,send'
-                                                                            });
-                                                                        }
 
-                                                                        //Create new asset
-                                                                        async function asset() {
-                                                                            await multichain.initiateMultichain().issue({
-                                                                                address: address,
-                                                                                asset: token_name,
-                                                                                qty: users.length * 9,
-                                                                                units: 0.1
-                                                                            }, (err) => {
-                                                                                if (err) {
-                                                                                    console.log(err);
-                                                                                } else {
-                                                                                    console.log('Create asset successfully');
-                                                                                }
-                                                                            })
-                                                                        }
+                                                        //Create new asset
+                                                        async function asset() {
+                                                            await multichain.initiateMultichain().issue({
+                                                                address: address,
+                                                                asset: token_name,
+                                                                qty: 100 * 9,
+                                                                units: 0.1
+                                                            }, (err) => {
+                                                                if (err) {
+                                                                    console.log(err);
+                                                                } else {
+                                                                    console.log('Create asset successfully');
+                                                                }
+                                                            })
+                                                        }
 
-                                                                        async function createAsset() {
-                                                                            await permission();
-                                                                            await asset();
-                                                                        }
+                                                        async function createAsset() {
+                                                            await permission();
+                                                            await asset();
+                                                        }
 
-                                                                        //Insert asset data
-                                                                        let asset_data = {
-                                                                            id: 0,
-                                                                            address: address
-                                                                        }
-                                                                        multichain.publish(stream_name, asset_name, asset_data);
-                                                                        //console.log('Input asset data to stream successfully');
+                                                        //Insert asset data
+                                                        let asset_data = {
+                                                            id: 0,
+                                                            address: address
+                                                        }
+                                                        multichain.publish(stream_name, asset_name, asset_data);
+                                                        //console.log('Input asset data to stream successfully');
 
-                                                                        async function createVoter() {
+                                                        async function addVoterAndSendToken() {
+                                                            for (var j = 0; j < voter.length; j++) {
+                                                                await User.findAll({
+                                                                    where: {
+                                                                        id_role: voter[j],
+                                                                        is_active: 1
+                                                                    }
+                                                                })
+                                                                    .then(users => {
+                                                                        if (users.length == 0) {
+                                                                            res.status(400).send({ message: 'There is user does not exist' });
+                                                                        } else {
+                                                                            console.log('------------------');
+                                                                            console.log('123');
+                                                                            console.log('------------------');
+                                                                            // async function createVoter() {
                                                                             for (var i = 0; i < users.length; i++) {
                                                                                 voterData.id_user = users[i].id;
                                                                                 let id = users[i].id;
@@ -610,9 +621,8 @@ router.post('/create', (req, res) => {
                                                                                 const address1 = address;
 
                                                                                 //Get new address
-                                                                                await multichain.initiateMultichain().getNewAddress()
+                                                                                multichain.initiateMultichain().getNewAddress()
                                                                                     .then(address2 => {
-
                                                                                         async function permissionForVoter() {
                                                                                             //Grant permission for voter
                                                                                             await multichain.initiateMultichain().grant({
@@ -663,8 +673,8 @@ router.post('/create', (req, res) => {
                                                                                             await permissionForVoter();
                                                                                             await sendTokenToVoter();
                                                                                         }
-
                                                                                         voter();
+
                                                                                     })
                                                                                     .catch(err => {
                                                                                         console.log('Error when get new address ' + err);
@@ -675,28 +685,35 @@ router.post('/create', (req, res) => {
                                                                                 Voter.create(voterData)
                                                                                     .then(() => { })
                                                                                     .catch(err => {
-                                                                                        console.log('error0' + err);
-                                                                                        res.status(400).send({ error0: err });
+                                                                                        console.log('error0 ' + err);
+                                                                                        // res.status(400).send({ error0: err });
                                                                                     })
                                                                             }
                                                                         }
 
-                                                                        async function test() {
-                                                                            await createAsset();
-                                                                            await createVoter();
-                                                                        }
-
-                                                                        test();
+                                                                        // async function test() {
+                                                                        //     // await createAsset();
+                                                                        //     await createVoter();
+                                                                        // }
+                                                                        // test();
+                                                                        // }
                                                                     })
                                                                     .catch(err => {
-                                                                        console.log('Error when set new address ' + err);
+                                                                        res.status(400).send({ error1: err })
                                                                     })
                                                             }
-                                                        })
-                                                        .catch(err => {
-                                                            res.status(400).send({ error1: err })
-                                                        })
-                                                }
+                                                        }
+
+                                                        async function run() {
+                                                            await createAsset();
+                                                            await addVoterAndSendToken();
+                                                        }
+                                                        run();
+
+                                                    })
+                                                    .catch(err => {
+                                                        console.log('Error when set new address ' + err);
+                                                    })
                                             }
 
 
