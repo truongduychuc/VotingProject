@@ -1675,7 +1675,7 @@ router.post('/voting_award', authorize(), (req, res) => {
                                                                                 }
 
                                                                                 async function voteSuccess() {
-                                                                                    Voter.update({
+                                                                                    await Voter.update({
                                                                                         vote_status: 0,
                                                                                         updated_at: today
                                                                                     }, {
