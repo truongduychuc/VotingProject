@@ -219,7 +219,7 @@ router.get('/profile', authorize(), (req, res) => {
         where: {
             id: req.decoded.id
         },
-        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'other',
+        attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'achievement',
             'ava_url'
         ],
         include: [{
@@ -278,7 +278,7 @@ router.get('/profile/:id', authorize(), (req, res) => {
                 where: {
                     id: req.params.id
                 },
-                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'is_active', 'address', 'other',
+                attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'is_active', 'address', 'achievement',
                     'ava_url'
                 ],
                 include: [{
@@ -1134,7 +1134,7 @@ router.put('/update/:id', authorize('admin'), (req, res) => {
                 email: req.body.email,
                 phone: req.body.phone,
                 address: req.body.address,
-                other: req.body.other,
+                achievement: req.body.achievement,
                 updated_at: today
             }, {
                     where: {
@@ -1158,7 +1158,7 @@ router.put('/update_profile', authorize(), (req, res) => {
     User.update({
         phone: req.body.phone,
         address: req.body.address,
-        other: req.body.other,
+        achievement: req.body.achievement,
         updated_at: today
     }, {
             where: {
