@@ -3,32 +3,32 @@
     <h3>AWARDS</h3>
   </div>
   <div class="card-body">
-    <div class="row award-header">
-            <div class="col-sm-6 align-items-center d-flex justify-content-sm-start justify-content-center">
-              <div class="form-group">
-                <select class="form-control rounded-pill">
-                  <option class="rounded-pill" hidden >Find an award</option>
-                  <option>text 1</option>
-                  <option>text 2</option>
-                  <option>text 3</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-sm-6 d-flex justify-content-sm-end align-items-center justify-content-center">
-              <div *ngIf="isAdmin" class="form-group">
-                <button (click)="openAddingAward()" class="btn btn-primary btn-rounded"><i class="fas fa-plus"></i>New award</button>
-              </div>
-            </div>
-    </div>
     <div class="row">
       <div class="col-12">
         <div class="card">
           <div class="card-body overflow-auto award-list-container">
-            <app-award-as-year *ngFor="let awardsAsYear of awardList; let i = index"
-                               [year]="awardsAsYear.key"
-                               [awardListOfYear]="awardsAsYear.value"
-                               [isCollapsed]="i !== 0">  <!--collapse from second year from top, only expand awards in first year-->
-            </app-award-as-year>
+            <div class="row">
+              <div class="col-12 d-flex justify-content-center justify-content-md-end">
+                <div class="form-group d-inline-block">
+                  <button *ngIf="isAdmin" (click)="openAddingAward()" class="btn btn-primary btn-rounded"><i class="fas fa-plus"></i>New</button>
+                </div>
+                <div class="form-group d-inline-block ml-2">
+                  <select (change)="findAnAwardByType()" [(ngModel)]="typeForSearching" class="form-control rounded-pill">
+                    <option hidden [ngValue]="null">Find an award</option>
+                    <option *ngFor="let type of awardTypesList" [ngValue]="type.id">{{type.name}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <app-award-as-year *ngFor="let awardsAsYear of awardList; let i = index"
+                                   [year]="awardsAsYear.key"
+                                   [awardListOfYear]="awardsAsYear.value"
+                                   [isCollapsed]="i !== 0">  <!--collapse from second year from top, only expand awards in first year-->
+                </app-award-as-year>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -6,6 +6,10 @@ import {GroupByPipe} from '../../_pipes/group-by.pipe';
 import {User} from '../../_models/user';
 import {DataSharingService} from '../../_shared/data-sharing.service';
 import {NotifierService} from 'angular-notifier';
+import {AwardType} from '../../_models/award-type';
+import {Router} from '@angular/router';
+import {Award} from '../../_models/award';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-award-list',
@@ -14,17 +18,19 @@ import {NotifierService} from 'angular-notifier';
 })
 export class AwardManagementComponent implements OnInit {
   awardList: any[];
+  awardTypesList: AwardType[];
   currentUser: User;
+  typeForSearching: number = null;
   // sharedData: for transferring successfully uploading logo message from upload-logo.component
   constructor(private modalService: NgbModal, private awardService: AwardService, private groupByPipe: GroupByPipe,
-              private  sharedData: DataSharingService, private notifier: NotifierService) {
+              private  sharedData: DataSharingService, private notifier: NotifierService, private router: Router) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
-    this.sharedData.currentMessage.subscribe( success => {
-      console.log(success);
+    this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
       this.getAwardList();
     });
+    this.getAwardTypesList();
   }
   // get awardList at beginning
   getAwardList() {
@@ -33,6 +39,27 @@ export class AwardManagementComponent implements OnInit {
       this.awardList = this.groupByPipe.transform(list, 'year').reverse();
     }, errGetting => {
       console.log(errGetting);
+    });
+  }
+  // direct to the award detail page includes information of the newest award
+  findAnAwardByType() {
+    if (this.typeForSearching === null || !this.typeForSearching) {
+      this.getAwardList();
+    } else {
+      this.awardService.findAnAwardByType(this.typeForSearching).pipe(tap((award: Award) => {
+        this.router.navigate([`home/award-detail/${award.id}`]);
+      })).subscribe();
+    }
+  }
+  getAwardTypesList() {
+    this.awardService.getAwardTypes().subscribe(successRes => {
+      if (!successRes.hasOwnProperty('types')) {
+        console.log('There is no types property in the response!');
+      } else {
+        this.awardTypesList = successRes.types;
+      }
+    }, err => {
+      console.log(err);
     });
   }
   // to show the button only can be used by admin
