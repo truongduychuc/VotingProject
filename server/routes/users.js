@@ -43,8 +43,8 @@ login: (post) /authenticate
 createUser(admin): (post) /register
 getRole: (get) /role
 getTeam: (get) /team
-getProfile: (get) /profile
-getProfileById: (get) /profile/:id
+getUser: (get) /profile
+getUserById: (get) /profile/:id
 listUser: (get) /list
 listUser(admin): (get) /list/admin
 changePassword: (put) /change_password
@@ -1177,7 +1177,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/avatars/')
     },
     filename: (req, file, cb) => {
-        cb(null, req.decoded.username + '_' + new Date().toISOString() + '_' + file.originalname)
+        cb(null, file.originalname)
     }
 })
 const fileFilter = (req, file, cb) => {

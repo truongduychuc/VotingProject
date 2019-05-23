@@ -860,7 +860,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/logos')
     },
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString() + '_' + file.originalname)
+        cb(null, file.originalname)
     }
 })
 const fileFilter = (req, file, cb) => {
@@ -1747,7 +1747,7 @@ router.post('/find_an_award', (req, res) => {
     })
         .then(awards => {
             const data = awards[0];
-            res.status(200).send({ award: data });
+            res.status(200).json(data);
         })
         .catch(err => {
             res.status(400).send({ message: err });
@@ -1825,18 +1825,6 @@ router.get('/get_award', authorize(), (req, res) => {
         })
 })
 
-//Get 
-router.get('/get_award_voter', authorize(), (req, res) => {
-    const today = new Date();
-    Voter.findAll({
-        where: {
-            id_user: req.decoded.id
-        },
-        include: [{
-            model: Award
-        }]
-    })
-})
 
 //Update result
 router.put('/update_result', (req, res) => {
@@ -1844,7 +1832,7 @@ router.put('/update_result', (req, res) => {
     async function waitForUpdate() {
         await updateResult(id_award);
         await updatePercent(id_award);
-        await chooseWinner(id_award);
+        // await chooseWinner(id_award);
     }
     waitForUpdate()
         .then(() => {
