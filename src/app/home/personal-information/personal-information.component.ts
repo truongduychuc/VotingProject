@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {User} from "../../_models/user";
-import {HttpErrorResponse} from "@angular/common/http";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {AccountService} from "../../_services/account.service";
-import {Router} from "@angular/router";
+import {User} from '../../_models/user';
+import {HttpErrorResponse} from '@angular/common/http';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {AccountService} from '../../_services/account.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-personal-information',
@@ -58,19 +58,16 @@ export class PersonalInformationComponent implements OnInit {
     this.editable = !this.editable;
   }
   getUserInfo() {
-    this.accountService.getPersonalProfile().subscribe((userProfileRes:any) => {
+    this.accountService.getPersonalProfile().subscribe((userProfileRes: any) => {
       this.currentUserProfile = userProfileRes.user;
-      if(!userProfileRes.hasOwnProperty('directManager')) {
+      if (!userProfileRes.hasOwnProperty('directManager')) {
         this.message = userProfileRes.message;
-        console.log(userProfileRes.message);
-      }
-      else {
+      } else {
         console.log('Has direct manager!');
         this.directManager = userProfileRes.directManager;
-        console.log(this.currentUserProfile);
       }
     }, (err: HttpErrorResponse) => {
       console.log(err);
-    })
+    });
   }
 }
