@@ -46,7 +46,7 @@ export class EditingModalComponent implements OnInit {
     });
   }
   getUserProfile(id: number) {
-    this.accountService.getUserProfileById(id).subscribe((userProfileRes:any) => {
+    this.accountService.getUserProfileById(id).subscribe((userProfileRes: any) => {
       this.userProfile = userProfileRes.user;
       console.log(userProfileRes);
       this.generateForm();

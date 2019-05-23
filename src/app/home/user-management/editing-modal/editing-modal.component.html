@@ -22,6 +22,12 @@
             <label class="col-form-label">Email</label>
             <input type="email" class="form-control" formControlName="email">
           </div>
+          <div class="form-group d-none d-md-block mt-md-5" >
+            <div class="custom-switch custom-control p-0">
+              <input type="checkbox" [checked]="userProfile?.is_active" class="custom-control-input" id="activeSwitch" formControlName="is_active">
+              <label class="custom-control-label" for="activeSwitch">Active</label>
+            </div>
+          </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">
@@ -37,22 +43,20 @@
             <input type="text" class="form-control" formControlName="english_name">
           </div>
           <div class="form-group">
-            <label class="col-form-label">Other</label>
+            <label class="col-form-label">Achievement(s)</label>
             <input type="text" class="form-control" formControlName="other">
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-          <div class="custom-switch custom-control p-0">
-            <input type="checkbox" [checked]="userProfile?.is_active" class="custom-control-input" id="activeSwitch" formControlName="is_active">
-            <label class="custom-control-label" for="activeSwitch">Active</label>
+          <div class="form-group d-block d-md-none">
+            <div class="custom-switch custom-control p-0">
+              <input type="checkbox" [checked]="userProfile?.is_active" class="custom-control-input" id="activeSwitch" formControlName="is_active">
+              <label class="custom-control-label" for="activeSwitch">Active</label>
+            </div>
           </div>
         </div>
       </div>
       <div class="d-flex justify-content-center flex-wrap">
         <button type="submit" class="btn btn-primary btn-rounded m-sm-3 m-1">SAVE</button>
-        <button class="btn btn-outline-primary btn-rounded m-sm-3 m-1" (click)="activeModal.close('Close!')">CANCEL</button>
+        <button class="btn btn-outline-primary btn-rounded m-sm-3 m-1" (click)="activeModal.dismiss('Close!')">CANCEL</button>
       </div>
     </form>
   </div>

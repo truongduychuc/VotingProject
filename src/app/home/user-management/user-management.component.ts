@@ -143,7 +143,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         console.log(sortColumn);
       }
     }
-    if(null == sortType && this.currentSortedType) {
+    if (null == sortType && this.currentSortedType) {
       sortType = this.currentSortedType;
       params = params.append('type', sortType);
     } else {
@@ -298,6 +298,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
  ngOnDestroy(): void {
     this.removeStatus();
-    console.log('Destroyed!');
+    // console.log('Destroyed!');
  }
 }
