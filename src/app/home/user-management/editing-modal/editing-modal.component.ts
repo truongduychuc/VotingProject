@@ -41,7 +41,7 @@ export class EditingModalComponent implements OnInit {
       first_name: this.userProfile.first_name,
       last_name: this.userProfile.last_name,
       english_name: this.userProfile.english_name,
-      other: this.userProfile.other,
+      achievement: this.userProfile.achievement,
       is_active: this.userProfile.is_active
     });
   }
