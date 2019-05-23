@@ -45,6 +45,28 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
       console.log(error1);
     });
   }
+  get cssBadgeClass() {
+    if (this.awardInfo.status === 0) {
+      return 'badge-info';
+    }
+    if (this.awardInfo.status === 1) {
+      return 'badge-warning';
+    }
+    if (this.awardInfo.status === 2) {
+      return 'badge-success';
+    }
+  }
+  get statusName() {
+    if (this.awardInfo.status === 0) {
+      return 'Finished';
+    }
+    if (this.awardInfo.status === 1) {
+      return 'Pending';
+    }
+    if (this.awardInfo.status === 2) {
+      return 'Voting';
+    }
+  }
   getBreakdown(sortColumn?: string, sortType?: string, sortTable?: string, searchText?: string, itemsPerPage?: number, currentPage?: number) {
     let params = new HttpParams();
     if (null == sortColumn && this.currentSortedColumn) {
