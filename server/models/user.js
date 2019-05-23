@@ -39,7 +39,7 @@ const User = db.sequelize.define(
         email: {
             type: Sequelize.STRING
         },
-        phone: {
+        achievement: {
             type: Sequelize.STRING
         },
         address: {
