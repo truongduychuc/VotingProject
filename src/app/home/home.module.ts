@@ -1,8 +1,8 @@
 import {NgModule } from '@angular/core';
 import {CommonModule } from '@angular/common';
 import {ChangePasswordModalComponent} from './change-password-modal/change-password-modal.component';
-import {CreatingUserModalComponent} from './employee-management/creating-user-modal/creating-user-modal.component';
-import {EmployeeManagementComponent} from './employee-management/employee-management.component';
+import {CreatingUserModalComponent} from './user-management/creating-user-modal/creating-user-modal.component';
+import {UserManagementComponent} from './user-management/user-management.component';
 import {FooterComponent} from './footer/footer.component';
 import {NavbarComponent} from './navbar/navbar.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
@@ -14,7 +14,7 @@ import {HomeComponent} from './home.component';
 import {NgbActiveModal, NgbDateNativeAdapter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
-import { EditingModalComponent } from './employee-management/editing-modal/editing-modal.component';
+import { EditingModalComponent } from './user-management/editing-modal/editing-modal.component';
 import { AwardManagementComponent } from './award-management/award-management.component';
 import { AwardAsYearComponent } from './award-management/award-as-year/award-as-year.component';
 import { AwardComponent } from './award-management/award/award.component';
@@ -74,7 +74,7 @@ const customNotifierOptions: NotifierOptions = {
   declarations: [
     ChangePasswordModalComponent,
     CreatingUserModalComponent,
-    EmployeeManagementComponent,
+    UserManagementComponent,
     NavbarComponent,
     SidebarComponent,
     FooterComponent,

@@ -11,11 +11,11 @@ import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-employee-list',
-  templateUrl: './employee-management.component.html',
-  styleUrls: ['./employee-management.component.scss']
+  templateUrl: './user-management.component.html',
+  styleUrls: ['./user-management.component.scss']
 
 })
-export class EmployeeManagementComponent implements OnInit, OnDestroy {
+export class UserManagementComponent implements OnInit, OnDestroy {
   currentPage = 1;
   currentPageSize = 10;
   currentSearchText: string;

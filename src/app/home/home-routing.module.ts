@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {EmployeeManagementComponent} from './employee-management/employee-management.component';
+import {UserManagementComponent} from './user-management/user-management.component';
 import {RouterModule, Routes} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {DashboardComponent} from './dashboard/dashboard.component';
@@ -17,7 +17,7 @@ const homeRoutes: Routes = [
   { path: '', component: HomeComponent, children: [
       {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
       {path: 'dashboard', component: DashboardComponent},
-      {path: 'employee-management', component: EmployeeManagementComponent},
+      {path: 'user-management', component: UserManagementComponent},
       {path: 'vote',
         component: VotingComponent,
         canActivate: [RoleGuard],
