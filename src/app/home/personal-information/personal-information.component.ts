@@ -26,18 +26,18 @@ export class PersonalInformationComponent implements OnInit {
     this.personalUpdating = this.formBuilder.group({
       phone: '',
       address: '',
-      other: ''
+      achievement: ''
     });
   }
   get isDisabledButton() {
-    if ('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.other.value) {
+    if ('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.achievement.value) {
       return true;
     } else {
       return false;
     }
   }
   updateInfo() {
-    if('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.other.value) {
+    if ('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.achievement.value) {
       console.log(this.personalUpdating.value);
       return;
     } else {
