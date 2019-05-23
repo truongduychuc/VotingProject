@@ -38,6 +38,28 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   get isAdmin() {
     return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
   }
+  getCssBadgeClass(status: number) {
+    if (status === 0) {
+      return 'badge-info';
+    }
+    if (status === 1) {
+      return 'badge-warning';
+    }
+    if (status === 2) {
+      return 'badge-success';
+    }
+  }
+  getStatusName(status: number) {
+    if (status === 0) {
+      return 'Finished';
+    }
+    if (status === 1) {
+      return 'Pending';
+    }
+    if (status === 2) {
+      return 'Voting';
+    }
+  }
   getDetail() {
     this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
       this.awardDetail = detail;
