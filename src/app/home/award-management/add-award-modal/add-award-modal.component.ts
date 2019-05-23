@@ -135,6 +135,8 @@ export class AddAwardModalComponent implements OnInit {
       console.log(startDateTime);
       this.formControl['date_start'].setValue(startDateTime);
       this.formControl['date_end'].setValue(endDateTime);
+      this.formControl['start_time'].setValue(null);
+      this.formControl['end_time'].setValue(null);
       console.log(this.addAward.value);
       this.awardService.createNewAward(this.addAward.value).subscribe(() => { // success
         this.activeModal.close('Award created successfully!');
