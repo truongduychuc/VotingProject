@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { AuthenticationService} from "../../_services/authentication.service";
-import { Router } from "@angular/router";
-import {AccountService} from "../../_services/account.service";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {AuthenticationService} from '../../_services/authentication.service';
+import {Router} from '@angular/router';
+import {AccountService} from '../../_services/account.service';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {NotifierService} from 'angular-notifier';
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-modal.component.html',
@@ -12,8 +13,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class LoginModalComponent implements OnInit {
   loginForm: FormGroup;
   constructor(public activeModal: NgbActiveModal,private formBuilder: FormBuilder, 
-  private authService: AuthenticationService, private router :Router, 
-  private accountService: AccountService) { }
+  private authService: AuthenticationService, private router :Router, private notifier: NotifierService) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
@@ -26,12 +26,12 @@ export class LoginModalComponent implements OnInit {
   private generateForm(): void {
    this.loginForm = this.formBuilder.group({
      username: ['', Validators.required],
-     password: ['',Validators.required]
+     password: ['', Validators.required]
    });
   }
 
   loginWithUserAndPass() {
-    if(this.loginForm.invalid) {
+    if (this.loginForm.invalid) {
       return;
     }
     const username = this.getControl.username.value;
@@ -40,7 +40,7 @@ export class LoginModalComponent implements OnInit {
       // get current user after set token
       this.activeModal.close('Login successfully!');
     }, errorLogin => {
-      console.log('Login form: ' + JSON.stringify(errorLogin));
+      this.notifier.notify('error', errorLogin);
     } );
   }
 

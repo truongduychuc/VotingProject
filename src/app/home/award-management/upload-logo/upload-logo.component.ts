@@ -55,7 +55,6 @@ export class UploadLogoComponent implements OnInit {
     }
     this.imageService.uploadAwardLogo(this.uploadLogo.controls['file'].value, this.id)
       .subscribe( (resForUploadingAvt: any) => {
-        alert(resForUploadingAvt.message);
         this.activeModal.close('Updated logo successfully!');
       }, errUploading => {
         console.log(errUploading);

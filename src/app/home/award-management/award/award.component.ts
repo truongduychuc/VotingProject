@@ -4,6 +4,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {UploadLogoComponent} from '../upload-logo/upload-logo.component';
 import {DataSharingService} from '../../../_shared/data-sharing.service';
 import {User} from '../../../_models/user';
+import {NotifierService} from 'angular-notifier';
 @Component({
   selector: 'app-award',
   templateUrl: './award.component.html',
@@ -26,7 +27,7 @@ export class AwardComponent implements OnInit {
   currentUser: User;
   serverURL = 'http://localhost:4000/';
   // sharedData: for transferring successfully uploading logo message to award-management component
-  constructor(private modalService: NgbModal, private sharedData: DataSharingService) {
+  constructor(private modalService: NgbModal, private sharedData: DataSharingService, private notifier: NotifierService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
@@ -60,8 +61,9 @@ export class AwardComponent implements OnInit {
     const modalRef = this.modalService.open(UploadLogoComponent);
     modalRef.componentInstance.id = this.awardId;
     modalRef.componentInstance.current_logo_url = this.awardLogoURL;
-    modalRef.result.then( () => {
+    modalRef.result.then( successMes => {
       this.sharedData.changeMessage('Updated logo successfully!');
+      this.notifier.notify('info', successMes);
     }, dismiss => {
       // console.log(dismiss);
     });

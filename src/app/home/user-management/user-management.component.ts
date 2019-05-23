@@ -52,7 +52,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         },
         (deletingError: any) => {
           this.notifier.notify('error', 'There was an error!');
-          console.log(deletingError);
+          // console.log(deletingError);
         }
       );
     }, dismiss => { // cancelled deleting user
@@ -122,7 +122,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
             this.currentRecords = res.filtered_counts;
           }
           this.saveCurrentStatus(lastEmployeeParams);
-          console.log(res);
         }, (err: HttpErrorResponse) => {
           console.log(err);
           this.error = err;

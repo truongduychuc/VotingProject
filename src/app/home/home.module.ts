@@ -33,12 +33,12 @@ import {NotifierModule, NotifierOptions} from 'angular-notifier';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
-      position: 'left',
+      position: 'middle',
       distance: 12
     },
     vertical: {
-      position: 'bottom',
-      distance: 12,
+      position: 'top',
+      distance: 65,
       gap: 10
     }
   },
@@ -48,7 +48,7 @@ const customNotifierOptions: NotifierOptions = {
     onClick: 'hide',
     onMouseover: 'pauseAutoHide',
     showDismissButton: true,
-    stacking: 4
+    stacking: 1
   },
   animations: {
     enabled: true,
