@@ -23,6 +23,9 @@ export class AwardService {
   updateAward(id: number, newInfo: Object) {
     return this.httpClient.put(this.serverURL + `update/${id}`, newInfo);
   }
+  findAnAwardByType(id: number): Observable<any> {
+    return this.httpClient.post(this.serverURL + 'find_an_award', {type: id});
+  }
   getAwardTypes(): Observable<any> {
     return this.httpClient.get(this.serverURL + 'award_type');
   }
