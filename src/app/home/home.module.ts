@@ -30,6 +30,7 @@ import {DateFormatPipe} from '../_pipes/date-format.pipe';
 import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
 import {ConfirmModalComponent} from '../modals/confirm-modal/confirm-modal.component';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
+import {CarouselModule} from 'ngx-owl-carousel-o';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
@@ -37,8 +38,8 @@ const customNotifierOptions: NotifierOptions = {
       distance: 12
     },
     vertical: {
-      position: 'top',
-      distance: 65,
+      position: 'bottom',
+      distance: 12,
       gap: 10
     }
   },
@@ -105,7 +106,8 @@ const customNotifierOptions: NotifierOptions = {
     HomeRoutingModule,
     NgbModule,
     NgSelectModule,
-    NotifierModule.withConfig(customNotifierOptions)
+    NotifierModule.withConfig(customNotifierOptions),
+    CarouselModule
   ],
   providers: [
     NgbActiveModal,
