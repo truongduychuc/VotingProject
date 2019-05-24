@@ -12,6 +12,7 @@ import {LoginModalComponent} from './default/login-modal/login-modal.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -20,7 +21,7 @@ const customNotifierOptions: NotifierOptions = {
       distance: 12
     },
     vertical: {
-      position: 'top',
+      position: 'bottom',
       distance: 12,
       gap: 10
     }
@@ -62,6 +63,7 @@ const customNotifierOptions: NotifierOptions = {
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     RouterModule,
     AppRoutingModule,
     HttpClientModule,
