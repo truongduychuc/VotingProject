@@ -22,12 +22,24 @@
   <div class="card-body">
     <div class="row">
       <div class="col-12">
-
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
         <h4 class="card-title">Nominees</h4>
+        <owl-carousel-o *ngIf="nomineeList" [options]="customOptions">
+          <ng-container *ngFor="let nominee of nomineeList">
+            <ng-template carouselSlide>
+              <div class="avatar">
+                <img [alt]="nominee?.nominee_name_1?.english_name + '\'s avatar'" [src]="serverURL + nominee?.nominee_name_1?.ava_url">
+                <div *ngIf="winner && winner.id_winner === nominee?.id_nominee" class="winner-info">
+                  <small class="text-white">{{'Winner in ' + awardDetail?.year}}</small>
+                </div>
+              </div>
+              <div class="p-2">
+                <p *ngIf="nominee.nominee_name_1" class="text-small">
+                  {{nominee?.nominee_name_1?.first_name + ' (' + nominee?.nominee_name_1?.english_name + ') ' + (nominee?.nominee_name_1?.last_name | uppercase) }}
+                </p>
+              </div>
+            </ng-template>
+          </ng-container>
+        </owl-carousel-o>
       </div>
     </div>
     <div class="row">

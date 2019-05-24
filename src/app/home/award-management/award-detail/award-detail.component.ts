@@ -1,10 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {AwardService} from '../../../_services/award.service';
 import {Award} from '../../../_models/award';
 import {PastWinner} from '../../../_models/past-winner';
 import {User} from '../../../_models/user';
 import {HttpErrorResponse, HttpParams} from '@angular/common/http';
+import {Winner} from '../../../_models/winner';
+import {AccountService} from '../../../_services/account.service';
 
 @Component({
   selector: 'app-award-detail',
@@ -12,10 +14,13 @@ import {HttpErrorResponse, HttpParams} from '@angular/common/http';
   styleUrls: ['./award-detail.component.scss']
 })
 export class AwardDetailComponent implements OnInit, OnDestroy {
+  serverURL = 'http://localhost:4000/';
   id: number;
   awardDetail: Award;
   pastWinnerList: PastWinner;
   currentUser: User;
+  nomineeList: any[];
+  winner: Winner;
   /*for sorting
   TABLE (Nodejs) -----|------ COLUMN (NodeJS) --------------------------------| TABLE (MySQL)
   winner--------------|------ percent ----------------------------------------| finalResults
@@ -25,13 +30,45 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   currentSortedColumn: string = 'year';
   currentSortedType = 'DESC';
   currentSortedTable: string = 'awardDetail';
-  constructor(private route: ActivatedRoute, private awardService: AwardService) {
+
+  // for the slide
+  customOptions: any = {
+    loop: false,
+    margin: 50,
+    mouseDrag: true,
+    touchDrag: true,
+    pullDrag: true,
+    dots: true,
+    navSpeed: 700,
+    navText: ['', ''],
+    responsive: {
+      0: {
+        items: 1
+      },
+      250: {
+        items: 2
+      },
+      550: {
+        items: 3
+      },
+      940: {
+        items: 4
+      }
+    },
+    nav: false,
+  /*  autoplay: true,
+    autoplayTimeout: 4000,
+    autoplayHoverPause: true*/
+  };
+  constructor(private route: ActivatedRoute, private awardService: AwardService, private accountService: AccountService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
     // get id from routeLink params
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.getDetail();
+    this.getNomineeList();
+    this.getWinner();
     this.reloadPreviousStatus();
   }
   // to show the button only can be used by admin
@@ -70,7 +107,6 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   reloadPreviousStatus() {
     // get params at the last times getting user list
     let lastPastWinnerParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
-    console.log(lastPastWinnerParams);
     if (null == lastPastWinnerParams) {
       // when you open browser initially
       // load default list
@@ -147,7 +183,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       this.saveCurrentStatus(lastPastWinnerParams);
       // console.log(lastPastWinnerParams);
     }, (err: HttpErrorResponse) => {
-      console.log(err);
+      // console.log(err);
     });
   }
   changeSortType() {
@@ -156,6 +192,13 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     } else {
       this.currentSortedType = 'ASC';
     }
+  }
+  // get winner if the award is finished
+  getWinner() {
+    // check if the award have not finished yet
+    this.awardService.getWinner(this.id).subscribe( winner => {
+      this.winner = winner;
+    });
   }
   sortOnColumn(columnName: string, tableName: string) {
     if (this.currentSortedColumn === columnName && this.currentSortedTable === tableName) {
@@ -167,6 +210,18 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       this.currentSortedTable = tableName;
     }
     this.getPastWinners();
+  }
+  getNomineeList() {
+    this.accountService.getListNomineesForVoting(this.id).subscribe(successRes => {
+      if (!successRes.hasOwnProperty('data')) {
+        console.log('There\'s no list of nominees in the response!');
+      } else {
+        if (!(successRes.data[0]).hasOwnProperty('nominee_name_1')) {
+          console.log('Error in nominee_name_1');
+        }
+        this.nomineeList = successRes.data;
+      }
+    });
   }
   // stay on current status after reloading page
   saveCurrentStatus(lastPastWinnerParams: Object) {
