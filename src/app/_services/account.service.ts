@@ -52,7 +52,7 @@ export class AccountService {
         params: params
       });
   }
-  getListNomineesForVoting(id: number) {
+  getListNomineesForVoting(id: number): Observable<any> {
     return this.httpClient.post(this.serverURL + 'users/list_for_voting', {id_award: id});
   }
   resetPassword(id: number) {
