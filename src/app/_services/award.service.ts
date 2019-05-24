@@ -3,6 +3,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Award} from '../_models/award';
 import {PastWinner} from '../_models/past-winner';
+import {Winner} from '../_models/winner';
 
 
 @Injectable({
@@ -29,14 +30,17 @@ export class AwardService {
   getAwardTypes(): Observable<any> {
     return this.httpClient.get(this.serverURL + 'award_type');
   }
-  getAwardDetail(id: number): Observable<Award> {
-    return this.httpClient.get<Award>(this.serverURL + `info/${id}`);
+  getAwardDetail(id_award: number): Observable<Award> {
+    return this.httpClient.get<Award>(this.serverURL + `info/${id_award}`);
   }
   getPastWinner(id: number, params?: HttpParams): Observable<PastWinner> {
     return this.httpClient.get<PastWinner>(this.serverURL + `past_winner/${id}`, {params: params});
   }
   getRankingBreakDown(id: number, params?: HttpParams) {
     return this.httpClient.get(this.serverURL + `breakdown/${id}`, {params: params});
+  }
+  getWinner(id_award: number): Observable<Winner> {
+    return this.httpClient.post<Winner>(this.serverURL + 'winner', {id_award: id_award});
   }
   // awards are taking place
   getAwardComingAbout() {
