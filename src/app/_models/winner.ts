@@ -1,4 +1,5 @@
 export interface Winner {
+  id_award?: number;
   id_winner: number;
   percent: number;
   winner_name?: WinnerName;
