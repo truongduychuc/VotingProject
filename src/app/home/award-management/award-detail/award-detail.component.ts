@@ -70,6 +70,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     this.getNomineeList();
     this.getWinner();
     this.reloadPreviousStatus();
+    this.updateBreakdown();
   }
   // to show the button only can be used by admin
   get isAdmin() {
@@ -222,6 +223,10 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
         this.nomineeList = successRes.data;
       }
     });
+  }
+  // update voting breakdown
+  updateBreakdown() {
+    this.awardService.updateVotingResult(this.id).subscribe();
   }
   // stay on current status after reloading page
   saveCurrentStatus(lastPastWinnerParams: Object) {
