@@ -46,7 +46,10 @@ export class AwardService {
   getAwardComingAbout() {
     return this.httpClient.get(this.serverURL + 'get_award');
   }
-  vote(votingResult: Object) {
+  vote(votingResult: Object): Observable<any> {
     return this.httpClient.post(this.serverURL + 'voting_award', votingResult);
+  }
+  updateVotingResult(id_award: number): Observable<any> {
+    return  this.httpClient.put(this.serverURL + 'update_result', {id: id_award});
   }
 }

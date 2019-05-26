@@ -19,7 +19,6 @@ export class UploadAvatarComponent implements OnInit {
   ngOnInit() {
     this.displayAvatarInitially();
     this.generateForm();
-    console.log(this.current_avt_url);
   }
   displayAvatarInitially() {
     if (!this.current_avt_url) {
@@ -34,7 +33,7 @@ export class UploadAvatarComponent implements OnInit {
   }
   onFileChange(event) {
     const reader = new FileReader();
-    if(event.target.files && event.target.files.length) {
+    if (event.target.files && event.target.files.length) {
       this.description = 'New image';
       const file: File = event.target.files[0];
       reader.readAsDataURL(file);
