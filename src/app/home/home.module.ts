@@ -1,35 +1,81 @@
 import {NgModule } from '@angular/core';
 import {CommonModule } from '@angular/common';
-import {ChangePasswordModalComponent} from "./change-password-modal/change-password-modal.component";
-import {CreateUserModalComponent} from "./employee-list/create-user-modal/create-user-modal.component";
-import {EmployeeListComponent} from "./employee-list/employee-list.component";
-import {FooterComponent} from "./footer/footer.component";
-import {NavbarComponent} from "./navbar/navbar.component";
-import {SidebarComponent} from "./sidebar/sidebar.component";
-import {DashboardComponent } from './dashboard/dashboard.component';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HomeRoutingModule} from "./home-routing.module";
-import {RouterModule} from "@angular/router";
-import {HomeComponent} from "./home.component";
-import {NgbActiveModal, NgbDateNativeAdapter, NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {ChangePasswordModalComponent} from './change-password-modal/change-password-modal.component';
+import {CreatingUserModalComponent} from './user-management/creating-user-modal/creating-user-modal.component';
+import {UserManagementComponent} from './user-management/user-management.component';
+import {FooterComponent} from './footer/footer.component';
+import {NavbarComponent} from './navbar/navbar.component';
+import {SidebarComponent} from './sidebar/sidebar.component';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HomeRoutingModule} from './home-routing.module';
+import {RouterModule} from '@angular/router';
+import {HomeComponent} from './home.component';
+import {NgbActiveModal, NgbDateNativeAdapter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {PersonalInformationComponent } from './personal-information/personal-information.component';
 import {VotingComponent } from './voting/voting.component';
-import { EditingModalComponent } from './employee-list/editing-modal/editing-modal.component';
-import { AwardListComponent } from './award-list/award-list.component';
-import { AwardAsYearComponent } from './award-list/award-as-year/award-as-year.component';
-import { AwardComponent } from './award-list/award/award.component';
-import { AddAwardModalComponent } from './award-list/add-award-modal/add-award-modal.component';
+import { EditingModalComponent } from './user-management/editing-modal/editing-modal.component';
+import { AwardManagementComponent } from './award-management/award-management.component';
+import { AwardAsYearComponent } from './award-management/award-as-year/award-as-year.component';
+import { AwardComponent } from './award-management/award/award.component';
+import { AddAwardModalComponent } from './award-management/add-award-modal/add-award-modal.component';
 import {NgSelectModule} from '@ng-select/ng-select';
 import { UploadAvatarComponent } from './upload-avatar/upload-avatar.component';
-import {GroupByPipe} from "../_pipes/group-by.pipe";
-import { AwardDetailComponent } from './award-list/award-detail/award-detail.component';
-import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.component';
-
+import {GroupByPipe} from '../_pipes/group-by.pipe';
+import { AwardDetailComponent } from './award-management/award-detail/award-detail.component';
+import { UploadLogoComponent } from './award-management/upload-logo/upload-logo.component';
+import { EditingAwardModalComponent } from './award-management/editing-award-modal/editing-award-modal.component';
+import { VotingBreakdownComponent } from './award-management/voting-breakdown/voting-breakdown.component';
+import {DateFormatPipe} from '../_pipes/date-format.pipe';
+import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
+import {ConfirmModalComponent} from '../modals/confirm-modal/confirm-modal.component';
+import {NotifierModule, NotifierOptions} from 'angular-notifier';
+import {CarouselModule} from 'ngx-owl-carousel-o';
+const customNotifierOptions: NotifierOptions = {
+  position: {
+    horizontal: {
+      position: 'middle',
+      distance: 12
+    },
+    vertical: {
+      position: 'bottom',
+      distance: 12,
+      gap: 10
+    }
+  },
+  theme: 'material',
+  behaviour: {
+    autoHide: 5000,
+    onClick: 'hide',
+    onMouseover: 'pauseAutoHide',
+    showDismissButton: true,
+    stacking: 1
+  },
+  animations: {
+    enabled: true,
+    show: {
+      preset: 'slide',
+      speed: 300,
+      easing: 'ease'
+    },
+    hide: {
+      preset: 'fade',
+      speed: 300,
+      easing: 'ease',
+      offset: 50
+    },
+    shift: {
+      speed: 300,
+      easing: 'ease'
+    },
+    overlap: 150
+  }
+};
 @NgModule({
   declarations: [
     ChangePasswordModalComponent,
-    CreateUserModalComponent,
-    EmployeeListComponent,
+    CreatingUserModalComponent,
+    UserManagementComponent,
     NavbarComponent,
     SidebarComponent,
     FooterComponent,
@@ -38,14 +84,19 @@ import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.compon
     PersonalInformationComponent,
     VotingComponent,
     EditingModalComponent,
-    AwardListComponent,
+    AwardManagementComponent,
     AwardAsYearComponent,
     AwardComponent,
     AddAwardModalComponent,
     UploadAvatarComponent,
     GroupByPipe,
     AwardDetailComponent,
-    UploadLogoComponent
+    UploadLogoComponent,
+    EditingAwardModalComponent,
+    VotingBreakdownComponent,
+    DateFormatPipe,
+    DatetimeFormatPipe,
+    ConfirmModalComponent
   ],
   imports: [
     CommonModule,
@@ -54,7 +105,9 @@ import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.compon
     FormsModule,
     HomeRoutingModule,
     NgbModule,
-    NgSelectModule
+    NgSelectModule,
+    NotifierModule.withConfig(customNotifierOptions),
+    CarouselModule
   ],
   providers: [
     NgbActiveModal,
@@ -62,11 +115,12 @@ import { UploadLogoComponent } from './award-list/upload-logo/upload-logo.compon
   ],
   entryComponents: [
     EditingModalComponent,
-    CreateUserModalComponent,
+    CreatingUserModalComponent,
     AddAwardModalComponent,
     ChangePasswordModalComponent,
     UploadAvatarComponent,
-    UploadLogoComponent
+    UploadLogoComponent,
+    ConfirmModalComponent
   ]
 })
 export class HomeModule { }

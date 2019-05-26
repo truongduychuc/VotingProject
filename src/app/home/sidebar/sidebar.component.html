@@ -2,31 +2,31 @@
   <ul class="nav">
     <li class="nav-item">
       <a class="nav-link" routerLink="dashboard" routerLinkActive="active">
-        <i class="menu-icon mdi mdi-television"></i>
-        <span class="menu-title">Dashboard</span>
+      <i class="fas fa-chart-line menu-icon"></i>
+      <span class="menu-title">Dashboard</span>
       </a>
     </li>
     <li *ngIf="isEmployeeOrManager" class="nav-item">
       <a class="nav-link" routerLink="personal-info" routerLinkActive="active">
-        <i class="menu-icon mdi mdi-information-outline"></i>
+      <i class="fas fa-id-card menu-icon"></i>
         <span class="menu-title">Personal Information</span>
       </a>
     </li>
     <li *ngIf="isEmployeeOrManager" class="nav-item">
       <a class="nav-link" routerLink="vote" routerLinkActive="active">
-        <i class="menu-icon mdi mdi-checkbox-marked-outline" routerLinkActive="active"></i>
+      <i class="fas fa-vote-yea menu-icon"></i>
         <span class="menu-title">Voting</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLink="employee-list" routerLinkActive="active">
-        <i class="menu-icon mdi mdi-format-list-numbers"></i>
-        <span class="menu-title">Employee list</span>
+      <a class="nav-link" routerLink="user-management" routerLinkActive="active">
+       <i class="fas fa-users menu-icon"></i>
+        <span class="menu-title">{{isEmployeeOrManager ? 'User List' : 'User Management'}}</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLink="award-list" routerLinkActive="active">
-        <i class="menu-icon mdi mdi-trophy-outline"></i>
+      <a class="nav-link" routerLink="award-management" routerLinkActive="active">
+      <i class="fas fa-trophy menu-icon"></i>
         <span class="menu-title">Awards</span>
       </a>
     </li>

@@ -1,4 +1,4 @@
-import {Winner} from "./winner";
+import {Winner} from './winner';
 
 export interface PastWinner {
   id: number;

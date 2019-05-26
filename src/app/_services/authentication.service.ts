@@ -43,7 +43,7 @@ export class AuthenticationService {
     const currentUser = <User> {
       first_name: authenticationResult.first_name,
       last_name: authenticationResult.last_name,
-      english_name: authenticationResult.last_name,
+      english_name: authenticationResult.english_name,
       position: authenticationResult.position
     }
     this.setToken(token, expiresAt);

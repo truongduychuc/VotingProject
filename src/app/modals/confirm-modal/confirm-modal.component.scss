@@ -1,0 +1,17 @@
+.modal-header {
+  border: 0;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+  padding: 1rem 1rem!important;
+  .heading {
+    padding: 0.3rem;
+    color: white;
+    font-size: 1.15rem;
+    margin: 0;
+  }
+  &.modal-confirm-danger {
+    background-color: #ff3547!important;
+  }
+  &.modal-confirm-info {
+    background-color: #308ee0 !important;
+  }
+}

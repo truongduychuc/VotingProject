@@ -1,7 +1,7 @@
 <div class="grid-margin">
   <div class="card shadow">
     <div class="card-header">
-      <strong>EDIT PERSONAL PROFILE</strong>
+      <h3>PERSONAL PROFILE</h3>
     </div>
     <div class="card-body">
       <form (ngSubmit)="updateInfo()" [formGroup]="personalUpdating">
@@ -60,17 +60,17 @@
             </div>
             <div class="form-group row">
               <label class="col-sm-3 col-form-label-lg">
-                Other
+                Achievement(s)
               </label>
               <div class="col-sm-9">
-                <input formControlName="other" [readOnly]="!editable" [value]="currentUserProfile?.other" type="text" class="form-control form-control-lg">
+                <input formControlName="achievement" [readOnly]="!editable" [value]="currentUserProfile?.achievement" type="text" class="form-control form-control-lg">
               </div>
             </div>
           </div>
         </div>
         <div class="d-flex justify-content-center flex-wrap">
-          <button type="button" (click)="changeEditable()" class="btn btn-warning btn-rounded mr-md-4 ml-md-0 m-sm-2 m-1">Edit</button>
-          <input type="submit" class="btn btn-info btn-rounded ml-md-4 mr-md-0 m-sm-2 m-1" value="Save">
+          <button type="button" (click)="changeEditable()" class="btn btn-primary btn-rounded m-sm-3 m-1">Edit</button>
+          <button [disabled]="isDisabledButton" type="submit" class="btn btn-outline-primary btn-rounded m-sm-3 m-1">Save</button>
         </div>
       </form>
     </div>

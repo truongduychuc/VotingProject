@@ -1,0 +1,20 @@
+.card {
+  background-color: transparent;
+  .banner {
+    padding: 0.4rem 1.81rem;
+    margin-top: 20px;
+    border-radius: 7px;
+    background-color: #f2f2f2;
+    a {
+      cursor: pointer;
+      &:hover {
+        font-weight: bold;
+      }
+    }
+    &:hover {
+      background-color: #efe9e9;
+    }
+    cursor: pointer;
+  }
+
+}

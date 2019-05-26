@@ -1,0 +1,50 @@
+$award-status-padding: 7.2px;
+.award {
+  border: 1px solid #f9e3e3;
+  margin-top: 10px;
+  border-radius: 7px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  //box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  //-webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  //-moz-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  .card-body {
+    padding: 1rem 1.81rem;
+    .row {
+      .information {
+        font-size: 0.75rem;
+        border-radius: 3px;
+        .p {
+          font-size: 0.75rem;
+        }
+        &.status {
+          @media (max-width: 768px) {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            h6 {
+              margin: 0 1em 0 0;
+            }
+          }
+          @media (min-width: 769px) {
+            h6 {
+              padding: 0 $award-status-padding;
+            }
+          }
+        }
+      }
+      .award-title-container {
+        .date-time {
+          color: #846b6b!important;
+        }
+        @media (max-width: 768px) {
+          text-align: center;
+        }
+        .award-title {
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+}

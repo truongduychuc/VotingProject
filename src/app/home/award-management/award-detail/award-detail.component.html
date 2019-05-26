@@ -1,0 +1,84 @@
+<div class="card shadow">
+  <div style="border-bottom: none" class="card-header">
+    <div class="row">
+      <div class="col-md-6 d-flex justify-content-md-start align-items-center pt-2 pb-2 justify-content-center">
+        <h4 class="mb-0">{{awardDetail?.year}}</h4>
+        <h4 class="mb-0 ml-2">{{awardDetail?.awardType.name | uppercase}}</h4>
+        <span [ngClass]="getCssBadgeClass(awardDetail?.status)" class="ml-2 badge-pill text-small">{{getStatusName(awardDetail?.status)}}</span>
+      </div>
+      <div class="col-md-6 d-flex justify-content-center align-items-center pt-2 pb-2 justify-content-md-end">
+        <button *ngIf="isAdmin" class="btn btn-primary btn-rounded mr-2">EDIT</button>
+        <button class="btn btn-outline-danger btn-rounded ml-2" routerLink="/home/award-management">BACK TO LIST</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 d-flex justify-content-center justify-content-sm-start">
+        <p class="mt-1 text-small text-gray" *ngIf="awardDetail?.status > 1">This award is taking place.
+          <a class="text-info ml-1" *ngIf="isAdmin" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12">
+        <h4 class="card-title">Nominees</h4>
+        <owl-carousel-o *ngIf="nomineeList" [options]="customOptions">
+          <ng-container *ngFor="let nominee of nomineeList">
+            <ng-template carouselSlide>
+              <div class="avatar">
+                <img [alt]="nominee?.nominee_name_1?.english_name + '\'s avatar'" [src]="serverURL + nominee?.nominee_name_1?.ava_url">
+                <div *ngIf="winner && winner.id_winner === nominee?.id_nominee" class="winner-info">
+                  <small class="text-white">{{'Winner in ' + awardDetail?.year}}</small>
+                </div>
+              </div>
+              <div class="p-2">
+                <p *ngIf="nominee.nominee_name_1" class="text-small">
+                  {{nominee?.nominee_name_1?.first_name + ' (' + nominee?.nominee_name_1?.english_name + ') ' + (nominee?.nominee_name_1?.last_name | uppercase) }}
+                </p>
+              </div>
+            </ng-template>
+          </ng-container>
+        </owl-carousel-o>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <h4 class="card-title">Past winner</h4>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="hand-cursor" title="Click to change sort direction" (click)="sortOnColumn('year','awardDetail')">Year
+                  <!--Change icon by sort direction-->
+                  <i class="sort-icon" [hidden]="!(currentSortedColumn == 'year')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+                </th>
+                <th class="hand-cursor" title="Click to change sort direction" (click)="sortOnColumn('first_name', 'winner_name')">Winner
+                  <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+                </th>
+                <th class="hand-cursor" title="Click to change sort direction" (click)="sortOnColumn('percent', 'winner')">% of total votes
+                  <i class="sort-icon" [hidden]="!(currentSortedColumn == 'percent')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+                </th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let pastWinner of pastWinnerList">
+              <td>{{pastWinner?.year}}</td>
+              <td>
+                {{
+                (pastWinner?.winner != null)? pastWinner?.winner?.winner_name?.first_name
+                  + ' (' + pastWinner?.winner?.winner_name?.english_name
+                  + ') ' + pastWinner?.winner?.winner_name?.last_name.toUpperCase() : ''
+                }}
+              </td>
+              <td>{{pastWinner?.winner?.percent}}</td>
+              <td><a class="text-info" [routerLink]="['/home/voting-breakdown/', pastWinner.id]">View Result</a></td> <!--Another way of /home/voting-breakdown/{{id}}-->
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

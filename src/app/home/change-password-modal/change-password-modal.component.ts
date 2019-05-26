@@ -17,8 +17,8 @@ export class ChangePasswordModalComponent implements OnInit {
   }
   generateForm() {
     this.changingPasswordForm = this.formBuilder.group({
-      currentPassword: ['', [Validators.required, Validators.minLength(8)]],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      currentPassword: ['', Validators.required],
+      newPassword: ['', Validators.required],
       confirmNewPassword: ['', [Validators.required]]
     }, {
       validator: this.MustMatch('newPassword', 'confirmNewPassword')
@@ -30,10 +30,10 @@ export class ChangePasswordModalComponent implements OnInit {
     }
     let old_password = this.changingPasswordForm.controls['currentPassword'].value;
     let new_password = this.changingPasswordForm.controls['newPassword'].value;
-    console.log(old_password + ' ' +new_password);
+    console.log(old_password + ' ' + new_password);
     this.accountService.changePassword(old_password, new_password).subscribe(
-      successMessageObj => {
-        console.log(successMessageObj);
+      (successMessageObj: any) => {
+        this.activeModal.close('Password changed successfully!');
       }, error1 => {
         console.log(JSON.stringify(error1));
       }

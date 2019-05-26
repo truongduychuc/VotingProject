@@ -9,7 +9,7 @@ import {Injectable, Pipe, PipeTransform} from '@angular/core';
 export class GroupByPipe implements PipeTransform {
 
   transform(collection: Array<Object>, property: string): Array<Object> {
-    if(!collection) {
+    if (!collection) {
       return null;
     }
     const groupedCollection  = collection.reduce((previous, current) => {

@@ -6,6 +6,7 @@ import {AuthenticationService} from '../../_services/authentication.service';
 import {User} from '../../_models/user';
 import {ChangePasswordModalComponent} from '../change-password-modal/change-password-modal.component';
 import {UploadAvatarComponent} from '../upload-avatar/upload-avatar.component';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +18,8 @@ export class NavbarComponent implements OnInit {
   currentUserProfile: User;
   public sidebarOpened = false;
   constructor(private authService: AuthenticationService, private accountService: AccountService,
-              private router: Router, config: NgbDropdownConfig, private modalService: NgbModal) {
+              private router: Router, config: NgbDropdownConfig, private modalService: NgbModal,
+              private notifier: NotifierService) {
     config.placement = 'bottom';
   }
   toggleOffcanvas() {
@@ -34,22 +36,30 @@ export class NavbarComponent implements OnInit {
   }
   getCurrentUserProfile() {
     this.accountService.getPersonalProfile().subscribe(
-      res => {
+      (res: any) => {
+        if (!res.hasOwnProperty('user')) {
+          console.log('There\'s no property user in response profile!');
+          return;
+        }
         this.currentUserProfile = res.user;
-        console.log(res.user);
+        // console.log(res.user);
       }, error1 => {
         console.log(error1);
       }
     );
   }
   openChangingPasswordModal() {
-    this.modalService.open(ChangePasswordModalComponent);
+    const modalRef = this.modalService.open(ChangePasswordModalComponent);
+    modalRef.result.then(successMessage => {
+      this.notifier.notify('info', successMessage);
+    });
   }
   openUploadingAvatarModal() {
     const modalRef = this.modalService.open(UploadAvatarComponent);
     modalRef.componentInstance.current_avt_url = this.currentUserProfile.ava_url;
-    modalRef.result.then(finished => {
+    modalRef.result.then((success) => {
       this.getCurrentUserProfile();
+      this.notifier.notify('info', success);
     }, reason => {
       console.log(reason);
     });
