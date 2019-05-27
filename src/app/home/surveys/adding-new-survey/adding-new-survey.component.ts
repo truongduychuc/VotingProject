@@ -46,9 +46,11 @@ export class AddingNewSurveyComponent implements OnInit {
     if (this.addSurvey.invalid) {
       return;
     }
-    this.surveyService.createNewSurvey(this.addSurvey.value).subscribe(successMessage => {
-      this.notifier.notify('info', successMessage);
-      this.router.navigateByUrl('/home/surveys/survey-list');
+    this.surveyService.createNewSurvey(this.addSurvey.value).subscribe(successRes => {
+      this.router.navigateByUrl('/home/surveys/list');
+      if (successRes.hasOwnProperty('message')) {
+        this.notifier.notify('info', successRes.message);
+      }
     }, errMessage => {
       if (typeof errMessage  === 'string') {
         this.notifier.notify('error', errMessage);
