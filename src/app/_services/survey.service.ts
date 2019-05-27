@@ -17,4 +17,7 @@ export class SurveyService {
   voteForSurvey(options: Object): Observable<any> {
     return this.httpClient.post(this.serverURL + 'vote', options);
   }
+  getQuestionList(survey_id: number): Observable<any> {
+    return this.httpClient.post(this.serverURL + 'question-list', {survey_id: survey_id});
+  }
 }
