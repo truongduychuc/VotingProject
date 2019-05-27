@@ -14,6 +14,7 @@ import {VotingBreakdownComponent} from './award-management/voting-breakdown/voti
 import {SurveysComponent} from './surveys/surveys.component';
 import {SurveyListComponent} from './surveys/survey-list/survey-list.component';
 import {AddingNewSurveyComponent} from './surveys/adding-new-survey/adding-new-survey.component';
+import {VotingSurveyComponent} from './surveys/voting-survey/voting-survey.component';
 
 
 const homeRoutes: Routes = [
@@ -43,7 +44,8 @@ const homeRoutes: Routes = [
         children: [
           {path: '', redirectTo: 'list'},
           {path: 'list', component: SurveyListComponent},
-          {path: 'add-new', component: AddingNewSurveyComponent}
+          {path: 'add-new', component: AddingNewSurveyComponent, canActivateChild: [RoleGuard], data: {roles: [Role.ADMIN]}},
+          {path: 'vote-for-survey', component: VotingSurveyComponent, canActivateChild: [RoleGuard], data: {roles: [Role.MANAGER, Role.DEVELOPER]}}
         ]}
     ]}
 ];

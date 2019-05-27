@@ -34,6 +34,7 @@ import {CarouselModule} from 'ngx-owl-carousel-o';
 import { SurveysComponent } from './surveys/surveys.component';
 import { AddingNewSurveyComponent } from './surveys/adding-new-survey/adding-new-survey.component';
 import { SurveyListComponent } from './surveys/survey-list/survey-list.component';
+import { VotingSurveyComponent } from './surveys/voting-survey/voting-survey.component';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
@@ -102,7 +103,8 @@ const customNotifierOptions: NotifierOptions = {
     ConfirmModalComponent,
     SurveysComponent,
     AddingNewSurveyComponent,
-    SurveyListComponent
+    SurveyListComponent,
+    VotingSurveyComponent
   ],
   imports: [
     CommonModule,
