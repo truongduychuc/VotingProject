@@ -9,12 +9,20 @@ import {SurveyService} from '../../../_services/survey.service';
 export class VotingSurveyComponent implements OnInit {
   surveyList: any[];
   questionList: any[];
+  selectedSurveyId: number;
   constructor(private surveyService: SurveyService) { }
 
   ngOnInit() {
     this.surveyService.getListSurveys().subscribe( list => {
       this.surveyList = list;
-      console.log(this.surveyList);
+    }, err => {
+      console.log(err);
+    });
+  }
+  getQuestionList(survey_id: number) {
+    this.surveyService.getQuestionList(survey_id).subscribe( questionList => {
+      this.questionList = questionList;
+      console.log(this.questionList);
     }, err => {
       console.log(err);
     });
