@@ -31,6 +31,9 @@ import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
 import {ConfirmModalComponent} from '../modals/confirm-modal/confirm-modal.component';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
 import {CarouselModule} from 'ngx-owl-carousel-o';
+import { SurveysComponent } from './surveys/surveys.component';
+import { AddingNewSurveyComponent } from './surveys/adding-new-survey/adding-new-survey.component';
+import { SurveyListComponent } from './surveys/survey-list/survey-list.component';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
@@ -96,7 +99,10 @@ const customNotifierOptions: NotifierOptions = {
     VotingBreakdownComponent,
     DateFormatPipe,
     DatetimeFormatPipe,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    SurveysComponent,
+    AddingNewSurveyComponent,
+    SurveyListComponent
   ],
   imports: [
     CommonModule,

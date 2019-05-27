@@ -11,13 +11,16 @@ import {RoleGuard} from '../_guards/role.guard';
 import {Role} from '../_enums/role';
 import {AwardDetailComponent} from './award-management/award-detail/award-detail.component';
 import {VotingBreakdownComponent} from './award-management/voting-breakdown/voting-breakdown.component';
+import {SurveysComponent} from './surveys/surveys.component';
+import {SurveyListComponent} from './surveys/survey-list/survey-list.component';
+import {AddingNewSurveyComponent} from './surveys/adding-new-survey/adding-new-survey.component';
 
 
 const homeRoutes: Routes = [
   { path: '', component: HomeComponent, children: [
       {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
       {path: 'dashboard', component: DashboardComponent},
-      {path: 'user-management', component: UserManagementComponent},
+      {path: 'users', component: UserManagementComponent},
       {path: 'vote',
         component: VotingComponent,
         canActivate: [RoleGuard],
@@ -31,9 +34,17 @@ const homeRoutes: Routes = [
         roles: [Role.MANAGER, Role.DEVELOPER]
       }
       },
-      {path: 'award-management', component: AwardManagementComponent},
+      {path: 'awards', component: AwardManagementComponent},
       {path: 'award-detail/:id', component: AwardDetailComponent},
-      {path: 'voting-breakdown/:id', component: VotingBreakdownComponent}
+      {path: 'voting-breakdown/:id', component: VotingBreakdownComponent},
+      {
+        path: 'surveys',
+        component: SurveysComponent,
+        children: [
+          {path: '', redirectTo: 'list'},
+          {path: 'list', component: SurveyListComponent},
+          {path: 'add-new', component: AddingNewSurveyComponent}
+        ]}
     ]}
 ];
 @NgModule({
