@@ -1,21 +1,21 @@
 <div class="card shadow">
-  <div class="card-header">
-    <h3>SURVEYS</h3>
+  <div class="card-header pb-0">
+    <ul class="nav nav-tabs card-header-tabs">
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="../surveys/list">LIST</a>
+      </li>
+      <li *ngIf="isAdmin" class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="../surveys/add-new">ADD NEW</a>
+      </li>
+      <li *ngIf="!isAdmin" class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="../surveys/vote-for-survey">VOTE</a>
+      </li>
+    </ul>
   </div>
   <div class="card-body">
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-              <li class="nav-item">
-                <a class="nav-link" routerLinkActive="active" routerLink="../surveys/list">List</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" routerLinkActive="active" routerLink="../surveys/add-new">Add new</a>
-              </li>
-            </ul>
-          </div>
           <div class="card-body">
             <router-outlet></router-outlet>
           </div>
