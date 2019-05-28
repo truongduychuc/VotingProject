@@ -54,10 +54,10 @@
               <th (click)="sortOnColumn('second_votes','votingBreakdown')"  title="Click to sort" class="hand-cursor">2nd votes <small>(3 points)</small>
                 <i class="sort-icon" [hidden]="!(currentSortedColumn == 'second_vote')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
               </th>
-              <th (click)="sortOnColumn('third_votes','votingBreakdown')" title="Click to sort" class="hand-cursor">3rd votes <small>(1 points)</small>
+              <th (click)="sortOnColumn('third_votes','votingBreakdown')" title="Click to sort" class="hand-cursor">3rd votes <small>(1 point)</small>
                 <i class="sort-icon" [hidden]="!(currentSortedColumn == 'third_vote')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
               </th>
-              <th (click)="sortOnColumn('total_points','votingBreakdown')" title="Click to sort">Total point
+              <th (click)="sortOnColumn('total_points','votingBreakdown')" title="Click to sort">Total points
                 <i class="sort-icon" [hidden]="!(currentSortedColumn == 'total_points')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
               </th>
             </tr>

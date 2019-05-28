@@ -16,6 +16,9 @@
         <p class="mt-1 text-small text-gray" *ngIf="awardDetail?.status > 1">This award is taking place.
           <a class="text-info ml-1" *ngIf="isAdmin" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
         </p>
+        <p class="mt-1" *ngIf="awardDetail?.status === 0">
+          <a class="text-info ml-1" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
+        </p>
       </div>
     </div>
   </div>
