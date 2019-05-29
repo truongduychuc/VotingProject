@@ -44,7 +44,6 @@ export class VotingComponent implements OnInit {
   // get list of award is going on
   getListAwardForVoting() {
     this.awardService.getAwardComingAbout().subscribe( (success: any) => {
-      console.log(success);
       if (!success.hasOwnProperty('data')) {
         console.log('The response has no property named \'data!\'');
       } else {
@@ -58,7 +57,6 @@ export class VotingComponent implements OnInit {
   loadNomineesCorresponding(id: number) {
     this.resetNomineeSelections();
     this.userService.getListNomineesForVoting(id).subscribe( (success: any) => {
-      console.log(success);
       if (!success.hasOwnProperty('data')) {  // check response if it get back the true data
         console.log('The response has no property named \'data!\'');
       } else {
