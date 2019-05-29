@@ -247,7 +247,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.removeStatus();
-    console.log('Destroyed!');
-    console.log(sessionStorage.getItem('lastPastWinnerParams'));
+    // console.log('Destroyed!');
+    // console.log(sessionStorage.getItem('lastPastWinnerParams'));
   }
 }
