@@ -76,7 +76,7 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
     } else {
       if (sortColumn) {
         params = params.append('col', sortColumn); // using append need params = params*before*.append...
-        console.log(sortColumn);
+        // console.log(sortColumn);
       }
     }
     if(null == sortType && this.currentSortedType) {
@@ -85,7 +85,7 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
     } else {
       if (sortType) {
         params = params.append('type', sortType);
-        console.log(sortType);
+        // console.log(sortType);
       }
     }
     if (null == sortTable && this.currentSortedTable) {
@@ -94,7 +94,7 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
     } else {
       if (sortTable) {
         params = params.append('table', sortTable);
-        console.log(sortTable);
+        // console.log(sortTable);
       }
     }
     if (null == searchText && this.currentSearchText) {
@@ -103,7 +103,7 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
     } else {
       if (searchText) {
         params = params.append('search', searchText);
-        console.log(searchText);
+        // console.log(searchText);
       }
     }
     if (null == itemsPerPage && this.currentPageSize) {
@@ -112,7 +112,7 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
     } else {
       if (itemsPerPage) {
         params = params.append('count', itemsPerPage.toString());
-        console.log(itemsPerPage);
+        // console.log(itemsPerPage);
       }
     }
     if (null == currentPage && this.currentPage) {
@@ -120,7 +120,7 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
       params = params.append('page', currentPage.toString());
     } else {
       if (currentPage) {
-        console.log(currentPage);
+        // console.log(currentPage);
         params = params.append('page', currentPage.toString());
       }
     }
@@ -154,7 +154,6 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
   pageChange(newPage: number) {
     // this function is called before the current page is changed to new page, so here need to take user list of newPage
     // console.log(this.currentPage);
-    console.log(newPage);
     this.getBreakdown(this.currentSortedColumn, this.currentSortedType, this.currentSortedTable, this.currentSearchText,
       this.currentPageSize, newPage);
   }
@@ -211,7 +210,6 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
               this.currentRecords = res.filtered_counts;
             }
             this.saveCurrentStatus(lastBreakdownParams);
-            console.log(res);
           }
         }, (err: HttpErrorResponse) => {
           console.log(err);
@@ -266,7 +264,7 @@ export class VotingBreakdownComponent implements OnInit, OnDestroy {
   // try to get previous page status
   getPreviousStatus() {
     let lastBreakdownParams = JSON.parse(sessionStorage.getItem('lastBreakdownParams'));
-    console.log(lastBreakdownParams);
+    // console.log(lastBreakdownParams);
     return lastBreakdownParams;
   }
 
