@@ -36,7 +36,7 @@ export class AwardService {
   getPastWinner(id: number, params?: HttpParams): Observable<PastWinner> {
     return this.httpClient.get<PastWinner>(this.serverURL + `past_winner/${id}`, {params: params});
   }
-  getRankingBreakDown(id: number, params?: HttpParams) {
+  getRankingBreakDown(id: number, params?: HttpParams): Observable<any> {
     return this.httpClient.get(this.serverURL + `breakdown/${id}`, {params: params});
   }
   getWinner(id_award: number): Observable<Winner> {
