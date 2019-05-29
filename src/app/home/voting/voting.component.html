@@ -24,6 +24,7 @@
                     <div class="form-group">
                       <label class="col-form-label">Choose an award:</label>
                       <select formControlName="id" (change)="loadNomineesCorresponding(voting.controls['id'].value)" class="form-control">
+                        <option hidden>Choose award here</option>
                         <optgroup *ngFor="let element of listAwards | groupBy: 'year'" [label]="element?.key">
                           <option *ngFor="let award of element?.value" [ngValue]="award?.id">
                             {{award?.awardType?.name}}
