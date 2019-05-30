@@ -20,6 +20,7 @@
             margin: 0;
             padding: 0;
             >.item {
+              cursor: pointer;
               position: relative;
               padding: 10px;
               box-shadow: none;
@@ -31,6 +32,15 @@
                 @media (max-width: 511px) {
                   top: 30%;
                 }
+              }
+              .badge-info {
+                padding:0px 2px;
+                font-size: 10px;
+                border-radius: 6px;
+                margin-right: 3px;
+              }
+              .award-title{
+                font-weight: 500;
               }
             }
           }

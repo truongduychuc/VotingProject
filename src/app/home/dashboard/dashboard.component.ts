@@ -10,13 +10,14 @@ import {
 } from 'chart.js';
 import {Label} from 'ng2-charts';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
+import {Award} from '../../_models/award';
 @Component({
   selector: 'app-data-tracking',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  finishedAwardList: any[];
+  finishedAwardList: Award[];
   upcomingAwardList: any[];
   percentList: number[];
   nomineeNameList: Label[];

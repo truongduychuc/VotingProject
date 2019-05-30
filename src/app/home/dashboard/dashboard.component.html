@@ -7,31 +7,16 @@
       <div class="col-sm-5 col-xl-3">
         <div class="card shortcut-list">
           <div class="card-header">
-            <h4 class="card-title">Lastest awards</h4>
+            <h4 class="card-title">Lastest finishes</h4>
           </div>
           <div class="card-body">
             <ul class="award-list">
-              <li class="item">
+              <li *ngFor="let finishedAward of finishedAwardList" class="item">
                 <a>
-                  <span class="award-title">Employee of the year</span>
+                  <span class="badge-info">{{finishedAward.year}}</span>
+                  <span class="award-title">{{finishedAward.awardType.name}}</span>
                   <span class="pull-right-container">
-                  <i class="fas fa-chevron-right"></i>
-                </span>
-                </a>
-              </li>
-              <li class="item">
-                <a>
-                  <span>Employee of the year</span>
-                  <span class="pull-right-container">
-                  <i class="fas fa-chevron-right"></i>
-                </span>
-                </a>
-              </li>
-              <li class="item">
-                <a>
-                  <span>Employee of the year</span>
-                  <span class="pull-right-container">
-                  <i class="fas fa-chevron-right"></i>
+                  <i class="fas fa-chevron-down"></i>
                 </span>
                 </a>
               </li>
@@ -40,7 +25,7 @@
         </div>
         <div class="card shortcut-list">
           <div class="card-header">
-            <h4 class="card-title">Upcoming awards</h4>
+            <h4 class="card-title">Upcoming</h4>
           </div>
           <div class="card-body"></div>
         </div>
