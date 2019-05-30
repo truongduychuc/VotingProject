@@ -90,7 +90,7 @@ router.post('/create', (req, res) => {
     const year = today.getFullYear();
     const awardData = {
         type: req.body.type,
-        description: null,
+        description: req.body.description,
         year: req.body.year,
         status: 1,
         date_start: req.body.date_start,
@@ -2031,6 +2031,9 @@ async function updatePercent(id) {
                 let id_nominee = nominees[i].id_nominee;
                 let num = nominees[i].total_points / sum * 100;
                 let percent = Math.round(num * 100) / 100;
+                if (percent == NaN) {
+                    percent = 0;
+                }
                 Breakdown.update({
                     percent: percent,
                     updated_at: today
@@ -2040,7 +2043,6 @@ async function updatePercent(id) {
                             id_nominee: id_nominee
                         }
                     })
-
             }
             console.log('Update percent successfully');
         })
@@ -2051,9 +2053,9 @@ async function updatePercent(id) {
 
 
 
-function calculate(id) {
+async function calculate(id) {
     const award_id = id;
-    Breakdown.findAll({
+    await Breakdown.findAll({
         where: {
             id_award: award_id
         },
@@ -2113,8 +2115,8 @@ function calculate(id) {
         })
 }
 
-function updateRank(i, id_nominee) {
-    Breakdown.update({
+async function updateRank(i, id_nominee) {
+    await Breakdown.update({
         rank: i
     }, {
             where: {
@@ -2459,7 +2461,8 @@ function sendEmailWhenStart(id) {
 function sendEmailWhenEnd(id) {
     Voter.findAll({
         where: {
-            id_award: id
+            id_award: id,
+            vote_status: 1,
         },
         include: [{
             model: Award,
@@ -2547,7 +2550,7 @@ const informAward = new CronJob('0 0 0 * * *', function () {
 });
 
 console.log('After job instantiation');
-// checkAward.start();
+checkAward.start();
 // checkAward.stop();
 // updateAward.start();
 // informAward.start();
