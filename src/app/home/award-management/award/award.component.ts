@@ -58,6 +58,9 @@ export class AwardComponent implements OnInit {
     }
   }
   openUploadingLogoModal() {
+    if (!this.isAdmin) {
+      return;
+    }
     const modalRef = this.modalService.open(UploadLogoComponent);
     modalRef.componentInstance.id = this.awardId;
     modalRef.componentInstance.current_logo_url = this.awardLogoURL;

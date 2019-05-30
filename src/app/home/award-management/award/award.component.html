@@ -2,7 +2,7 @@
   <div class="card-body">
     <div class="row">
       <div class="col-md-2 d-flex justify-content-center">
-        <div title="Click on logo to upload new one" class="p-1">
+        <div [ngClass]="{'hand-cursor award-logo-container': isAdmin}" [title]="isAdmin ? 'Click on logo to upload new one' : ''" class="p-1">
           <img [src]="serverURL + awardLogoURL" (click)="openUploadingLogoModal()" alt="Logo" [ngClass]="awardLogoURL ? 'img-md rounded-circle' : 'img-md'">
         </div>
       </div>
