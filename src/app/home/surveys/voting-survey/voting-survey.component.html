@@ -2,16 +2,36 @@
   <div class="col-12">
     <div class="card">
       <div class="card-body">
+        <form (ngSubmit)="onSubmit()" [formGroup]="votingSurvey">
         <div class="row">
-          <div class="col-12 d-flex justify-content-center">
-            <div class="form-group d-inline-block">
-              <label class="col-form-label">Choose a survey to vote</label>
-              <select [(ngModel)]="selectedSurveyId" (change)="getQuestionList(selectedSurveyId)" class="form-control rounded-pill">
-                <option *ngFor="let survey of surveyList" [ngValue]="survey.id">{{survey?.survey_name}}</option>
-              </select>
+            <div class="col-12 d-flex justify-content-center">
+              <div class="form-group d-inline-block">
+                <label class="col-form-label">Choose a survey to vote</label>
+                <select formControlName="survey_id" (change)="getQuestionList(votingSurvey.controls['survey_id'].value)" class="form-control rounded-pill">
+                  <option *ngFor="let survey of surveyList" [ngValue]="survey.id">{{survey?.survey_name}}</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
+          <div formArrayName="answers" class="row mt-3">
+              <div [formGroupName]="questionIndex" *ngFor="let question of questionList; index as questionIndex" class="col-12 mb-3">
+                <div class="form-group">
+                  <h6>{{questionIndex + 1 }}. {{question.title}}</h6>
+                  <div class="pl-3">
+                    <div *ngFor="let answer of question.answers" class="custom-control custom-radio">
+                      <input [value]="answer.id" type="radio" class="custom-control-input" [id]="'answer' + answer.id " formControlName="id">
+                      <label class="custom-control-label" [for]="'answer' + answer.id ">{{answer.title}}</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div *ngIf="votingSurvey.valid" class="row mt-4">
+            <div class="col-12 d-flex justify-content-center">
+              <button type="submit" class="btn btn-outline-primary btn-rounded">Finish</button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
