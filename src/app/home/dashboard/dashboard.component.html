@@ -1,1 +1,59 @@
-<h1>Updating, please come back later!</h1>
+<div class="card shadow">
+  <div class="card-header">
+    <h3>DASHBOARD</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-5 col-xl-3">
+        <div class="card shortcut-list">
+          <div class="card-header">
+            <h4 class="card-title">Lastest awards</h4>
+          </div>
+          <div class="card-body">
+            <ul class="award-list">
+              <li class="item">
+                <a>
+                  <span class="award-title">Employee of the year</span>
+                  <span class="pull-right-container">
+                  <i class="fas fa-chevron-right"></i>
+                </span>
+                </a>
+              </li>
+              <li class="item">
+                <a>
+                  <span>Employee of the year</span>
+                  <span class="pull-right-container">
+                  <i class="fas fa-chevron-right"></i>
+                </span>
+                </a>
+              </li>
+              <li class="item">
+                <a>
+                  <span>Employee of the year</span>
+                  <span class="pull-right-container">
+                  <i class="fas fa-chevron-right"></i>
+                </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="card shortcut-list">
+          <div class="card-header">
+            <h4 class="card-title">Upcoming awards</h4>
+          </div>
+          <div class="card-body"></div>
+        </div>
+      </div>
+      <div class="col-sm-7 col-xl-9 align-items-center">
+        <canvas *ngIf="percentList" baseChart
+                [data]="percentList"
+                [labels]="nomineeNameList"
+                [chartType]="pieChartType"
+                [options]="pieChartOptions"
+                [plugins]="pieChartPlugins">
+        </canvas>
+      </div>
+    </div>
+  </div>
+</div>
