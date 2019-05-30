@@ -37,10 +37,31 @@
                 padding:0px 2px;
                 font-size: 10px;
                 border-radius: 6px;
-                margin-right: 3px;
+                margin-right: 4px;
               }
               .award-title{
                 font-weight: 500;
+              }
+              ul {
+                display: none;
+                padding: 0;
+                list-style: none;
+                li{
+                  margin: 0;
+                  padding: 0;
+                  a {
+                    display: block;
+                    padding: 5px 0 5px 2rem;
+                    &:hover {
+                      background-color: #efe9e9;
+                    }
+                  }
+                }
+              }
+              &:hover {
+                .award-title{
+                  color: #8d9498;
+                }
               }
             }
           }

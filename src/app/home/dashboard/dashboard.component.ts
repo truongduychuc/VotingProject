@@ -11,6 +11,7 @@ import {
 import {Label} from 'ng2-charts';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import {Award} from '../../_models/award';
+import {element} from 'protractor';
 @Component({
   selector: 'app-data-tracking',
   templateUrl: './dashboard.component.html',
@@ -21,6 +22,9 @@ export class DashboardComponent implements OnInit {
   upcomingAwardList: any[];
   percentList: number[];
   nomineeNameList: Label[];
+  // for collapse menu
+  finishedMenuStates: boolean[];
+  upcomingMenuStates: boolean[];
   public pieChartOptions: ChartOptions = {
     responsive: true,
     legend: {
@@ -95,15 +99,16 @@ export class DashboardComponent implements OnInit {
   constructor(private awardService: AwardService) { }
 
   ngOnInit() {
-    this.getAwardList();
+    this.getFinishedAwardList();
     this.getData(1034);
   }
   // get awardList at beginning
-  getAwardList() {
+  getFinishedAwardList() {
     this.awardService.getAwardList().pipe().subscribe( list => {
       const finishedAwards = list.filter(award => award.status === 0);
-      const slicedAwards = finishedAwards.slice(0, 3);
-      this.finishedAwardList = slicedAwards;
+      const pendingAwards = list.filter(award => award.status === 1);
+      const slicedFinishedAwards = finishedAwards.slice(0, 3);
+      this.finishedAwardList = slicedFinishedAwards;
     }, errGetting => {
       console.log(errGetting);
     });
@@ -123,6 +128,19 @@ export class DashboardComponent implements OnInit {
     }, err => {
       console.log(err);
     });
+  }
+  openNestedMenu(id: number) {
+    const submenu = <HTMLElement>document.getElementById('award' + id);
+    const dropIcon = <HTMLElement>document.getElementById('drop-icon' + id);
+    if (submenu.style.display === 'block') {
+      submenu.style.display = 'none';
+      dropIcon.classList.remove('fa-chevron-down');
+      dropIcon.classList.add('fa-chevron-right');
+    } else {
+      submenu.style.display = 'block';
+      dropIcon.classList.remove('fa-chevron-right');
+      dropIcon.classList.add('fa-chevron-down');
+    }
   }
 
 }

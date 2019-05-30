@@ -11,14 +11,19 @@
           </div>
           <div class="card-body">
             <ul class="award-list">
-              <li *ngFor="let finishedAward of finishedAwardList" class="item">
+              <li (click)="openNestedMenu(finishedAward.id)" *ngFor="let finishedAward of finishedAwardList" class="item">
                 <a>
                   <span class="badge-info">{{finishedAward.year}}</span>
                   <span class="award-title">{{finishedAward.awardType.name}}</span>
                   <span class="pull-right-container">
-                  <i class="fas fa-chevron-down"></i>
+                  <i [id]="'drop-icon' + finishedAward.id" class="fas fa-chevron-right"></i>
                 </span>
                 </a>
+                <ul [id]="'award' + finishedAward.id">
+                  <li><a [className]="'award-menu' + finishedAward.id">View chart</a>
+                  </li>
+                  <li><a [className]="'award-menu' + finishedAward.id">View detail</a></li>
+                </ul>
               </li>
             </ul>
           </div>
