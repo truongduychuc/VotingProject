@@ -61,7 +61,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div *ngIf="listNominees" class="row">
           <div *ngIf="voting.controls['id'].value" class="col-md-4 d-flex">
             <div class="card shadow">
               <div class="card-header">
@@ -78,6 +78,7 @@
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
                       <select formControlName="first_vote" class="form-control">
+                        <option hidden></option>
                         <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>

@@ -80,6 +80,7 @@ export class VotingComponent implements OnInit {
     modalRef.result.then( accept => {
       this.awardService.vote(this.voting.value).subscribe( (successMes: string) => {
         this.notifier.notify('info', 'Voted successfully!');
+        this.resetAllSelections();
       }, err => {
         // display error message to alert, the message is returned from error interceptor
         if (typeof err !== 'string') {
