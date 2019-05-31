@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, OnInit} from '@angular/core';
 import {AwardService} from '../../_services/award.service';
 import {
   ChartColor,
@@ -11,20 +11,20 @@ import {
 import {Label} from 'ng2-charts';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import {Award} from '../../_models/award';
-import {element} from 'protractor';
+import {DateFormatPipe} from '../../_pipes/date-format.pipe';
+import {Router} from '@angular/router';
 @Component({
   selector: 'app-data-tracking',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit{
   finishedAwardList: Award[];
   upcomingAwardList: any[];
   percentList: number[];
   nomineeNameList: Label[];
-  // for collapse menu
-  finishedMenuStates: boolean[];
-  upcomingMenuStates: boolean[];
+  chartTitle;
+  chartTime;
   public pieChartOptions: ChartOptions = {
     responsive: true,
     legend: {
@@ -64,11 +64,6 @@ export class DashboardComponent implements OnInit {
         }
       }
     },
-    title: {
-      fontStyle: 'bold',
-      fontSize: 20,
-      fontFamily: 'Poppins'
-    },
     tooltips: {
       bodyFontSize: 14,
       bodyFontFamily: 'Poppins',
@@ -92,32 +87,27 @@ export class DashboardComponent implements OnInit {
       }
     }
   };
-  public title: ChartTitleOptions = {
-  };
   public pieChartPlugins = [pluginDataLabels];
   public pieChartType: ChartType = 'pie';
-  constructor(private awardService: AwardService) { }
+  constructor(private awardService: AwardService, private dateFormat: DateFormatPipe, private router: Router) { }
 
   ngOnInit() {
     this.getFinishedAwardList();
-    this.getData(1034);
   }
   // get awardList at beginning
   getFinishedAwardList() {
     this.awardService.getAwardList().pipe().subscribe( list => {
       const finishedAwards = list.filter(award => award.status === 0);
       const pendingAwards = list.filter(award => award.status === 1);
-      const slicedFinishedAwards = finishedAwards.slice(0, 3);
-      this.finishedAwardList = slicedFinishedAwards;
+      this.finishedAwardList = finishedAwards.slice(0, 3);
+      this.upcomingAwardList = pendingAwards.slice(0, 3);
+      this.getData(this.finishedAwardList[0]);
     }, errGetting => {
       console.log(errGetting);
     });
   }
-  getSpecificAwardInfo() {
-    this.awardService.getAwardDetail(1034);
-  }
-  getData(id: number) {
-    this.awardService.getRankingBreakDown(id).subscribe(res => {
+  getData(award: Award) {
+    this.awardService.getRankingBreakDown(award.id).subscribe(res => {
       const slicedBreakdowns = res.data.slice(0, 3);
       const tempPercentList = slicedBreakdowns.map(breakdown => breakdown.percent);
       this.nomineeNameList = slicedBreakdowns.map(breakdown => breakdown.nominee_name.english_name);
@@ -125,11 +115,18 @@ export class DashboardComponent implements OnInit {
       const othersPercents = parseFloat((Math.round ((100   - tempPercentList.reduce((a, b) => a + b, 0)) * 100) / 100).toFixed(2));
       tempPercentList.push(othersPercents);
       this.percentList = tempPercentList;
+      this.chartTitle = award.awardType.name;
+      const awardStartTime: string = this.dateFormat.transform(award.date_start);
+      const awardEndTime: string = this.dateFormat.transform(award.date_end);
+      this.chartTime = 'From ' + awardStartTime + ' to ' + awardEndTime;
     }, err => {
       console.log(err);
     });
   }
   openNestedMenu(id: number) {
+    if (!id) {
+      return;
+    }
     const submenu = <HTMLElement>document.getElementById('award' + id);
     const dropIcon = <HTMLElement>document.getElementById('drop-icon' + id);
     if (submenu.style.display === 'block') {
@@ -142,6 +139,8 @@ export class DashboardComponent implements OnInit {
       dropIcon.classList.add('fa-chevron-down');
     }
   }
-
+  navigateToDetailPage(id: number) {
+    this.router.navigate(['/home/award-detail', id]);
+  }
 }
 

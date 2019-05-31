@@ -10,8 +10,8 @@
             <h4 class="card-title">Lastest finishes</h4>
           </div>
           <div class="card-body">
-            <ul class="award-list">
-              <li (click)="openNestedMenu(finishedAward.id)" *ngFor="let finishedAward of finishedAwardList" class="item">
+            <ul *ngIf="finishedAwardList" class="award-list">
+              <li (click)="openNestedMenu(finishedAward?.id)" *ngFor="let finishedAward of finishedAwardList" class="item">
                 <a>
                   <span class="badge-info">{{finishedAward.year}}</span>
                   <span class="award-title">{{finishedAward.awardType.name}}</span>
@@ -20,11 +20,14 @@
                 </span>
                 </a>
                 <ul [id]="'award' + finishedAward.id">
-                  <li><a [className]="'award-menu' + finishedAward.id">View chart</a>
+                  <li><a (click)="getData(finishedAward)" [className]="'award-menu' + finishedAward.id">View chart</a>
                   </li>
-                  <li><a [className]="'award-menu' + finishedAward.id">View detail</a></li>
+                  <li><a (click)="navigateToDetailPage(finishedAward.id)" [className]="'award-menu' + finishedAward.id">View detail</a></li>
                 </ul>
               </li>
+            </ul>
+            <ul *ngIf="finishedAwardList?.length === 0" class="award-list">
+              <li style="cursor: default" class="align-items-center item text-center">No available award</li>
             </ul>
           </div>
         </div>
@@ -32,17 +35,47 @@
           <div class="card-header">
             <h4 class="card-title">Upcoming</h4>
           </div>
-          <div class="card-body"></div>
+          <div class="card-body">
+            <ul *ngIf="upcomingAwardList" class="award-list">
+              <li (click)="openNestedMenu(upcomingAward.id)" *ngFor="let upcomingAward of upcomingAwardList" class="item">
+                <a>
+                  <span class="badge-info">{{upcomingAward.year}}</span>
+                  <span class="award-title">{{upcomingAward.awardType.name}}</span>
+                  <span class="pull-right-container">
+                  <i [id]="'drop-icon' + upcomingAward.id" class="fas fa-chevron-right"></i>
+                </span>
+                </a>
+                <ul [id]="'award' + upcomingAward.id">
+                  <li><a (click)="navigateToDetailPage(upcomingAward.id)" [className]="'award-menu' + upcomingAward.id">View detail</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul *ngIf="upcomingAwardList?.length === 0" class="award-list">
+              <li style="cursor: default" class="align-items-center item text-center">No available award</li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="col-sm-7 col-xl-9 align-items-center">
-        <canvas *ngIf="percentList" baseChart
-                [data]="percentList"
-                [labels]="nomineeNameList"
-                [chartType]="pieChartType"
-                [options]="pieChartOptions"
-                [plugins]="pieChartPlugins">
-        </canvas>
+      <div class="col-sm-7 col-xl-9 mt-4 mt-sm-0">
+        <div class="row">
+          <div class="col-12 text-center">
+            <h4 class="chart-title">{{chartTitle}}</h4>
+          </div>
+          <div class="col-12 text-center">
+            <p class="chart-time text-small">{{chartTime}}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 align-items-center">
+            <canvas *ngIf="percentList && finishedAwardList.length > 0" baseChart
+                    [data]="percentList"
+                    [labels]="nomineeNameList"
+                    [chartType]="pieChartType"
+                    [options]="pieChartOptions"
+                    [plugins]="pieChartPlugins">
+            </canvas>
+          </div>
+        </div>
       </div>
     </div>
   </div>
