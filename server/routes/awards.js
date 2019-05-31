@@ -68,7 +68,7 @@ getTypeOfAward: (get) /award_type
 findAnAward: (get) /find_an_award
 voting: (post) /voting_award
 updateResult: (put) /update_result
-
+finishAward: (post) /finish_award
 
 deleteAward(admin): (post) /delete/:id (not done)
 
@@ -1896,7 +1896,19 @@ router.post('/check_status_voter', authorize(), (req, res) => {
         })
 })
 
-
+//Finish award
+router.post('/finish_award', (req, res) => {
+    const today = new Date();
+    Award.update({
+        status: 0,
+        date_end: today,
+        updated_at: today,
+    }, {
+            where: {
+                id: req.body.id
+            }
+        })
+})
 
 async function updateResult(id) {
     const today = new Date();
