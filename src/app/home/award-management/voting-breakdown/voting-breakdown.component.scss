@@ -1,12 +1,10 @@
 .card-header {
   border-bottom: none;
+  background-color: transparent;
   .row {
     .col-12 {
       .card-description {
         font-style: italic;
-        @media (min-width: 576px) {
-          margin-left: 2.8rem;
-        }
       }
     }
   }
