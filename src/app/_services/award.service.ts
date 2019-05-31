@@ -27,6 +27,9 @@ export class AwardService {
   findAnAwardByType(id: number): Observable<any> {
     return this.httpClient.post(this.serverURL + 'find_an_award', {type: id});
   }
+  checkVoterStatus(id_award: number) {
+    return this.httpClient.post(this.serverURL + 'check_status_voter', {id_award: id_award});
+  }
   getAwardTypes(): Observable<any> {
     return this.httpClient.get(this.serverURL + 'award_type');
   }
