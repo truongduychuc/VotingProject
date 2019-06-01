@@ -1848,9 +1848,10 @@ router.put('/update_result', (req, res) => {
 
 //Check status vote of voter
 router.post('/check_status_voter', authorize(), (req, res) => {
-
+    const today = new Date();
     const voter1 = req.decoded.id;
-    const stream_name = 'award_' + req.body.id_award;
+    const id_award = req.body.id_award;
+    const stream_name = 'award_' + id_award;
     // //Check if voter has already voted for award or not
 
     //List voter
@@ -1892,7 +1893,13 @@ router.post('/check_status_voter', authorize(), (req, res) => {
                             })
                         }
                     })
+                    .catch(err => {
+                        console.log('Error when get list voter ' + err)
+                    })
             }
+        })
+        .catch(err => {
+            console.log('Error when get list voter ' + err)
         })
 })
 
@@ -2562,7 +2569,7 @@ const informAward = new CronJob('0 0 0 * * *', function () {
 });
 
 console.log('After job instantiation');
-checkAward.start();
+// checkAward.start();
 // checkAward.stop();
 // updateAward.start();
 // informAward.start();
