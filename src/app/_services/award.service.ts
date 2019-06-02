@@ -4,6 +4,8 @@ import {Observable} from 'rxjs';
 import {Award} from '../_models/award';
 import {PastWinner} from '../_models/past-winner';
 import {Winner} from '../_models/winner';
+import {catchError, tap} from 'rxjs/operators';
+import {NotifierService} from 'angular-notifier';
 
 
 @Injectable({
@@ -11,7 +13,7 @@ import {Winner} from '../_models/winner';
 })
 export class AwardService {
   serverURL = 'http://localhost:4000/awards/';
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private notifier: NotifierService) {
 
   }
   createNewAward(newAward: Object) {
@@ -21,7 +23,7 @@ export class AwardService {
   getAwardList(): Observable<Award[]> {
     return this.httpClient.get<Award[]>(this.serverURL + 'list');
   }
-  updateAward(id: number, newInfo: Object) {
+  updateAward(id: number, newInfo: Object): Observable<any> {
     return this.httpClient.put(this.serverURL + `update/${id}`, newInfo);
   }
   findAnAwardByType(id: number): Observable<any> {
