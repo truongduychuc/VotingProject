@@ -30,7 +30,7 @@
       </div>
       <div class="col-md-2">
         <div class="d-flex flex-wrap flex-column">
-          <button *ngIf="isAdmin" class="btn btn-primary btn-rounded m-1">Edit</button>
+          <button (click)="openEditingAwardModal(awardId)" *ngIf="isAdmin" class="btn btn-primary btn-rounded m-1">Edit</button>
           <button class="btn btn-detail btn-outline-primary btn-rounded m-1" routerLink="/home/award-detail/{{awardId}}">Detail</button>
         </div>
       </div>
