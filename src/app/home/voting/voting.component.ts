@@ -56,15 +56,18 @@ export class VotingComponent implements OnInit {
   // load list of nominees for award has id === id
   loadNomineesCorresponding(id: number) {
     this.resetNomineeSelections();
-    this.userService.getListNomineesForVoting(id).subscribe( (success: any) => {
-      if (!success.hasOwnProperty('data')) {  // check response if it get back the true data
-        console.log('The response has no property named \'data!\'');
-      } else {
-        this.listNominees = success.data;
-        console.log(this.listNominees);
-      }
-    } , err => {
-      console.log(err);
+    this.awardService.checkVoterStatus(id).subscribe( canVote => {
+      this.userService.getListNomineesForVoting(id).subscribe( (success: any) => {
+        if (!success.hasOwnProperty('data')) {  // check response if it get back the true data
+          console.log('The response has no property named \'data!\'');
+        } else {
+          this.listNominees = success.data;
+        }
+      } , err => {
+        console.log(err);
+      });
+    }, alreadyVoted => {
+      this.errorMessage = alreadyVoted;
     });
   }
   // onSubmit
