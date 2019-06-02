@@ -130,7 +130,8 @@ const customNotifierOptions: NotifierOptions = {
     ChangePasswordModalComponent,
     UploadAvatarComponent,
     UploadLogoComponent,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    EditingAwardModalComponent
   ]
 })
 export class HomeModule { }
