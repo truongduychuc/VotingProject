@@ -5,10 +5,13 @@
   <form (ngSubmit)="loginWithUserAndPass()" [formGroup]="loginForm">
     <div class="form-group">
       <label class="col-form-label">Username</label>
-        <input type="text" formControlName="username" class="form-control">
+        <input type="text" formControlName="username" (change)="loginWithUserAndPass()" class="form-control">
         <!--Input validation, note: touched - after user click on the input the first time  -->
         <small class="text-small text-danger" *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].errors?.required">
           Username is required
+        </small>
+        <small class="text-small text-danger" *ngIf="loginForm.controls['username'].errors?.pattern">
+          Only accept letters and numbers
         </small>
     </div>
       <div class="form-group">
@@ -16,6 +19,9 @@
         <input type="password" formControlName="password" class="form-control">
         <small class="text-small text-danger" *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].errors?.required">
             Password is required
+        </small>
+        <small class="text-small text-danger" *ngIf="loginForm.controls['password'].errors?.pattern">
+          Only accept letters and numbers
         </small>
       </div>
     <div class="d-flex justify-content-center flex-wrap">
