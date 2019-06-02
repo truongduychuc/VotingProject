@@ -1,5 +1,5 @@
 <div class="card shadow">
-  <div style="border-bottom: none; background-color: transparent" class="card-header">
+  <div *ngIf="awardDetail" style="border-bottom: none; background-color: transparent" class="card-header">
     <div class="row">
       <div class="col-md-6 d-flex justify-content-md-start align-items-center pt-2 pb-2 justify-content-center">
         <h4 class="mb-0">{{awardDetail?.year}}</h4>
