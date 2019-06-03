@@ -36,6 +36,7 @@ import { AddingNewSurveyComponent } from './surveys/adding-new-survey/adding-new
 import { SurveyListComponent } from './surveys/survey-list/survey-list.component';
 import { VotingSurveyComponent } from './surveys/voting-survey/voting-survey.component';
 import {ChartsModule} from 'ng2-charts';
+import {NgxSimpleCountdownModule} from 'ngx-simple-countdown';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
@@ -117,7 +118,8 @@ const customNotifierOptions: NotifierOptions = {
     NgSelectModule,
     NotifierModule.withConfig(customNotifierOptions),
     CarouselModule,
-    ChartsModule
+    ChartsModule,
+    NgxSimpleCountdownModule
   ],
   providers: [
     NgbActiveModal,
