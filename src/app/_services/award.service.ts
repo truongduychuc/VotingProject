@@ -19,7 +19,10 @@ export class AwardService {
   createNewAward(newAward: Object) {
     return this.httpClient.post(this.serverURL + 'create', newAward);
   }
-
+  // finish award earlier end date
+  finishAward(awardId: number): Observable<any> {
+    return this.httpClient.post(this.serverURL + 'finish_award', {id: awardId});
+  }
   getAwardList(): Observable<Award[]> {
     return this.httpClient.get<Award[]>(this.serverURL + 'list');
   }
