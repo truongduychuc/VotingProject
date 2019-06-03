@@ -7,6 +7,10 @@ import {User} from '../../../_models/user';
 import {HttpErrorResponse, HttpParams} from '@angular/common/http';
 import {Winner} from '../../../_models/winner';
 import {AccountService} from '../../../_services/account.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {EditingAwardModalComponent} from '../editing-award-modal/editing-award-modal.component';
+import {NotifierService} from 'angular-notifier';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-award-detail',
@@ -21,6 +25,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   currentUser: User;
   nomineeList: any[];
   winner: Winner;
+  countDownDateEnd: number;
   /*for sorting
   TABLE (Nodejs) -----|------ COLUMN (NodeJS) --------------------------------| TABLE (MySQL)
   winner--------------|------ percent ----------------------------------------| finalResults
@@ -60,7 +65,8 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     autoplayTimeout: 4000,
     autoplayHoverPause: true*/
   };
-  constructor(private route: ActivatedRoute, private awardService: AwardService, private accountService: AccountService) {
+  constructor(private route: ActivatedRoute, private awardService: AwardService, private accountService: AccountService,
+              private modalService: NgbModal, private notifier: NotifierService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
@@ -101,6 +107,8 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   getDetail() {
     this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
       this.awardDetail = detail;
+      const endDate = new Date(this.awardDetail.date_end);
+      console.log(endDate.getTime()/1000);
     }, error1 => {
       console.log(error1);
     });
@@ -227,6 +235,25 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   // update voting breakdown
   updateBreakdown() {
     this.awardService.updateVotingResult(this.id).subscribe();
+  }
+  openEditingAwardModal(awardId: number) {
+    const modalRef = this.modalService.open(EditingAwardModalComponent);
+    modalRef.componentInstance.awardId = awardId;
+    modalRef.result.then( successMes => {
+      this.getDetail();
+      this.notifier.notify('info', successMes);
+    }, dismiss => {
+      // console.log(dismiss);
+    });
+  }
+  finishAward() {
+    this.awardService.finishAward(this.awardDetail.id).subscribe(() => {
+      this.notifier.notify('info', 'Award finished successfully!');
+      this.getDetail();
+    }, error => {
+      this.notifier.notify('error', 'Error when finishing award!');
+      console.log(error);
+    });
   }
   // stay on current status after reloading page
   saveCurrentStatus(lastPastWinnerParams: Object) {
