@@ -25,6 +25,9 @@
             <option hidden>Year</option>
             <option *ngFor="let year of years" [ngValue]="year">{{year}}</option>
           </select>
+          <small class="text-small text-danger" *ngIf="formControl['year'].touched && formControl['year'].errors?.required">
+            Year is required
+          </small>
         </div>
       </div>
     </div>
@@ -48,6 +51,9 @@
               </button>
             </div>
           </div>
+          <small class="text-small text-danger" *ngIf="formControl['date_start'].touched && formControl['date_start'].errors?.required">
+            You have to choose start date
+          </small>
         </div>
       </div>
       <div class="col-md-6">
@@ -55,6 +61,9 @@
           <label class="col-form-label">Start time</label>
           <ngb-timepicker formControlName="start_time" [spinners]="false" [meridian]="true">
           </ngb-timepicker>
+          <small class="text-small text-danger" *ngIf="formControl['start_time'].touched && formControl['start_time'].errors?.required">
+            You have to choose start time
+          </small>
         </div>
       </div>
     </div>
@@ -76,6 +85,9 @@
               </button>
             </div>
           </div>
+          <small class="text-small text-danger" *ngIf="formControl['date_end'].touched && formControl['date_end'].errors?.required">
+            You have to choose end date
+          </small>
         </div>
       </div>
       <div class="col-md-6">
@@ -83,6 +95,9 @@
           <label class="col-form-label">End time</label>
           <ngb-timepicker formControlName="end_time" [spinners]="false" [meridian]="true">
           </ngb-timepicker>
+          <small class="text-small text-danger" *ngIf="formControl['end_time'].touched && formControl['end_time'].errors?.required">
+            You have to choose end time
+          </small>
         </div>
       </div>
     </div>
@@ -91,21 +106,9 @@
         <div class="form-group">
           <label class="col-form-label">Total prize (in cash)</label>
           <input type="text" class="form-control" formControlName="prize">
-        </div>
-        <div class="form-group">
-          <label class="col-form-label">Who can be nominated?</label>
-          <ng-select
-            formControlName="id_nominee"
-            [items]="nomineesList"
-            bindLabel="english_name"
-            [multiple]="true"
-            [hideSelected]="true"
-            groupBy="team_name"
-            bindValue="id"
-            dropdownPosition="bottom"
-            [closeOnSelect]="false"
-          >
-          </ng-select>
+          <small class="text-small text-danger" *ngIf="formControl['prize'].touched && formControl['prize'].errors?.required">
+            Prize is required
+          </small>
         </div>
       </div>
       <div class="col-md-6">
@@ -113,13 +116,43 @@
           <label class="col-form-label">Item</label>
           <input formControlName="item" type="text" class="form-control">
         </div>
+      </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="col-form-label">Who can be nominated?</label>
+            <ng-select
+                    formControlName="id_nominee"
+                    [items]="nomineesList"
+                    bindLabel="english_name"
+                    [multiple]="true"
+                    [hideSelected]="true"
+                    groupBy="team_name"
+                    bindValue="id"
+                    dropdownPosition="bottom"
+                    [closeOnSelect]="false"
+            >
+            </ng-select>
+            <small class="text-small text-danger" *ngIf="formControl['id_nominee'].touched && formControl['id_nominee'].errors?.required">
+              You have to choose nominees
+            </small>
+            <small class="text-small text-danger" *ngIf="formControl['id_nominee'].errors?.minlength">
+              You have to choose at least {{formControl['id_nominee'].errors.minlength.requiredLength}} nominees
+            </small>
+          </div>
+        </div>
+      <div class="col-md-6">
         <div class="form-group">
           <label class="col-form-label">Who can vote?</label>
           <select formControlName="id_role_voter" class="form-control">
-            <option hidden>Who?</option>
+            <option [ngValue]="null" hidden>Who?</option>
             <option [ngValue]="[2]">Manager</option>
             <option [ngValue]="[2,3]">All employees</option>
           </select>
+          <small class="text-small text-danger" *ngIf="formControl['id_role_voter'].touched && formControl['id_role_voter'].errors?.required">
+            You need to select voter's role
+          </small>
         </div>
       </div>
     </div>

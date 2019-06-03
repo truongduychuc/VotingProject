@@ -23,8 +23,6 @@ export class AddAwardModalComponent implements OnInit {
   dateStartMax: NgbDateStruct;
   dateEndMin: NgbDateStruct;
   dateEndMax: NgbDateStruct;
-
-
   constructor(public activeModal: NgbActiveModal, private teamService: TeamService, private awardService: AwardService,
               private formBuilder: FormBuilder, private calendar: NgbCalendar, private dateNative: NgbDateNativeAdapter,
               private notifier: NotifierService) { }
@@ -38,19 +36,24 @@ export class AddAwardModalComponent implements OnInit {
     this.generateForm();
   }
   generateForm() {
+    const defaultTime: NgbTimeStruct = {
+      hour: 12,
+      minute: 0,
+      second: 0
+    };
     this.addAward = this.formBuilder.group({
       type: '',
       name: '',
       year: ['', Validators.required],
-      id_nominee: ['', Validators.required],
-      id_role_voter: ['Who?', Validators.required],
+      id_nominee: [[], [Validators.required, Validators.minLength(4)]],
+      id_role_voter: [null, Validators.required],
       date_start: [this.dateStartMin, Validators.required], // every award can only have date_start chosen from today
-      date_end: ['', Validators.required],
+      date_end: [null, Validators.required],
       prize: ['', Validators.required],
       item: '',
       description: '',
-      start_time: '',
-      end_time: '',
+      start_time: [defaultTime, Validators.required],
+      end_time: [defaultTime, Validators.required],
     });
   }
   setDateInitially() {
@@ -69,7 +72,7 @@ export class AddAwardModalComponent implements OnInit {
   }
   changeDateEndLimit() {
     const currentDateStart = this.addAward.controls['date_start'].value;
-    console.log(this.dateNative.toModel(this.formControl['date_start'].value));
+    // console.log(this.dateNative.toModel(this.formControl['date_start'].value));
     this.dateEndMin = currentDateStart;
     this.dateEndMax = <NgbDateStruct>{
       year: currentDateStart.year + 1,
@@ -100,7 +103,6 @@ export class AddAwardModalComponent implements OnInit {
               value.team_name = team.name;
             }
           });
-          console.log(this.nomineesList);
         }
       }, error1 => console.log(error1));
     }, error => {
@@ -113,7 +115,7 @@ export class AddAwardModalComponent implements OnInit {
         console.log('The response didn\'t include \'type\' property!');
       } else {
         this.types = successRes.types;
-        console.log(this.types);
+        // console.log(this.types);
       }
     }, error => {
       console.log(error);
@@ -122,7 +124,7 @@ export class AddAwardModalComponent implements OnInit {
   // onSubmit
   createNewAward() {
     if (this.addAward.invalid) {
-      console.log('Invalid!');
+      // console.log('Invalid!');
       return;
     } else {
       const startTime: NgbTime = this.formControl['start_time'].value;
@@ -132,12 +134,12 @@ export class AddAwardModalComponent implements OnInit {
       // concat date and time taken from datepicker and timepicker
       const startDateTime = new Date(startDate.year, startDate.month - 1, startDate.day, startTime.hour,  startTime.minute, startTime.second);
       const endDateTime = new Date(endDate.year, endDate.month - 1, endDate.day, endTime.hour,  endTime.minute, endTime.second);
-      console.log(startDateTime);
+      // console.log(startDateTime);
       this.formControl['date_start'].setValue(startDateTime);
       this.formControl['date_end'].setValue(endDateTime);
       this.formControl['start_time'].setValue(null);
       this.formControl['end_time'].setValue(null);
-      console.log(this.addAward.value);
+      // console.log(this.addAward.value);
       this.awardService.createNewAward(this.addAward.value).subscribe(() => { // success
         this.activeModal.close('Award created successfully!');
       }, err => {
