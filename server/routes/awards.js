@@ -195,7 +195,7 @@ router.post('/create', (req, res) => {
                             let asset_name = 'asset_' + award.id;
                             let token_name = 'token_' + award.id;
                             //Create new stream
-                            multichain.createStream(stream_name);
+                            // multichain.createStream(stream_name);
 
                             voterData.id_award = award.id;
                             nomineeData.id_award = award.id;
@@ -216,7 +216,11 @@ router.post('/create', (req, res) => {
 
                             }
 
-                            subscribe();
+                            async function test() {
+                                await multichain.createStream(stream_name);
+                                await subscribe();
+                            }
+                            test();
 
                             //Add infomation
                             multichain.initiateMultichain().publish({
@@ -505,7 +509,7 @@ router.post('/create', (req, res) => {
                                             let asset_name = 'asset_' + award.id;
                                             let token_name = 'token_' + award.id;
                                             //Create new stream
-                                            multichain.createStream(stream_name);
+                                            // multichain.createStream(stream_name);
 
                                             voterData.id_award = award.id;
                                             nomineeData.id_award = award.id;
@@ -524,7 +528,12 @@ router.post('/create', (req, res) => {
                                                 })
 
                                             }
-                                            subscribe();
+
+                                            async function test() {
+                                                await multichain.createStream(stream_name);
+                                                await subscribe();
+                                            }
+                                            test();
 
                                             //Add infomation
                                             multichain.initiateMultichain().publish({
@@ -2569,7 +2578,7 @@ const informAward = new CronJob('0 0 0 * * *', function () {
 });
 
 console.log('After job instantiation');
-// checkAward.start();
+checkAward.start();
 // checkAward.stop();
 // updateAward.start();
 // informAward.start();
