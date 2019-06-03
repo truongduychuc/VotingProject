@@ -48,7 +48,9 @@ export class AwardManagementComponent implements OnInit {
     } else {
       this.awardService.findAnAwardByType(this.typeForSearching).pipe(tap((award: Award) => {
         this.router.navigate([`home/award-detail/${award.id}`]);
-      })).subscribe();
+      })).subscribe(() => {}, error => {
+        this.notifier.notify('error', 'This award is never happened!');
+      });
     }
   }
   getAwardTypesList() {
