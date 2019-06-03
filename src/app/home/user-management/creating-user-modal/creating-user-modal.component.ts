@@ -25,8 +25,8 @@ export class CreatingUserModalComponent implements OnInit {
 
   generateForm() {
     this.createUser = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: ['', [Validators.required]],
+      username: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ. ]+$')]],
+      password: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ. ]+$')]],
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
       english_name: ['', Validators.required],

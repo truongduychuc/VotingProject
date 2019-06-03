@@ -12,6 +12,9 @@
              *ngIf="createUser.controls['username'].touched &&  createUser.controls['username'].errors?.required">
             Username is required
           </p>
+          <small class="text-small text-danger" *ngIf="createUser.controls['username'].errors?.pattern">
+            Only accept letters, numbers and dot symbol
+          </small>
         </div>
         <div class="form-group">
           <label class="col-form-label">Password</label>
@@ -20,6 +23,9 @@
              *ngIf="createUser.controls['password'].touched && createUser.controls['password'].errors?.required">
             Password is required
           </p>
+          <small class="text-small text-danger" *ngIf="createUser.controls['password'].errors?.pattern">
+            Only accept letters, numbers and dot symbol
+          </small>
         </div>
         <div class="form-group">
           <label class="col-form-label">Email</label>

@@ -25,8 +25,8 @@ export class LoginModalComponent implements OnInit {
   // create form by using form builder
   private generateForm(): void {
    this.loginForm = this.formBuilder.group({
-     username: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ ]+$')]],
-     password: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ ]+$')]]
+     username: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ. ]+$')]],
+     password: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ. ]+$')]]
    });
   }
 
