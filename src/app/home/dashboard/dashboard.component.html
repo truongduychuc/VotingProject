@@ -25,6 +25,9 @@
                   <li><a (click)="navigateToDetailPage(finishedAward.id)" [className]="'award-menu' + finishedAward.id">View detail</a></li>
                 </ul>
               </li>
+              <li (click)="loadMoreFinishes()" *ngIf="totalFinishes > 3 && this.limitOfFinishes < 9" class="item view-more">
+                <a>View more...</a>
+              </li>
             </ul>
             <ul *ngIf="finishedAwardList?.length === 0" class="award-list">
               <li style="cursor: default" class="align-items-center item text-center">No available award</li>
@@ -48,6 +51,9 @@
                 <ul [id]="'award' + upcomingAward.id">
                   <li><a (click)="navigateToDetailPage(upcomingAward.id)" [className]="'award-menu' + upcomingAward.id">View detail</a></li>
                 </ul>
+              </li>
+              <li (click)="loadMoreUpcoming()" *ngIf="totalFinishes > 3 && this.limitOfUpcoming < 9" class="item view-more">
+                <a>View more...</a>
               </li>
             </ul>
             <ul *ngIf="upcomingAwardList?.length === 0" class="award-list">

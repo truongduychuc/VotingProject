@@ -63,6 +63,13 @@
                   color: #8d9498;
                 }
               }
+              &.view-more {
+                align-items: center;
+                text-align: center;
+                a {
+                  text-decoration-style: solid;
+                }
+              }
             }
           }
         }

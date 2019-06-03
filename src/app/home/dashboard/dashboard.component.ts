@@ -18,7 +18,11 @@ import {Router} from '@angular/router';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit{
+export class DashboardComponent implements OnInit {
+  limitOfFinishes: number = 3;
+  limitOfUpcoming: number = 3;
+  totalFinishes: number;
+  totalUpcoming: number;
   finishedAwardList: Award[];
   upcomingAwardList: any[];
   percentList: number[];
@@ -92,15 +96,17 @@ export class DashboardComponent implements OnInit{
   constructor(private awardService: AwardService, private dateFormat: DateFormatPipe, private router: Router) { }
 
   ngOnInit() {
-    this.getFinishedAwardList();
+    this.getAwardList();
   }
   // get awardList at beginning
-  getFinishedAwardList() {
+  getAwardList() {
     this.awardService.getAwardList().pipe().subscribe( list => {
       const finishedAwards = list.filter(award => award.status === 0);
+      this.totalFinishes = finishedAwards.length;
       const pendingAwards = list.filter(award => award.status === 1);
-      this.finishedAwardList = finishedAwards.slice(0, 3);
-      this.upcomingAwardList = pendingAwards.slice(0, 3);
+      this.totalUpcoming = pendingAwards.length;
+      this.finishedAwardList = finishedAwards.slice(0, this.limitOfFinishes);
+      this.upcomingAwardList = pendingAwards.slice(0, this.limitOfUpcoming);
       this.getData(this.finishedAwardList[0]);
     }, errGetting => {
       console.log(errGetting);
@@ -141,6 +147,14 @@ export class DashboardComponent implements OnInit{
   }
   navigateToDetailPage(id: number) {
     this.router.navigate(['/home/award-detail', id]);
+  }
+  loadMoreFinishes(): void {
+    this.limitOfFinishes += 3;
+    this.getAwardList();
+  }
+  loadMoreUpcoming(): void {
+    this.limitOfUpcoming += 3;
+    this.getAwardList();
   }
 }
 
