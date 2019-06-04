@@ -290,6 +290,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     modalRef.result.then(successMessage => {  // had created successfully
       this.getUserListPerPage();
       this.notifier.notify('info', successMessage);
+    }, () => {
     });
   }
 
