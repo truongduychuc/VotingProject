@@ -32,8 +32,11 @@
       @media (max-width: 767px) {
         height: 160px;
       }
-      @media (min-width: 768px) {
+      @media (min-width: 768px) and (max-width: 1365px){
         height: 200px;
+      }
+      @media (min-width: 1366px) {
+        height: 300px;
       }
       img {
         height: 100%;
