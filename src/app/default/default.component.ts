@@ -18,7 +18,7 @@ export class DefaultComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
-      const modalRef = this.modalService.open(LoginModalComponent, {backdrop: 'static', size: 'sm'});
+      const modalRef = this.modalService.open(LoginModalComponent, {backdrop: 'static', size: 'sm', backdropClass: 'login-modal-backdrop'});
       modalRef.result.then( close => {
         this.router.navigate(['home']);
       }, dismiss => {
