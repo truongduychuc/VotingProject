@@ -52,7 +52,7 @@
                   <li><a (click)="navigateToDetailPage(upcomingAward.id)" [className]="'award-menu' + upcomingAward.id">View detail</a></li>
                 </ul>
               </li>
-              <li (click)="loadMoreUpcoming()" *ngIf="totalFinishes > 3 && this.limitOfUpcoming < 9" class="item view-more">
+              <li (click)="loadMoreUpcoming()" *ngIf="totalUpcoming > 3 && this.limitOfUpcoming < 9" class="item view-more">
                 <a>View more...</a>
               </li>
             </ul>
