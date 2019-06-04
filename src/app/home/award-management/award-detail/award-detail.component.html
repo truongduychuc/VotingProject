@@ -5,7 +5,6 @@
         <h4 class="mb-0">{{awardDetail?.year}}</h4>
         <h4 class="mb-0 ml-2">{{awardDetail?.awardType.name | uppercase}}</h4>
         <span [ngClass]="getCssBadgeClass(awardDetail?.status)" class="ml-2 badge-pill text-small">{{getStatusName(awardDetail?.status)}}</span>
-        <div class="countdown" simpleCountdown [dateTo]="1581242400" [reactive]="true" [language]="'en'"></div>
       </div>
       <div class="col-md-6 d-flex justify-content-center align-items-center pt-2 pb-2 justify-content-md-end">
         <button (click)="finishAward()" *ngIf="isAdmin && awardDetail.status" class="btn btn-danger btn-rounded mr-2">Finish now</button>
@@ -83,6 +82,23 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+    <div *ngIf="awardDetail && (awardDetail.status === 2 || awardDetail.status === 1)" class="timer-container shadow opened">
+      <div class="counter">
+        <ng-container [ngSwitch]="awardDetail.status">
+          <p class="text-small" *ngSwitchCase="2">Finish after</p>
+          <p class="text-small" *ngSwitchDefault>Start after</p>
+        </ng-container>
+        <p class="content">
+          <countdown-timer [end]="awardDetail.date_end">
+            <ng-template><div>Abc</div></ng-template>
+          </countdown-timer>
+        </p>
+        <span (click)="openTimer()" class="collapse-icon">
+          <i [ngClass]="{'fa-chevron-right': isTimerCountDownOpened, 'fa-chevron-left': !isTimerCountDownOpened}" class="fas">
+          </i>
+        </span>
       </div>
     </div>
   </div>

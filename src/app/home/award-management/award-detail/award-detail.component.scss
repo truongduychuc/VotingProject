@@ -52,4 +52,53 @@
     }
   }
 }
+.timer-container {
+  position: fixed;
+  width: 200px;
+  height: 76px;
+  right: -200px;
+  top: 153px;
+  background-color: #e8e8e8;
+  padding: 10px;
+  transition: right 0.2s linear;
+  z-index: 1;
+  border: 1px solid #e8d8d8;
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
+  color: #064482;
+  .counter {
+    position: relative;
+    .collapse-icon {
+      color: white;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: -42px;
+      padding: 10px;
+      border-bottom-left-radius: 4px;
+      border-top-left-radius: 4px;
+      background-color: #9893a5;
+      border: 1px solid #e8d8d8;
+      cursor: pointer;
+    }
+    .text-small {
+      text-align: center;
+      font-size: 14px;
+    }
+    .content {
+      font-size: 18px;
+      margin-bottom: 0;
+      text-align: center;
+    }
+  }
+  &.opened {
+    right: 0;
+    transition: right 0.2s linear;
+    >.counter {
+      .collapse-icon {
+      opacity: 0.6;
+    }
+  }
+  }
+}
 

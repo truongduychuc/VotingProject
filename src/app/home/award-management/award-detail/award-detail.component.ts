@@ -10,7 +10,6 @@ import {AccountService} from '../../../_services/account.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditingAwardModalComponent} from '../editing-award-modal/editing-award-modal.component';
 import {NotifierService} from 'angular-notifier';
-import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-award-detail',
@@ -25,7 +24,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   currentUser: User;
   nomineeList: any[];
   winner: Winner;
-  countDownDateEnd: number;
+  countDown: number;
+
+  isTimerCountDownOpened = true;
   /*for sorting
   TABLE (Nodejs) -----|------ COLUMN (NodeJS) --------------------------------| TABLE (MySQL)
   winner--------------|------ percent ----------------------------------------| finalResults
@@ -107,8 +108,6 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   getDetail() {
     this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
       this.awardDetail = detail;
-      const endDate = new Date(this.awardDetail.date_end);
-      console.log(endDate.getTime()/1000);
     }, error1 => {
       console.log(error1);
     });
@@ -254,6 +253,16 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       this.notifier.notify('error', 'Error when finishing award!');
       console.log(error);
     });
+  }
+  openTimer() {
+    const timerContainer = document.getElementsByClassName('timer-container')[0];
+    if (timerContainer.classList.contains('opened')) {
+      timerContainer.classList.remove('opened');
+      this.isTimerCountDownOpened = false;
+    } else {
+      timerContainer.classList.add('opened');
+      this.isTimerCountDownOpened = true;
+    }
   }
   // stay on current status after reloading page
   saveCurrentStatus(lastPastWinnerParams: Object) {
