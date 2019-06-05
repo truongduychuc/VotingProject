@@ -1862,44 +1862,58 @@ router.post('/check_status_voter', authorize(), (req, res) => {
     const id_award = req.body.id_award;
     const stream_name = 'award_' + id_award;
     // //Check if voter has already voted for award or not
-
-    //List voter
-    multichain.initiateMultichain().listStreamKeyItems({
-        stream: stream_name,
-        key: 'voter'
+    Voter.findOne({
+        where: {
+            id_award: id_award,
+            id_user: req.decoded.id
+        }
     })
-        .then(voters => {
-            console.log('Get list voter successfully');
-            for (var i = 0; i < voters.length; i++) {
-                //Get txid
-                let txid = voters[i].txid;
-                //Check id voter
-                multichain.initiateMultichain().getStreamItem({
+        .then(voter => {
+            if (!voter) {
+                res.status(400).send({ message: 'You are not allowed to vote this award' });
+            } else {
+                //List voter
+                multichain.initiateMultichain().listStreamKeyItems({
                     stream: stream_name,
-                    txid: txid
+                    key: 'voter'
                 })
-                    .then(voter => {
-                        let id_voter = voter.data.json.id;
-                        if (voter1 == id_voter) {
-                            let address1 = voter.data.json.address;
-                            multichain.initiateMultichain().getAddressBalances({
-                                address: address1
-                            }).then(qty => {
-                                if (qty.length == 0) {
-                                    Voter.update({
-                                        vote_status: 0,
-                                        updated_at: today
-                                    }, {
-                                            where: {
-                                                id_award: id_award,
-                                                id_user: req.decoded.id
+                    .then(voters => {
+                        console.log('Get list voter successfully');
+                        for (var i = 0; i < voters.length; i++) {
+                            //Get txid
+                            let txid = voters[i].txid;
+                            //Check id voter
+                            multichain.initiateMultichain().getStreamItem({
+                                stream: stream_name,
+                                txid: txid
+                            })
+                                .then(voter => {
+                                    let id_voter = voter.data.json.id;
+                                    if (voter1 == id_voter) {
+                                        let address1 = voter.data.json.address;
+                                        multichain.initiateMultichain().getAddressBalances({
+                                            address: address1
+                                        }).then(qty => {
+                                            if (qty.length == 0) {
+                                                Voter.update({
+                                                    vote_status: 0,
+                                                    updated_at: today
+                                                }, {
+                                                        where: {
+                                                            id_award: id_award,
+                                                            id_user: req.decoded.id
+                                                        }
+                                                    })
+                                                res.status(400).send({ message: 'You already vote for this award' });
+                                            } else {
+                                                res.status(200).send({ message: 'You can vote for this award' });
                                             }
                                         })
-                                    res.status(400).send({ message: 'You already vote for this award' });
-                                } else {
-                                    res.status(200).send({ message: 'You can vote for this award' });
-                                }
-                            })
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log('Error when get list voter ' + err)
+                                })
                         }
                     })
                     .catch(err => {
@@ -1910,6 +1924,7 @@ router.post('/check_status_voter', authorize(), (req, res) => {
         .catch(err => {
             console.log('Error when get list voter ' + err)
         })
+
 })
 
 //Finish award
@@ -1923,6 +1938,12 @@ router.post('/finish_award', (req, res) => {
             where: {
                 id: req.body.id
             }
+        })
+        .then(() => {
+            res.status(200).send({ message: 'Finish award successfully' });
+        })
+        .catch(err => {
+            res.status(400).send({ message: 'Error when finish' + err });
         })
 })
 
@@ -2057,20 +2078,21 @@ async function updatePercent(id) {
             }
             for (var i = 0; i < nominees.length; i++) {
                 let id_nominee = nominees[i].id_nominee;
-                let num = nominees[i].total_points / sum * 100;
-                let percent = Math.round(num * 100) / 100;
-                if (percent == NaN) {
-                    percent = 0;
+                if (nominees[i].total_points == 0) {
+
+                } else {
+                    let num = nominees[i].total_points / sum * 100;
+                    let percent = Math.round(num * 100) / 100;
+                    Breakdown.update({
+                        percent: percent,
+                        updated_at: today
+                    }, {
+                            where: {
+                                id_award: id_award,
+                                id_nominee: id_nominee
+                            }
+                        })
                 }
-                Breakdown.update({
-                    percent: percent,
-                    updated_at: today
-                }, {
-                        where: {
-                            id_award: id_award,
-                            id_nominee: id_nominee
-                        }
-                    })
             }
             console.log('Update percent successfully');
         })

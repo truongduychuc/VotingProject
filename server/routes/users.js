@@ -79,7 +79,7 @@ router.post('/register', (req, res) => {
         last_name: req.body.last_name,
         english_name: req.body.english_name,
         email: req.body.email,
-        ava_url: 'uploads/avatars/undefined_2019-04-26T03:22:00.179Z_defaut_ava.jpg',
+        ava_url: 'uploads/avatars/defaut_ava.jpg',
         created_at: today,
         updated_at: today
     };
