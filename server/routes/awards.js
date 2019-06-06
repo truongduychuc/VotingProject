@@ -67,7 +67,7 @@ getRankingBreakdown: (get) /breakdown/:id
 getTypeOfAward: (get) /award_type
 findAnAward: (get) /find_an_award
 voting: (post) /voting_award
-updateResult: (put) /update_result
+updateResult: (post) /update_result
 finishAward: (post) /finish_award
 
 deleteAward(admin): (post) /delete/:id (not done)
@@ -1836,12 +1836,12 @@ router.get('/get_award', authorize(), (req, res) => {
 
 
 //Update result
-router.put('/update_result', (req, res) => {
+router.post('/update_result', (req, res) => {
     const id_award = req.body.id;
     async function waitForUpdate() {
         await updateResult(id_award);
         await updatePercent(id_award);
-        // await chooseWinner(id_award);
+        await chooseWinner(id_award);
     }
     waitForUpdate()
         .then(() => {
@@ -2157,7 +2157,7 @@ async function calculate(id) {
                         }
                     }
                 }
-                updateRank(i + 1, data[i].id_nominee);
+                updateRank(i + 1, data[i].id_nominee, award_id);
             }
         })
         .catch(err => {
@@ -2165,12 +2165,13 @@ async function calculate(id) {
         })
 }
 
-async function updateRank(i, id_nominee) {
+async function updateRank(i, id_nominee, award_id) {
     await Breakdown.update({
         rank: i
     }, {
             where: {
-                id_nominee: id_nominee
+                id_nominee: id_nominee,
+                id_award: award_id
             }
         })
 }
