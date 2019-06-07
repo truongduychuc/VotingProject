@@ -6,6 +6,7 @@ import {Award} from '../../_models/award';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.component';
 import {NotifierService} from 'angular-notifier';
+import {User} from '../../_models/user';
 
 @Component({
   selector: 'app-voting',
@@ -18,24 +19,37 @@ export class VotingComponent implements OnInit {
   listAwards: any[];
   listNominees: any[];
   errorMessage: string;
+  currentUser: User;
   constructor(private formBuilder: FormBuilder, private awardService: AwardService,
-              private userService: AccountService, private modalService: NgbModal, private notifier: NotifierService) { }
+              private userService: AccountService, private modalService: NgbModal, private notifier: NotifierService) {
+  }
 
   ngOnInit() {
     this.getListAwardForVoting();
     this.getListAwardForVoting();
-    this.generateForm();
+    this.getCurrentUser();
   }
   generateForm() {
     this.voting = this.formBuilder.group({
       id: [null, Validators.required],
-      first_vote: [null, Validators.required],
-      second_vote: [null, Validators.required],
-      third_vote: [null, Validators.required]
+      first_vote: [null, [Validators.required]],
+      second_vote: [null, [Validators.required]],
+      third_vote: [null, [Validators.required]]
     }, {
       validators: [
-        this.duplicatedSelect('first_vote', 'second_vote', 'third_vote')
+        this.duplicatedSelect('first_vote', 'second_vote', 'third_vote'),
+        this.selfVoteValidation('first_vote'), this.selfVoteValidation('second_vote'), this.selfVoteValidation('third_vote'),
       ]
+    });
+  }
+  getCurrentUser() {
+    this.userService.getPersonalProfile().subscribe(profile => {
+      if (!profile.hasOwnProperty('user')) {
+        console.log('No user property inside profile response!');
+      } else {
+        this.currentUser = profile.user;
+        this.generateForm();
+      }
     });
   }
   get formControls() {
@@ -115,11 +129,6 @@ export class VotingComponent implements OnInit {
           second.setErrors(null);
           third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
-        if (first.value === third.value && first.value === second.value && second.value === third.value) {
-          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
-          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
-          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
-        }
       }
       if (second.errors && !second.errors.duplicated) {
         return;
@@ -133,11 +142,6 @@ export class VotingComponent implements OnInit {
           first.setErrors({duplicated: true, message: 'Duplicated selection!'});
           second.setErrors({duplicated: true, message: 'Duplicated selection!'});
           third.setErrors(null);
-        }
-        if (first.value === third.value && first.value === second.value && second.value === third.value) {
-          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
-          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
-          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
       }
       if (third.errors && !third.errors.duplicated) {
@@ -153,16 +157,30 @@ export class VotingComponent implements OnInit {
           second.setErrors(null);
           third.setErrors({duplicated: true, message: 'Duplicated selection!'});
         }
-        if (first.value === third.value && first.value === second.value && second.value === third.value) {
-          first.setErrors({duplicated: true, message: 'Duplicated selection!'});
-          second.setErrors({duplicated: true, message: 'Duplicated selection!'});
-          third.setErrors({duplicated: true, message: 'Duplicated selection!'});
-        }
+      }
+      if (first.value === third.value && first.value === second.value && second.value === third.value) {
+        first.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        second.setErrors({duplicated: true, message: 'Duplicated selection!'});
+        third.setErrors({duplicated: true, message: 'Duplicated selection!'});
       }
       if (first.value !== second.value && second.value !== third.value && first.value !== third.value) {
         first.setErrors(null);
         second.setErrors(null);
         third.setErrors(null);
+      }
+    };
+  }
+  // validation help us to prevent current user from voting for themselves
+  selfVoteValidation(formControlName: string) {
+    return (formGroup: FormGroup) => {
+      const formControl = formGroup.controls[formControlName];
+      if (formControl.errors && !formControl.errors.selfVote) {
+        return;
+      }
+      if (formControl.value === this.currentUser.id) {
+        formControl.setErrors({selfVote: true, message: 'You can not choose yourself!'});
+      } else {
+        formControl.setErrors(null);
       }
     };
   }
@@ -205,6 +223,7 @@ export class VotingComponent implements OnInit {
     }
   }
   resetAllSelections() {
+    console.log(this.voting.controls);
     // reset all
     this.voting.controls['id'].setValue(null);
     // refresh list of awards
@@ -218,7 +237,7 @@ export class VotingComponent implements OnInit {
     this.voting.controls['second_vote'].setValue(null);
     this.voting.controls['third_vote'].setValue(null);
   }
-  // test() {
-  //   console.log(this.voting.controls);
-  // }
+  test() {
+    console.log(this.voting.controls);
+  }
 }

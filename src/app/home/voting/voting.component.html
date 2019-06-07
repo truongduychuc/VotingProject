@@ -3,7 +3,7 @@
     <h3>VOTING</h3>
   </div>
   <div class="card-body">
-    <div class="voting-custom">
+    <div *ngIf="currentUser" class="voting-custom">
       <div *ngIf="!listAwards" class="row">
         <div class="col-12 pl-5 pr-5">
           <ngb-alert [dismissible]="false" type="danger">
@@ -97,6 +97,9 @@
                     <small class="text-danger" *ngIf="formControls['first_vote'].errors?.duplicated">
                       {{formControls['first_vote'].errors?.message}}  Choose another one!
                     </small>
+                    <small class="text-danger" *ngIf="formControls['first_vote'].errors?.selfVote">
+                      {{formControls['first_vote'].errors?.message}}
+                    </small>
                   </div>
                 </div>
               </div>
@@ -136,6 +139,9 @@
                     <small class="text-danger" *ngIf="formControls['second_vote'].errors?.duplicated">
                       {{formControls['second_vote'].errors?.message}}  Choose another one!
                     </small>
+                    <small class="text-danger" *ngIf="formControls['second_vote'].errors?.selfVote">
+                      {{formControls['second_vote'].errors?.message}}
+                    </small>
                   </div>
                 </div>
               </div>
@@ -174,6 +180,9 @@
                   <div class="col-12 d-flex justify-content-center mt-1">
                     <small class="text-danger" *ngIf="formControls['third_vote'].errors?.duplicated">
                       {{formControls['third_vote'].errors?.message}}  Choose another one!
+                    </small>
+                    <small class="text-danger" *ngIf="formControls['third_vote'].errors?.selfVote">
+                      {{formControls['third_vote'].errors?.message}}
                     </small>
                   </div>
                 </div>
