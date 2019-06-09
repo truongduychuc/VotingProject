@@ -37,6 +37,8 @@ import { SurveyListComponent } from './surveys/survey-list/survey-list.component
 import { VotingSurveyComponent } from './surveys/voting-survey/voting-survey.component';
 import {ChartsModule} from 'ng2-charts';
 import {CountdownTimerModule} from 'ngx-countdown-timer';
+import { ScoreTableComponent } from './award-management/voting-breakdown/score-table/score-table.component';
+import { CurrentChartComponent } from './award-management/voting-breakdown/current-chart/current-chart.component';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
@@ -106,7 +108,9 @@ const customNotifierOptions: NotifierOptions = {
     SurveysComponent,
     AddingNewSurveyComponent,
     SurveyListComponent,
-    VotingSurveyComponent
+    VotingSurveyComponent,
+    ScoreTableComponent,
+    CurrentChartComponent
   ],
   imports: [
     CommonModule,

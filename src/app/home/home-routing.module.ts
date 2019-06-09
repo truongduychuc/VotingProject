@@ -15,6 +15,8 @@ import {SurveysComponent} from './surveys/surveys.component';
 import {SurveyListComponent} from './surveys/survey-list/survey-list.component';
 import {AddingNewSurveyComponent} from './surveys/adding-new-survey/adding-new-survey.component';
 import {VotingSurveyComponent} from './surveys/voting-survey/voting-survey.component';
+import {ScoreTableComponent} from './award-management/voting-breakdown/score-table/score-table.component';
+import {CurrentChartComponent} from './award-management/voting-breakdown/current-chart/current-chart.component';
 
 
 const homeRoutes: Routes = [
@@ -37,7 +39,15 @@ const homeRoutes: Routes = [
       },
       {path: 'awards', component: AwardManagementComponent},
       {path: 'award-detail/:id', component: AwardDetailComponent},
-      {path: 'voting-breakdown/:id', component: VotingBreakdownComponent},
+      {
+        path: 'voting-breakdown/:id',
+        component: VotingBreakdownComponent,
+        children: [
+          {path: '', redirectTo: 'score-table'},
+          {path: 'score-table', component: ScoreTableComponent},
+          {path: 'chart', component: CurrentChartComponent}
+        ]
+      },
       {
         path: 'surveys',
         component: SurveysComponent,
@@ -45,8 +55,17 @@ const homeRoutes: Routes = [
           {path: '', redirectTo: 'list'},
           {path: 'list', component: SurveyListComponent},
           {path: 'add-new', component: AddingNewSurveyComponent, canActivateChild: [RoleGuard], data: {roles: [Role.ADMIN]}},
-          {path: 'vote-for-survey', component: VotingSurveyComponent, canActivateChild: [RoleGuard], data: {roles: [Role.MANAGER, Role.DEVELOPER]}}
-        ]}
+          {
+            path: 'vote-for-survey',
+            component: VotingSurveyComponent,
+            canActivateChild: [RoleGuard],
+            data: {
+              roles: [
+                Role.MANAGER,
+                Role.DEVELOPER
+              ]}
+          }]
+      }
     ]}
 ];
 @NgModule({
