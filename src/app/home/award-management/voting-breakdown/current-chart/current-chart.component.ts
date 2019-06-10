@@ -117,7 +117,7 @@ export class CurrentChartComponent implements OnInit {
       const tempPercentList = tempPointList.map(
         point => parseFloat((Math.round (((point / awardTotalPoints) * 100) * 100 ) / 100).toFixed(2))
       );
-      const othersPercent = 100 - tempPercentList.reduce((previousVal, currentVal) => previousVal + currentVal);
+      const othersPercent = parseFloat((Math.round((100 - tempPercentList.reduce((previousVal, currentVal) => previousVal + currentVal)) * 100) / 100).toFixed(2));
       tempPercentList.push(othersPercent);
       // get nominee names and make it become an array which responsibility for being label of chart
       this.nomineeNameList = slicedBreakdowns.map(breakdown => breakdown.nominee_name.english_name);
