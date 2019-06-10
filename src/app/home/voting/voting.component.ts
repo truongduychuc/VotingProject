@@ -223,7 +223,6 @@ export class VotingComponent implements OnInit {
     }
   }
   resetAllSelections() {
-    console.log(this.voting.controls);
     // reset all
     this.voting.controls['id'].setValue(null);
     // refresh nomineeList
