@@ -51,7 +51,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           this.notifier.notify('info', 'User deleted successfully');
         },
         (deletingError: any) => {
-          this.notifier.notify('error', 'There was an error!');
+          if (typeof deletingError === 'string') {
+            this.notifier.notify('error', deletingError);
+          }
           // console.log(deletingError);
         }
       );
