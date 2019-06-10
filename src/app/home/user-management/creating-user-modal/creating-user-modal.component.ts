@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {TeamService} from '../../../_services/team.service';
 import {Team} from '../../../_models/team';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-create-user-form',
@@ -15,7 +16,7 @@ export class CreatingUserModalComponent implements OnInit {
   createUser: FormGroup;
   listTeams: Team[];
   constructor(private formBuilder: FormBuilder, private accountService: AccountService, private router: Router,
-              public activeModal: NgbActiveModal, private teamService: TeamService) {
+              public activeModal: NgbActiveModal, private teamService: TeamService, private notifier: NotifierService) {
   }
   ngOnInit() {
     this.getAllTeams();
@@ -60,7 +61,11 @@ export class CreatingUserModalComponent implements OnInit {
       alert(data.message);
       this.activeModal.close('User created successfully!');
 
-    }, error1 => console.log(error1));
+    }, error1 => {
+      if (typeof error1 === 'string') {
+        this.notifier.notify('error', error1);
+      }
+    });
   }
 
   // this function helps us to compare password
