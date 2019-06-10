@@ -104,8 +104,8 @@
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">
-          <label class="col-form-label">Total prize (in cash)</label>
-          <input type="text" class="form-control" formControlName="prize">
+          <label class="col-form-label">Total prize (in cash) (VND)</label>
+          <input type="number" class="form-control" (keyup)="test()" formControlName="prize">
           <small class="text-small text-danger" *ngIf="formControl['prize'].touched && formControl['prize'].errors?.required">
             Prize is required
           </small>
