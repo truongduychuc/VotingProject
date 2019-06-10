@@ -76,5 +76,14 @@
       }
       //
     }
+    .col-sm-7 {
+      .chart-title {
+        display: inline-block;
+      }
+      .badge-info {
+        border-radius: 6px;
+        margin-right: 0.5rem;
+      }
+    }
   }
 }

@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
   nomineeNameList: Label[];
   chartTitle;
   chartTime;
+  chartYear;
   public pieChartOptions: ChartOptions = {
     responsive: true,
     legend: {
@@ -124,6 +125,7 @@ export class DashboardComponent implements OnInit {
       const awardStartTime: string = this.dateFormat.transform(award.date_start);
       const awardEndTime: string = this.dateFormat.transform(award.date_end);
       this.chartTime = 'From ' + awardStartTime + ' to ' + awardEndTime;
+      this.chartYear = award.year;
     }, err => {
       console.log(err);
     });
