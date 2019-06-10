@@ -971,7 +971,8 @@ router.get('/past_winner/:id', (req, res) => {
     console.log(table);
     Award.findOne({
         where: {
-            id: req.params.id
+            id: req.params.id,
+            status: 0
         }
     })
         .then(award => {

@@ -14,6 +14,9 @@ const User = require('../models/user');
 const Role = require('../models/role');
 const Team = require('../models/team');
 const Nominee = require('../models/nominee');
+const Winner = require('../models/winner');
+const Voter = require('../models/voter');
+const Breakdown = require('../models/breakdown');
 
 router.use(cors());
 
@@ -86,7 +89,15 @@ router.post('/register', (req, res) => {
 
     User.findOne({
         where: {
-            username: req.body.username
+            [Op.or]: [{
+                username: req.body.username
+            },
+            {
+                email: req.body.email
+            },
+            {
+                english_name: req.body.english_name
+            }]
         }
     })
         //TODO bcrypt
@@ -1270,18 +1281,61 @@ router.post('/list_for_voting', (req, res) => {
 
 
 //DELETE
-router.post('/delete/:id', (req, res) => {
-    User.destroy({
+router.post('/delete/:id', authorize('admin'), (req, res) => {
+    User.findOne({
         where: {
-            id: req.params.id
+            id: req.params.id,
         }
     }).then(user => {
         if (!user) {
-            res.status(400).send({ message: 'User does not exist' })
+            res.status(400).send({ message: 'User does not exist' });
         } else {
-            res.status(200).send({ message: 'Delete successfully' })
+            if (user.id_role == 1) {
+                res.status(400).send({ message: 'You cannot delete this user' });
+            } else {
+                Winner.destroy({
+                    where: {
+                        id: req.params.id
+                    }
+                })
+                    .then(() => {
+                        Voter.destroy({
+                            where: {
+                                id: req.params.id
+                            }
+                        })
+                            .then(() => {
+                                Nominee.destroy({
+                                    where: {
+                                        id: req.params.id
+                                    }
+                                })
+                                    .then(() => {
+                                        Breakdown.destroy({
+                                            where: {
+                                                id: req.params.id
+                                            }
+                                        })
+                                            .then(() => {
+                                                User.destroy({
+                                                    where: {
+                                                        id: req.params.id
+                                                    }
+                                                })
+                                                    .then(() => {
+                                                        res.status(200).send({ message: 'Delete successfully' })
+                                                    })
+                                            })
+                                    })
+                            })
+                    })
+            }
+
         }
     })
+        .catch(err => {
+            res.status(400).send({ message: 'Error when delete this user ' + err });
+        })
 })
 
 
