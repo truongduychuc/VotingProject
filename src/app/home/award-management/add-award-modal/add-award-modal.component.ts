@@ -23,6 +23,11 @@ export class AddAwardModalComponent implements OnInit {
   dateStartMax: NgbDateStruct;
   dateEndMin: NgbDateStruct;
   dateEndMax: NgbDateStruct;
+  defaultTime: NgbTimeStruct = {
+    hour: 12,
+    minute: 0,
+    second: 0
+  };
   constructor(public activeModal: NgbActiveModal, private teamService: TeamService, private awardService: AwardService,
               private formBuilder: FormBuilder, private calendar: NgbCalendar, private dateNative: NgbDateNativeAdapter,
               private notifier: NotifierService) { }
@@ -36,11 +41,6 @@ export class AddAwardModalComponent implements OnInit {
     this.generateForm();
   }
   generateForm() {
-    const defaultTime: NgbTimeStruct = {
-      hour: 12,
-      minute: 0,
-      second: 0
-    };
     this.addAward = this.formBuilder.group({
       type: '',
       name: '',
@@ -52,8 +52,8 @@ export class AddAwardModalComponent implements OnInit {
       prize: ['', Validators.required],
       item: '',
       description: '',
-      start_time: [defaultTime, Validators.required],
-      end_time: [defaultTime, Validators.required],
+      start_time: [this.defaultTime, Validators.required],
+      end_time: [this.defaultTime, Validators.required],
     });
   }
   setDateInitially() {
