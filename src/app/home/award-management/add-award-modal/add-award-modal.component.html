@@ -109,7 +109,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text">VND</span>
             </div>
-            <input currencyMask [options]="{prefix: '', precision: 0, thousands: ',', align: 'left' }" min="0"  type="text" class="form-control" formControlName="prize">
+            <input currencyMask [options]="{prefix: '', allowNegative: false, precision: 0, thousands: ',', align: 'left' }" min="0"  type="text" class="form-control" formControlName="prize">
           </div>
           <small class="text-small text-danger" *ngIf="formControl['prize'].touched && formControl['prize'].errors?.required">
             Prize is required
