@@ -58,7 +58,6 @@ export class CreatingUserModalComponent implements OnInit {
     console.log(this.createUser.value);
   // using service send post method, and retrieve message and error
     this.accountService.registerNewUser(this.createUser.value).subscribe(data => {
-      alert(data.message);
       this.activeModal.close('User created successfully!');
 
     }, error1 => {
