@@ -49,7 +49,7 @@ export class AddAwardModalComponent implements OnInit {
       id_role_voter: [null, Validators.required],
       date_start: [this.dateStartMin, Validators.required], // every award can only have date_start chosen from today
       date_end: [null, Validators.required],
-      prize: [0, [Validators.required/*, Validators.pattern('^\\d+$')*/]],
+      prize: ['', [Validators.required, Validators.pattern('^\\d+$')]],
       item: '',
       description: '',
       start_time: [this.defaultTime, Validators.required],

@@ -114,6 +114,9 @@
           <small class="text-small text-danger" *ngIf="formControl['prize'].touched && formControl['prize'].errors?.required">
             Prize is required
           </small>
+          <small class="text-small text-danger" *ngIf="formControl['prize'].errors?.pattern">
+            Prize only accepts number
+          </small>
         </div>
       </div>
       <div class="col-md-6">
