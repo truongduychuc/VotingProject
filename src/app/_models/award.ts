@@ -10,7 +10,7 @@ export interface Award {
   description: string;
   date_start: Date;
   date_end: Date;
-  prize: string; // VND
+  prize: number; // VND
   item: string;
   logo_url: string;
   created_at: Date;
