@@ -105,7 +105,12 @@
       <div class="col-md-6">
         <div class="form-group">
           <label class="col-form-label">Total prize (in cash)</label>
-          <input type="text" class="form-control" formControlName="prize">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">VND</span>
+            </div>
+            <input currencyMask [options]="{prefix: '', precision: 0, thousands: ',', align: 'left' }" min="0"  type="text" class="form-control" formControlName="prize">
+          </div>
           <small class="text-small text-danger" *ngIf="formControl['prize'].touched && formControl['prize'].errors?.required">
             Prize is required
           </small>

@@ -39,6 +39,7 @@ import {ChartsModule} from 'ng2-charts';
 import {CountdownTimerModule} from 'ngx-countdown-timer';
 import { ScoreTableComponent } from './award-management/voting-breakdown/score-table/score-table.component';
 import { CurrentChartComponent } from './award-management/voting-breakdown/current-chart/current-chart.component';
+import {CurrencyMaskModule} from 'ng2-currency-mask';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
@@ -123,7 +124,8 @@ const customNotifierOptions: NotifierOptions = {
     NotifierModule.withConfig(customNotifierOptions),
     CarouselModule,
     ChartsModule,
-    CountdownTimerModule
+    CountdownTimerModule,
+    CurrencyMaskModule
   ],
   providers: [
     NgbActiveModal,
