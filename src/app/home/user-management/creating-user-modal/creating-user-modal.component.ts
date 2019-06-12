@@ -55,7 +55,6 @@ export class CreatingUserModalComponent implements OnInit {
     if (this.createUser.controls['id_role'].value === undefined || this.createUser.controls['id_role'].value === null) {
       this.createUser.controls['id_role'].setValue('');
     }
-    console.log(this.createUser.value);
   // using service send post method, and retrieve message and error
     this.accountService.registerNewUser(this.createUser.value).subscribe(data => {
       this.activeModal.close('User created successfully!');
@@ -66,24 +65,4 @@ export class CreatingUserModalComponent implements OnInit {
       }
     });
   }
-
-  // this function helps us to compare password
-  MustMatch(controlName: string, matchingControlName: string) {
-    return (formGroup: FormGroup) => {
-      // get main control and the control which you want to compare to
-      const control = formGroup.controls[controlName];
-      const matchingControl = formGroup.controls[matchingControlName];
-      if (matchingControl.errors && !matchingControl.errors.mustMatch) {
-        // return if another validator has already found an error on the matchingControl
-        return;
-      }
-      // set error on matchingControl if validation fails
-      if (control.value !== matchingControl.value) {
-        matchingControl.setErrors({mustMatch: true});
-      } else {
-        matchingControl.setErrors(null);
-      }
-    };
-  }
-
 }
