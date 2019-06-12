@@ -48,7 +48,7 @@ const homeRoutes: Routes = [
           {path: 'chart', component: CurrentChartComponent}
         ]
       },
-      {
+      /*{
         path: 'surveys',
         component: SurveysComponent,
         children: [
@@ -65,7 +65,7 @@ const homeRoutes: Routes = [
                 Role.DEVELOPER
               ]}
           }]
-      }
+      }*/
     ]}
 ];
 @NgModule({
