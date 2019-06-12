@@ -197,7 +197,7 @@
             </ngb-alert>
           </div>
         </div>
-        <div class="mt-4 d-flex justify-content-center flex-wrap">
+        <div *ngIf="listNominees" class="mt-4 d-flex justify-content-center flex-wrap">
           <!--[disabled]="voting.invalid"-->
           <button [disabled]="voting.invalid" type="submit" class="btn btn-success btn-rounded m-2">Vote</button>
           <button (click)="resetAllSelections()" type="button" class="btn btn-outline-success btn-rounded m-2">Reset</button>

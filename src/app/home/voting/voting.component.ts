@@ -234,6 +234,7 @@ export class VotingComponent implements OnInit {
   resetNomineeSelections() {
     // refresh selections without refreshing awards
     this.errorMessage = null;
+    this.listNominees = undefined;
     this.voting.controls['first_vote'].setValue(null);
     this.voting.controls['second_vote'].setValue(null);
     this.voting.controls['third_vote'].setValue(null);
