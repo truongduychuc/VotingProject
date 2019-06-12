@@ -91,8 +91,7 @@
           <p class="text-small" *ngSwitchDefault>Start after</p>
         </ng-container>
         <p class="content">
-          <countdown-timer [end]="awardDetail.date_end">
-            <ng-template><div>Abc</div></ng-template>
+          <countdown-timer (zeroTrigger)="zeroTimerTrigger()" [end]="awardDetail.date_end">
           </countdown-timer>
         </p>
         <span (click)="openTimer()" class="collapse-icon">

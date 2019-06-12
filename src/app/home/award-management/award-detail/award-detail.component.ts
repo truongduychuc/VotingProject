@@ -10,6 +10,7 @@ import {AccountService} from '../../../_services/account.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditingAwardModalComponent} from '../editing-award-modal/editing-award-modal.component';
 import {NotifierService} from 'angular-notifier';
+import {DataSharingService} from '../../../_shared/data-sharing.service';
 
 @Component({
   selector: 'app-award-detail',
@@ -67,7 +68,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     autoplayHoverPause: true*/
   };
   constructor(private route: ActivatedRoute, private awardService: AwardService, private accountService: AccountService,
-              private modalService: NgbModal, private notifier: NotifierService) {
+              private modalService: NgbModal, private notifier: NotifierService, private sharedData: DataSharingService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
@@ -78,6 +79,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     this.getWinner();
     this.reloadPreviousStatus();
     this.updateBreakdown();
+    this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
+      this.getNomineeList();
+    });
   }
   // to show the button only can be used by admin
   get isAdmin() {
@@ -254,6 +258,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       this.notifier.notify('error', 'Error when finishing award!');
       console.log(error);
     });
+  }
+  zeroTimerTrigger() {
+    this.getDetail();
   }
   openTimer() {
     const timerContainer = document.getElementsByClassName('timer-container')[0];
