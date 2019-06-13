@@ -1838,7 +1838,7 @@ router.post('/update_result', (req, res) => {
     async function waitForUpdate() {
         await updateResult(id_award);
         await updatePercent(id_award);
-        await chooseWinner(id_award);
+        // await chooseWinner(id_award);
     }
     waitForUpdate()
         .then(() => {
@@ -1927,6 +1927,7 @@ router.post('/check_status_voter', authorize(), (req, res) => {
 //Finish award
 router.post('/finish_award', (req, res) => {
     const today = new Date();
+    const id_award = req.body.id
     Award.update({
         status: 0,
         date_end: today,
@@ -1937,6 +1938,12 @@ router.post('/finish_award', (req, res) => {
             }
         })
         .then(() => {
+            async function waitForUpdate() {
+                await updateResult(id_award);
+                await updatePercent(id_award);
+                await chooseWinner(id_award);
+            }
+            waitForUpdate()
             res.status(200).send({ message: 'Finish award successfully' });
         })
         .catch(err => {
