@@ -210,6 +210,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     // check if the award have not finished yet
     this.awardService.getWinner(this.id).subscribe( winner => {
       this.winner = winner;
+      console.log(winner);
     });
   }
   sortOnColumn(columnName: string, tableName: string) {
@@ -259,8 +260,10 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   finishAward() {
     this.awardService.finishAward(this.awardDetail.id).subscribe(() => {
       this.notifier.notify('info', 'Award finished successfully!');
+      this.updateBreakdown();
       this.getDetail();
       this.getWinner();
+      this.getNomineeList();
     }, error => {
       this.notifier.notify('error', 'Error when finishing award!');
       console.log(error);
