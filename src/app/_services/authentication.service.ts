@@ -1,14 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 // A lightweight JavaScript date library for parsing, validating, manipulating, and formatting dates.
-import * as moment from "moment";
-import * as jwt_decode from "jwt-decode";
+import * as moment from 'moment';
+import * as jwt_decode from 'jwt-decode';
 import {map} from 'rxjs/operators';
-import {User} from "../_models/user";
-import {AccountService} from "./account.service";
-import {Router} from "@angular/router";
-import {stringify} from 'querystring';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {User} from '../_models/user';
+import {AccountService} from './account.service';
+import {Router} from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
