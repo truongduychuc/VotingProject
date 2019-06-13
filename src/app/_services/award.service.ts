@@ -58,6 +58,6 @@ export class AwardService {
     return this.httpClient.post(this.serverURL + 'voting_award', votingResult);
   }
   updateVotingResult(id_award: number): Observable<any> {
-    return  this.httpClient.put(this.serverURL + 'update_result', {id: id_award});
+    return  this.httpClient.post(this.serverURL + 'update_result', {id: id_award});
   }
 }
