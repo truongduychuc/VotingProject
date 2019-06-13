@@ -35,68 +35,24 @@
       <div class="col-md-6">
         <div class="form-group">
           <label class="col-form-label">Start date</label>
-          <div class="input-group">
-            <input class="form-control"
-                   (change)="changeDateEndLimit()"
-                   (dateSelect)="changeDateEndLimit()"
-                   formControlName="date_start"
-                   [minDate]="dateStartMin"
-                   [maxDate]="dateStartMax"
-                   placeholder="yyyy-mm-dd"
-                   ngbDatepicker
-                   #datePickerStart = "ngbDatepicker">
-            <div class="input-group-append">
-              <button title="Click to select date" class="input-group-text" type="button" (click)="datePickerStart.toggle()">
-                <i class="fas fa-calendar-alt"></i>
-              </button>
-            </div>
-          </div>
+          <input type="datetime-local" (change)="changeDateLimit()" [min]="minStartDate" class="form-control" formControlName="date_start">
           <small class="text-small text-danger" *ngIf="formControl['date_start'].touched && formControl['date_start'].errors?.required">
             You have to choose start date
           </small>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-group">
-          <label class="col-form-label">Start time</label>
-          <ngb-timepicker formControlName="start_time" [spinners]="false" [meridian]="true">
-          </ngb-timepicker>
-          <small class="text-small text-danger" *ngIf="formControl['start_time'].touched && formControl['start_time'].errors?.required">
-            You have to choose start time
+          <small class="text-small text-danger" *ngIf="formControl['date_start'].errors?.dateError">
+            {{formControl['date_start'].errors.message}}
           </small>
         </div>
       </div>
-    </div>
-    <div class="row">
       <div class="col-md-6">
         <div class="form-group">
           <label class="col-form-label">End date</label>
-          <div class="input-group">
-            <input class="form-control"
-                   formControlName="date_end"
-                   [minDate]="dateEndMin"
-                   [maxDate]="dateEndMax"
-                   placeholder="yyyy-mm-dd"
-                   ngbDatepicker
-                   #datePickerEnd = "ngbDatepicker">
-            <div class="input-group-append">
-              <button title="Click to select date" class="input-group-text" type="button" (click)="datePickerEnd.toggle()">
-                <i class="fas fa-calendar-alt"></i>
-              </button>
-            </div>
-          </div>
+          <input type="datetime-local"  class="form-control" formControlName="date_end">
           <small class="text-small text-danger" *ngIf="formControl['date_end'].touched && formControl['date_end'].errors?.required">
             You have to choose end date
           </small>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-group">
-          <label class="col-form-label">End time</label>
-          <ngb-timepicker formControlName="end_time" [spinners]="false" [meridian]="true">
-          </ngb-timepicker>
-          <small class="text-small text-danger" *ngIf="formControl['end_time'].touched && formControl['end_time'].errors?.required">
-            You have to choose end time
+          <small class="text-small text-danger" *ngIf="formControl['date_end'].errors?.dateError">
+            {{formControl['date_end'].errors.message}}
           </small>
         </div>
       </div>
