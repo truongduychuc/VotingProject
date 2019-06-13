@@ -69,7 +69,7 @@ export class AwardManagementComponent implements OnInit {
     return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
   }
   openAddingAward() {
-    const modalRef =  this.modalService.open(AddAwardModalComponent, {windowClass: 'myCustomModalClass', backdrop: 'static'});
+    const modalRef =  this.modalService.open(AddAwardModalComponent, {backdrop: 'static'});
     modalRef.result.then((successMes: string) => {
       this.getAwardList();
       this.notifier.notify('info', successMes);
