@@ -260,6 +260,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     this.awardService.finishAward(this.awardDetail.id).subscribe(() => {
       this.notifier.notify('info', 'Award finished successfully!');
       this.getDetail();
+      this.getWinner();
     }, error => {
       this.notifier.notify('error', 'Error when finishing award!');
       console.log(error);
