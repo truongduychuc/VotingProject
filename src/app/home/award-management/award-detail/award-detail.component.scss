@@ -1,9 +1,12 @@
-.custom {
-  width: 100%;
-  .award-description {
-    height: 200px;
-    padding: 1rem;
-    overflow: auto;
+.card-body {
+  .row {
+    .col-12 {
+      .award-description {
+        padding: 1rem;
+        border: 1px inset gray;
+        border-radius: 6px;
+      }
+    }
   }
 }
 .table-responsive {

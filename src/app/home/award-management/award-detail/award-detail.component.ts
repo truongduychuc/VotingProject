@@ -78,7 +78,6 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     this.getNomineeList();
     this.getWinner();
     this.reloadPreviousStatus();
-    this.updateBreakdown();
     this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
       this.getNomineeList();
     });
@@ -112,6 +111,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   getDetail() {
     this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
       this.awardDetail = detail;
+      this.updateBreakdown();
     }, error1 => {
       console.log(error1);
     });
@@ -237,7 +237,13 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   }
   // update voting breakdown
   updateBreakdown() {
-    this.awardService.updateVotingResult(this.id).subscribe();
+    if (this.awardDetail.status === 2) {
+      this.awardService.updateVotingResult(this.id).subscribe( success => {
+        console.log(success);
+      }, error => {
+        console.log(error);
+      });
+    }
   }
   openEditingAwardModal(awardId: number) {
     const modalRef = this.modalService.open(EditingAwardModalComponent);
