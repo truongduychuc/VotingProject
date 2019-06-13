@@ -20,10 +20,12 @@ import {Router} from '@angular/router';
 export class DashboardComponent implements OnInit {
   limitOfFinishes: number = 3;
   limitOfUpcoming: number = 3;
+  limitOfTakingPlace: number = 3;
   totalFinishes: number;
   totalUpcoming: number;
   finishedAwardList: Award[];
-  upcomingAwardList: any[];
+  upcomingAwardList: Award[];
+  takingPlaceAwardList: Award[];
   percentList: number[];
   nomineeNameList: Label[];
   chartTitle;
@@ -33,7 +35,7 @@ export class DashboardComponent implements OnInit {
     responsive: true,
     legend: {
       display: true,
-      position: 'right',
+      position: 'bottom',
       labels: {
         fontSize: 13,
         fontFamily: 'Poppins',
@@ -105,8 +107,10 @@ export class DashboardComponent implements OnInit {
       this.totalFinishes = finishedAwards.length;
       const pendingAwards = list.filter(award => award.status === 1);
       this.totalUpcoming = pendingAwards.length;
+      const takingPlaceAward = list.filter(award => award.status === 2);
       this.finishedAwardList = finishedAwards.slice(0, this.limitOfFinishes);
       this.upcomingAwardList = pendingAwards.slice(0, this.limitOfUpcoming);
+      this.takingPlaceAwardList = takingPlaceAward.slice(0, this.limitOfTakingPlace);
       this.getData(this.finishedAwardList[0]);
     }, errGetting => {
       console.log(errGetting);
@@ -155,6 +159,10 @@ export class DashboardComponent implements OnInit {
   }
   loadMoreUpcoming(): void {
     this.limitOfUpcoming += 3;
+    this.getAwardList();
+  }
+  loadMoreTakingPlace(): void {
+    this.limitOfTakingPlace += 3;
     this.getAwardList();
   }
 }
