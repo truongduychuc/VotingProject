@@ -24,6 +24,7 @@
         "mysql2": "^1.6.4",
         "node-cron": "^2.0.3",
         "nodemailer": "^5.1.1",
+        "nodemon": "^1.19.1",
         "sequelize": "^4.42.0",
         "upper-case": "^1.1.3"
     },
