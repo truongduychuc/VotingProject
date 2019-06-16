@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Award} from '../../../../_models/award';
 import {AwardService} from '../../../../_services/award.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse, HttpParams} from '@angular/common/http';
-
+import {TimerObservable} from 'rxjs/observable/TimerObservable';
+import 'rxjs/add/operator/takeWhile';
 @Component({
   selector: 'app-score-table',
   templateUrl: './score-table.component.html',
   styleUrls: ['./score-table.component.scss']
 })
-export class ScoreTableComponent implements OnInit {
+export class ScoreTableComponent implements OnInit, OnDestroy {
   id: number; // id of award
   awardInfo: Award;
   breakdownList: any[];
@@ -30,13 +31,23 @@ export class ScoreTableComponent implements OnInit {
   itemsPerPageArr = [2, 5, 10, 15, 20, 25];
   error: any;
   previousSearchText: string;
-  constructor(private awardService: AwardService, private route: ActivatedRoute, private router: Router) { }
+  isAlive: boolean;
+  interval: number;
+  constructor(private awardService: AwardService, private route: ActivatedRoute, private router: Router) {
+    this.isAlive = true;
+    this.interval = 5000;
+  }
 
   ngOnInit() {
     // get id from routeLink params
     this.id = parseInt(this.route.parent.snapshot.paramMap.get('id'));
     this.getAwardInfo();
     this.reloadPreviousStatus();
+    TimerObservable.create(0, this.interval)
+      .takeWhile(() => this.isAlive)
+      .subscribe(() => {
+        this.getBreakdown();
+      });
   }
   getAwardInfo() {
     this.awardService.getAwardDetail(this.id).subscribe(award => {
@@ -148,7 +159,9 @@ export class ScoreTableComponent implements OnInit {
         // console.log(successRes);
       }
     }, errGettingBreakdown => {
-      console.log(errGettingBreakdown);
+      if ( typeof errGettingBreakdown === 'string') {
+        this.error = errGettingBreakdown;
+      }
     });
   }
   pageChange(newPage: number) {
@@ -274,6 +287,7 @@ export class ScoreTableComponent implements OnInit {
   }
   ngOnDestroy(): void {
     this.removeStatus();
+    this.isAlive = false;
   }
 
 }
