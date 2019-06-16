@@ -7,6 +7,10 @@ import {User} from '../../../_models/user';
 import {HttpErrorResponse, HttpParams} from '@angular/common/http';
 import {Winner} from '../../../_models/winner';
 import {AccountService} from '../../../_services/account.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {EditingAwardModalComponent} from '../editing-award-modal/editing-award-modal.component';
+import {NotifierService} from 'angular-notifier';
+import {DataSharingService} from '../../../_shared/data-sharing.service';
 
 @Component({
   selector: 'app-award-detail',
@@ -21,6 +25,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   currentUser: User;
   nomineeList: any[];
   winner: Winner;
+  countDown: number;
+
+  isTimerCountDownOpened = true;
   /*for sorting
   TABLE (Nodejs) -----|------ COLUMN (NodeJS) --------------------------------| TABLE (MySQL)
   winner--------------|------ percent ----------------------------------------| finalResults
@@ -60,7 +67,8 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     autoplayTimeout: 4000,
     autoplayHoverPause: true*/
   };
-  constructor(private route: ActivatedRoute, private awardService: AwardService, private accountService: AccountService) {
+  constructor(private route: ActivatedRoute, private awardService: AwardService, private accountService: AccountService,
+              private modalService: NgbModal, private notifier: NotifierService, private sharedData: DataSharingService) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
   ngOnInit() {
@@ -70,7 +78,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     this.getNomineeList();
     this.getWinner();
     this.reloadPreviousStatus();
-    this.updateBreakdown();
+    this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
+      this.getNomineeList();
+    });
   }
   // to show the button only can be used by admin
   get isAdmin() {
@@ -101,6 +111,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   getDetail() {
     this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
       this.awardDetail = detail;
+      this.updateBreakdown();
     }, error1 => {
       console.log(error1);
     });
@@ -199,6 +210,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     // check if the award have not finished yet
     this.awardService.getWinner(this.id).subscribe( winner => {
       this.winner = winner;
+      console.log(winner);
     });
   }
   sortOnColumn(columnName: string, tableName: string) {
@@ -226,7 +238,49 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   }
   // update voting breakdown
   updateBreakdown() {
-    this.awardService.updateVotingResult(this.id).subscribe();
+    if (this.awardDetail.status === 2) {
+      this.awardService.updateVotingResult(this.id).subscribe( success => {
+        console.log(success);
+      }, error => {
+        console.log(error);
+      });
+    }
+  }
+  openEditingAwardModal(awardId: number) {
+    const modalRef = this.modalService.open(EditingAwardModalComponent);
+    modalRef.componentInstance.awardId = awardId;
+    modalRef.result.then( successMes => {
+      this.getDetail();
+      this.notifier.notify('info', successMes);
+    }, dismiss => {
+      // console.log(dismiss);
+    });
+  }
+  // finish award before the end date
+  finishAward() {
+    this.awardService.finishAward(this.awardDetail.id).subscribe(() => {
+      this.notifier.notify('info', 'Award finished successfully!');
+      this.updateBreakdown();
+      this.getDetail();
+      this.getWinner();
+      this.getNomineeList();
+    }, error => {
+      this.notifier.notify('error', 'Error when finishing award!');
+      console.log(error);
+    });
+  }
+  zeroTimerTrigger() {
+    this.getDetail();
+  }
+  openTimer() {
+    const timerContainer = document.getElementsByClassName('timer-container')[0];
+    if (timerContainer.classList.contains('opened')) {
+      timerContainer.classList.remove('opened');
+      this.isTimerCountDownOpened = false;
+    } else {
+      timerContainer.classList.add('opened');
+      this.isTimerCountDownOpened = true;
+    }
   }
   // stay on current status after reloading page
   saveCurrentStatus(lastPastWinnerParams: Object) {
@@ -247,7 +301,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.removeStatus();
-    console.log('Destroyed!');
-    console.log(sessionStorage.getItem('lastPastWinnerParams'));
+    // console.log('Destroyed!');
+    // console.log(sessionStorage.getItem('lastPastWinnerParams'));
   }
 }

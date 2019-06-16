@@ -11,9 +11,9 @@ import {AuthenticationService} from '../../_services/authentication.service';
 export class SidebarComponent implements OnInit {
 
   currentUser: User;
-  constructor(private authService: AuthenticationService) {
+  constructor() {
    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-   console.log(this.currentUser);
+   // console.log(this.currentUser);
   }
   get isEmployeeOrManager() {
     if (!this.currentUser) {

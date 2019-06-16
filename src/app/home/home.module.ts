@@ -31,6 +31,15 @@ import {DatetimeFormatPipe} from '../_pipes/datetime-format.pipe';
 import {ConfirmModalComponent} from '../modals/confirm-modal/confirm-modal.component';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
 import {CarouselModule} from 'ngx-owl-carousel-o';
+import { SurveysComponent } from './surveys/surveys.component';
+import { AddingNewSurveyComponent } from './surveys/adding-new-survey/adding-new-survey.component';
+import { SurveyListComponent } from './surveys/survey-list/survey-list.component';
+import { VotingSurveyComponent } from './surveys/voting-survey/voting-survey.component';
+import {ChartsModule} from 'ng2-charts';
+import {CountdownTimerModule} from 'ngx-countdown-timer';
+import { ScoreTableComponent } from './award-management/voting-breakdown/score-table/score-table.component';
+import { CurrentChartComponent } from './award-management/voting-breakdown/current-chart/current-chart.component';
+import {CurrencyMaskModule} from 'ng2-currency-mask';
 const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
@@ -96,7 +105,13 @@ const customNotifierOptions: NotifierOptions = {
     VotingBreakdownComponent,
     DateFormatPipe,
     DatetimeFormatPipe,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    SurveysComponent,
+    AddingNewSurveyComponent,
+    SurveyListComponent,
+    VotingSurveyComponent,
+    ScoreTableComponent,
+    CurrentChartComponent
   ],
   imports: [
     CommonModule,
@@ -107,7 +122,10 @@ const customNotifierOptions: NotifierOptions = {
     NgbModule,
     NgSelectModule,
     NotifierModule.withConfig(customNotifierOptions),
-    CarouselModule
+    CarouselModule,
+    ChartsModule,
+    CountdownTimerModule,
+    CurrencyMaskModule
   ],
   providers: [
     NgbActiveModal,
@@ -120,7 +138,8 @@ const customNotifierOptions: NotifierOptions = {
     ChangePasswordModalComponent,
     UploadAvatarComponent,
     UploadLogoComponent,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    EditingAwardModalComponent
   ]
 })
 export class HomeModule { }

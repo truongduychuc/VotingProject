@@ -1,7 +1,9 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import {Injectable, Pipe, PipeTransform} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {Constants} from '../_enums/constants';
-
+@Injectable({
+  providedIn: 'root'
+})
 @Pipe({
   name: 'dateFormat'
 })

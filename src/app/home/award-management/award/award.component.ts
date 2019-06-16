@@ -5,6 +5,7 @@ import {UploadLogoComponent} from '../upload-logo/upload-logo.component';
 import {DataSharingService} from '../../../_shared/data-sharing.service';
 import {User} from '../../../_models/user';
 import {NotifierService} from 'angular-notifier';
+import {EditingAwardModalComponent} from '../editing-award-modal/editing-award-modal.component';
 @Component({
   selector: 'app-award',
   templateUrl: './award.component.html',
@@ -58,6 +59,9 @@ export class AwardComponent implements OnInit {
     }
   }
   openUploadingLogoModal() {
+    if (!this.isAdmin) {
+      return;
+    }
     const modalRef = this.modalService.open(UploadLogoComponent);
     modalRef.componentInstance.id = this.awardId;
     modalRef.componentInstance.current_logo_url = this.awardLogoURL;
@@ -68,5 +72,14 @@ export class AwardComponent implements OnInit {
       // console.log(dismiss);
     });
   }
-
+  openEditingAwardModal(awardId: number) {
+    const modalRef = this.modalService.open(EditingAwardModalComponent);
+    modalRef.componentInstance.awardId = awardId;
+    modalRef.result.then( successMes => {
+      this.sharedData.changeMessage('Updated award successfully!');
+      this.notifier.notify('info', successMes);
+    }, dismiss => {
+      // console.log(dismiss);
+    });
+  }
 }

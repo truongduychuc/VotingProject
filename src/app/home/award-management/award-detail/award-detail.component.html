@@ -1,5 +1,5 @@
 <div class="card shadow">
-  <div style="border-bottom: none" class="card-header">
+  <div *ngIf="awardDetail" style="border-bottom: none; background-color: transparent" class="card-header">
     <div class="row">
       <div class="col-md-6 d-flex justify-content-md-start align-items-center pt-2 pb-2 justify-content-center">
         <h4 class="mb-0">{{awardDetail?.year}}</h4>
@@ -7,20 +7,30 @@
         <span [ngClass]="getCssBadgeClass(awardDetail?.status)" class="ml-2 badge-pill text-small">{{getStatusName(awardDetail?.status)}}</span>
       </div>
       <div class="col-md-6 d-flex justify-content-center align-items-center pt-2 pb-2 justify-content-md-end">
-        <button *ngIf="isAdmin" class="btn btn-primary btn-rounded mr-2">EDIT</button>
-        <button class="btn btn-outline-danger btn-rounded ml-2" routerLink="/home/award-management">BACK TO LIST</button>
+        <button (click)="finishAward()" *ngIf="isAdmin && awardDetail.status" class="btn btn-danger btn-rounded mr-2">Finish now</button>
+        <button (click)="openEditingAwardModal(awardDetail.id)" *ngIf="isAdmin" class="btn btn-primary btn-rounded mr-2">EDIT</button>
+<!--        <button class="btn btn-outline-danger btn-rounded ml-2" routerLink="/home/awards">BACK TO LIST</button>-->
       </div>
     </div>
     <div class="row">
       <div class="col-12 d-flex justify-content-center justify-content-sm-start">
-        <p class="mt-1 text-small text-gray" *ngIf="awardDetail?.status > 1">This award is taking place.
+        <p class="mt-1 text-small text-gray" *ngIf="awardDetail?.status > 1">
           <a class="text-info ml-1" *ngIf="isAdmin" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
+        </p>
+        <p class="mt-1" *ngIf="awardDetail?.status === 0">
+          <a class="text-info ml-1" routerLink="/home/voting-breakdown/{{awardDetail.id}}">View Result</a>
         </p>
       </div>
     </div>
   </div>
   <div class="card-body">
-    <div class="row">
+    <!--<div class="row">
+      <div class="col-12">
+        <div class="award-description d-block">
+        </div>
+      </div>
+    </div>-->
+    <div class="row mt-2">
       <div class="col-12">
         <h4 class="card-title">Nominees</h4>
         <owl-carousel-o *ngIf="nomineeList" [options]="customOptions">
@@ -78,6 +88,22 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+    <div *ngIf="awardDetail && (awardDetail.status === 2 || awardDetail.status === 1)" class="timer-container shadow opened">
+      <div class="counter">
+        <ng-container [ngSwitch]="awardDetail.status">
+          <p class="text-small" *ngSwitchCase="2">Finish after</p>
+          <p class="text-small" *ngSwitchDefault>Start after</p>
+        </ng-container>
+        <p class="content">
+          <countdown-timer (zeroTrigger)="zeroTimerTrigger()" [end]="awardDetail.date_end">
+          </countdown-timer>
+        </p>
+        <span (click)="openTimer()" class="collapse-icon">
+          <i [ngClass]="{'fa-chevron-right': isTimerCountDownOpened, 'fa-chevron-left': !isTimerCountDownOpened}" class="fas">
+          </i>
+        </span>
       </div>
     </div>
   </div>

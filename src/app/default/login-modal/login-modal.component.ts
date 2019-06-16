@@ -12,8 +12,8 @@ import {NotifierService} from 'angular-notifier';
 })
 export class LoginModalComponent implements OnInit {
   loginForm: FormGroup;
-  constructor(public activeModal: NgbActiveModal,private formBuilder: FormBuilder, 
-  private authService: AuthenticationService, private router :Router, private notifier: NotifierService) { }
+  constructor(public activeModal: NgbActiveModal, private formBuilder: FormBuilder,
+  private authService: AuthenticationService, private router: Router, private notifier: NotifierService) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
@@ -25,12 +25,13 @@ export class LoginModalComponent implements OnInit {
   // create form by using form builder
   private generateForm(): void {
    this.loginForm = this.formBuilder.group({
-     username: ['', Validators.required],
-     password: ['', Validators.required]
+     username: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ. ]+$')]],
+     password: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ. ]+$')]]
    });
   }
 
   loginWithUserAndPass() {
+    // console.log(this.loginForm.controls);
     if (this.loginForm.invalid) {
       return;
     }

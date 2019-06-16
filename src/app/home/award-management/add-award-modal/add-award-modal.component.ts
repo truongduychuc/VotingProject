@@ -2,16 +2,15 @@ import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {NgbActiveModal, NgbCalendar, NgbDate, NgbDateNativeAdapter, NgbDateStruct, NgbTimeStruct} from '@ng-bootstrap/ng-bootstrap';
 import {TeamService} from '../../../_services/team.service';
 import {AwardService} from '../../../_services/award.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormControlName, FormGroup, Validators} from '@angular/forms';
 import {Team} from '../../../_models/team';
-import {NgbTime} from '@ng-bootstrap/ng-bootstrap/timepicker/ngb-time';
 import {NotifierService} from 'angular-notifier';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-add-award',
   templateUrl: './add-award-modal.component.html',
   styleUrls: ['./add-award-modal.component.scss'],
-  encapsulation: ViewEncapsulation.None
 })
 export class AddAwardModalComponent implements OnInit {
   years: number[] = [];
@@ -19,63 +18,37 @@ export class AddAwardModalComponent implements OnInit {
   nomineesList: any[];
   listTeams: Team[]; // for finding and patching team_name to nominee object
   addAward: FormGroup;
-  dateStartMin: NgbDateStruct;
-  dateStartMax: NgbDateStruct;
-  dateEndMin: NgbDateStruct;
-  dateEndMax: NgbDateStruct;
-
-
+  minStartDate: Date;
+  maxStartDate: Date;
+  minEndDate: Date;
+  maxEndDate: Date;
   constructor(public activeModal: NgbActiveModal, private teamService: TeamService, private awardService: AwardService,
-              private formBuilder: FormBuilder, private calendar: NgbCalendar, private dateNative: NgbDateNativeAdapter,
-              private notifier: NotifierService) { }
+              private formBuilder: FormBuilder, private notifier: NotifierService) { }
 
   ngOnInit() {
     this.getListNominees();
     this.getAwardTypes();
-    this.setDateInitially();
-    // this.getListTeams();
     this.setYearsArray();
     this.generateForm();
   }
   generateForm() {
+    this.setDateInitially();
     this.addAward = this.formBuilder.group({
       type: '',
       name: '',
       year: ['', Validators.required],
-      id_nominee: ['', Validators.required],
-      id_role_voter: ['Who?', Validators.required],
-      date_start: [this.dateStartMin, Validators.required], // every award can only have date_start chosen from today
-      date_end: ['', Validators.required],
-      prize: ['', Validators.required],
+      id_nominee: [[], [Validators.required, Validators.minLength(4)]],
+      id_role_voter: [null, Validators.required],
+      date_start: [this.minStartDate.toISOString().substring(0, 16), [Validators.required]], // every award can only have date_start chosen from today
+      date_end: [null, Validators.required],
+      prize: ['', [Validators.required, Validators.pattern('^\\d+$')]],
       item: '',
-      description: '',
-      start_time: '',
-      end_time: '',
+      description: ''
+    }, {
+      validators: [
+        this.dateValidation('date_start', 'date_end')
+      ]
     });
-  }
-  setDateInitially() {
-    this.dateStartMin = this.calendar.getToday();
-    this.dateStartMax = <NgbDateStruct> {
-      year: this.dateStartMin.year,
-      month: 12,
-      day: 31
-    };
-    this.dateEndMin = this.dateStartMin;
-    this.dateEndMax = <NgbDateStruct>{
-      year: this.dateStartMin.year + 1,
-      month: this.dateStartMin.month,
-      day: this.dateStartMin.day
-    };
-  }
-  changeDateEndLimit() {
-    const currentDateStart = this.addAward.controls['date_start'].value;
-    console.log(this.dateNative.toModel(this.formControl['date_start'].value));
-    this.dateEndMin = currentDateStart;
-    this.dateEndMax = <NgbDateStruct>{
-      year: currentDateStart.year + 1,
-      month: currentDateStart.month,
-      day: currentDateStart.day
-    };
   }
   setYearsArray() {
     const currentYear = new Date().getFullYear();
@@ -100,7 +73,6 @@ export class AddAwardModalComponent implements OnInit {
               value.team_name = team.name;
             }
           });
-          console.log(this.nomineesList);
         }
       }, error1 => console.log(error1));
     }, error => {
@@ -113,7 +85,7 @@ export class AddAwardModalComponent implements OnInit {
         console.log('The response didn\'t include \'type\' property!');
       } else {
         this.types = successRes.types;
-        console.log(this.types);
+        // console.log(this.types);
       }
     }, error => {
       console.log(error);
@@ -122,22 +94,9 @@ export class AddAwardModalComponent implements OnInit {
   // onSubmit
   createNewAward() {
     if (this.addAward.invalid) {
-      console.log('Invalid!');
+      // console.log('Invalid!');
       return;
     } else {
-      const startTime: NgbTime = this.formControl['start_time'].value;
-      const endTime: NgbTime = this.formControl['end_time'].value;
-      const startDate: NgbDate = this.formControl['date_start'].value;
-      const endDate: NgbDate = this.formControl['date_end'].value;
-      // concat date and time taken from datepicker and timepicker
-      const startDateTime = new Date(startDate.year, startDate.month - 1, startDate.day, startTime.hour,  startTime.minute, startTime.second);
-      const endDateTime = new Date(endDate.year, endDate.month - 1, endDate.day, endTime.hour,  endTime.minute, endTime.second);
-      console.log(startDateTime);
-      this.formControl['date_start'].setValue(startDateTime);
-      this.formControl['date_end'].setValue(endDateTime);
-      this.formControl['start_time'].setValue(null);
-      this.formControl['end_time'].setValue(null);
-      console.log(this.addAward.value);
       this.awardService.createNewAward(this.addAward.value).subscribe(() => { // success
         this.activeModal.close('Award created successfully!');
       }, err => {
@@ -148,7 +107,73 @@ export class AddAwardModalComponent implements OnInit {
       });
     }
   }
+  setDateInitially() {
+    const today = new Date();
+    this.minStartDate = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours(), today.getMinutes() + 1, 0));
+    this.maxStartDate = new Date(Date.UTC(today.getFullYear() + 1, 11, 31, 23, 0, 0));
+    this.minEndDate = this.minStartDate;
+    this.maxEndDate = new Date(Date.UTC(this.minStartDate.getFullYear() + 1, this.minStartDate.getMonth(), this.minStartDate.getDate()));
+  }
+  dateValidation(startDateName: string, endDateName: string) {
+    return (formGroup: FormGroup) => {
+      const startDate = formGroup.controls[startDateName];
+      const endDate = formGroup.controls[endDateName];
+      const startDateValue = new Date(startDate.value);
+      const endDateValue = new Date(endDate.value);
+      const today = new Date();
+      if (startDate.errors && !startDate.errors.dateError) {
+        return;
+      } else {
+        if (startDateValue.getDate() === today.getDate() && startDateValue.getMonth() === today.getMonth() && startDateValue.getFullYear() === today.getFullYear()) {
+          if (!moment().isBefore(startDateValue)) {
+            startDate.setErrors({dateError: true, message: 'Start time can not be smaller than current time'});
+          }
+        } else {
+          if (!moment().isBefore(startDateValue)) {
+            startDate.setErrors({dateError: true, message: 'Start date must be greater than today'});
+          }
+        }
+        if (!moment(startDateValue).isBefore(this.maxStartDate)) {
+          startDate.setErrors({
+            dateError: true,
+            message: `Start date can not be greater than ${this.maxStartDate.toISOString().substring(0, 10)}`
+          });
+        }
+      }
+      if (endDate.errors && !endDate.errors.dateError) {
+        return;
+      } else {
+        if (!moment().isBefore(endDateValue)) {
+          endDate.setErrors({dateError: true, message: 'End date must be greater than today'});
+        }
+        if (!moment(startDateValue).isBefore(endDateValue)) {
+          endDate.setErrors({dateError: true, message: 'End date must be greater than start date'});
+        }
+        if (!moment(endDateValue).isBefore(this.maxEndDate)) {
+          endDate.setErrors({dateError: true, message: `End date can not be greater than ${this.maxEndDate.toISOString().substring(0, 10)}`});
+        }
+      }
+    };
+  }
+  changeDateLimit() {
+    const startDateValue = new Date(this.formControl['date_start'].value);
+    this.minEndDate = new Date (
+      startDateValue.getFullYear(),
+      startDateValue.getMonth(),
+      startDateValue.getDate(),
+      startDateValue.getHours(),
+      startDateValue.getMinutes());
+    this.maxEndDate = new Date (
+      startDateValue.getFullYear() + 1,
+      startDateValue.getMonth(),
+      startDateValue.getDate(),
+      startDateValue.getHours(),
+      startDateValue.getMinutes());
+  }
   get formControl() {
     return this.addAward.controls;
+  }
+  test () {
+    console.log(this.addAward.controls);
   }
 }

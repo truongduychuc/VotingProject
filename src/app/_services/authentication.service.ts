@@ -1,14 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 // A lightweight JavaScript date library for parsing, validating, manipulating, and formatting dates.
-import * as moment from "moment";
-import * as jwt_decode from "jwt-decode";
+import * as moment from 'moment';
+import * as jwt_decode from 'jwt-decode';
 import {map} from 'rxjs/operators';
-import {User} from "../_models/user";
-import {AccountService} from "./account.service";
-import {Router} from "@angular/router";
-import {stringify} from 'querystring';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {User} from '../_models/user';
+import {AccountService} from './account.service';
+import {Router} from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +16,7 @@ export class AuthenticationService {
               private accountService: AccountService, private router: Router) {
   }
   login(username: string, password: string) {
-    let userTryingToLogin = {
+    const userTryingToLogin = {
       username: username,
       password: password
     };
@@ -35,10 +33,10 @@ export class AuthenticationService {
     const token = authenticationResult.token;
     // decode token to get payload, this part is optional, it's used here just for checking
     const decodedToken = this.getDecodedAccessToken(token);
-    console.log('Token: ' + JSON.stringify(decodedToken));
+    // console.log('Token: ' + JSON.stringify(decodedToken));
     // set the time when token will be expired
     const expiresAt = moment().add(decodedToken.exp - decodedToken.iat, 'second');
-    console.log(this.getExpiration());
+    // console.log(this.getExpiration());
 
     const currentUser = <User> {
       first_name: authenticationResult.first_name,
@@ -48,7 +46,6 @@ export class AuthenticationService {
     }
     this.setToken(token, expiresAt);
     this.setCurrentUser(currentUser);
-    console.log(JSON.parse(localStorage.getItem('currentUser')));
   }
 
   private setToken(token, expiresTime) {
@@ -68,7 +65,7 @@ export class AuthenticationService {
     localStorage.removeItem('token');
     localStorage.removeItem('expires_at');
     this.router.navigate(['start-page']);
-    console.log('Logged out!');
+    // console.log('Logged out!');
 
   }
   isLoggedIn() {
@@ -87,9 +84,9 @@ export class AuthenticationService {
 
   // for jwt decoding, this is optional
   private getDecodedAccessToken(token: string): any {
-    try{
+    try {
       return jwt_decode(token);
-    }catch (Error) {
+    } catch (Error) {
       console.log(Error);
       return null;
     }

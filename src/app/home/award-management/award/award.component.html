@@ -2,7 +2,7 @@
   <div class="card-body">
     <div class="row">
       <div class="col-md-2 d-flex justify-content-center">
-        <div title="Click on logo to upload new one" class="p-1">
+        <div [ngClass]="{'hand-cursor award-logo-container': isAdmin}" [title]="isAdmin ? 'Click on logo to upload new one' : ''" class="p-1">
           <img [src]="serverURL + awardLogoURL" (click)="openUploadingLogoModal()" alt="Logo" [ngClass]="awardLogoURL ? 'img-md rounded-circle' : 'img-md'">
         </div>
       </div>
@@ -25,12 +25,12 @@
       <div class="col-md-3">
         <div class="information p-1 m-1 m-md-0">
           <h6>Total prize:</h6>
-          <p>{{prize}}</p>
+          <p>VND {{prize | currency: 'VND' : ''}}</p>
         </div>
       </div>
       <div class="col-md-2">
         <div class="d-flex flex-wrap flex-column">
-          <button *ngIf="isAdmin" class="btn btn-primary btn-rounded m-1">Edit</button>
+          <button (click)="openEditingAwardModal(awardId)" *ngIf="isAdmin" class="btn btn-primary btn-rounded m-1">Edit</button>
           <button class="btn btn-detail btn-outline-primary btn-rounded m-1" routerLink="/home/award-detail/{{awardId}}">Detail</button>
         </div>
       </div>

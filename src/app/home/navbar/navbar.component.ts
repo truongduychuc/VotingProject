@@ -58,8 +58,8 @@ export class NavbarComponent implements OnInit {
     const modalRef = this.modalService.open(UploadAvatarComponent);
     modalRef.componentInstance.current_avt_url = this.currentUserProfile.ava_url;
     modalRef.result.then((success) => {
-      this.getCurrentUserProfile();
       this.notifier.notify('info', success);
+      this.getCurrentUserProfile();
     }, reason => {
       console.log(reason);
     });

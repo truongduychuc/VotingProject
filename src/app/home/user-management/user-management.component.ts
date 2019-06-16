@@ -51,7 +51,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           this.notifier.notify('info', 'User deleted successfully');
         },
         (deletingError: any) => {
-          this.notifier.notify('error', 'There was an error!');
+          if (typeof deletingError === 'string') {
+            this.notifier.notify('error', deletingError);
+          }
           // console.log(deletingError);
         }
       );
@@ -75,7 +77,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   reloadPreviousStatus() {
     // get params at the last times getting user list
     let lastEmployeeParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
-    if(null == lastEmployeeParams) {   // when you open browser initially
+    if (null == lastEmployeeParams) {   // when you open browser initially
       // load default list
      this.getUserListPerPage();
     } else {
@@ -139,7 +141,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     } else {
       if (sortColumn) {
         params = params.append('col', sortColumn); // using append need params = params*before*.append...
-        console.log(sortColumn);
+        // console.log(sortColumn);
       }
     }
     if (null == sortType && this.currentSortedType) {
@@ -148,7 +150,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     } else {
       if (sortType) {
         params = params.append('type', sortType);
-        console.log(sortType);
+        // console.log(sortType);
       }
     }
     if (null == sortTable && this.currentSortedTable) {
@@ -157,7 +159,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     } else {
       if (sortTable) {
         params = params.append('table', sortTable);
-        console.log(sortTable);
+        // console.log(sortTable);
       }
     }
     if (null == searchText && this.currentSearchText) {
@@ -166,7 +168,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     } else {
       if (searchText) {
         params = params.append('search', searchText);
-        console.log(searchText);
+        // console.log(searchText);
       }
     }
     if (null == itemsPerPage && this.currentPageSize) {
@@ -175,7 +177,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     } else {
       if (itemsPerPage) {
         params = params.append('count', itemsPerPage.toString());
-        console.log(itemsPerPage);
+        // console.log(itemsPerPage);
       }
     }
     if (null == currentPage && this.currentPage) {
@@ -183,7 +185,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       params = params.append('page', currentPage.toString());
     } else {
       if (currentPage) {
-        console.log(currentPage);
+        // console.log(currentPage);
         params = params.append('page', currentPage.toString());
       }
     }
@@ -206,9 +208,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           page: currentPage
         };
         this.saveCurrentStatus(lastEmployeeParams);
-        console.log(res);
       }, (err: HttpErrorResponse) => {
-        console.log(err);
+        // console.log(err);
         this.error = err;
       }
     );
@@ -247,8 +248,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   // called when changing to new page number in pagination
   pageChange(newPage: number) {
     // this function is called before the current page is changed to new page, so here need to take user list of newPage
-    // console.log(this.currentPage);
-    console.log(newPage);
+    // console.log(newPage);
     this.getUserListPerPage(this.currentSortedColumn, this.currentSortedType, this.currentSortedTable, this.currentSearchText,
       this.currentPageSize, newPage);
 
@@ -269,7 +269,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   // try to get previous page status
   getPreviousStatus() {
    let lastEmployeeParams = JSON.parse(sessionStorage.getItem('lastEmployeeParams'));
-   console.log(lastEmployeeParams);
+   // console.log(lastEmployeeParams);
    return lastEmployeeParams;
   }
 
@@ -292,6 +292,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     modalRef.result.then(successMessage => {  // had created successfully
       this.getUserListPerPage();
       this.notifier.notify('info', successMessage);
+    }, () => {
     });
   }
 

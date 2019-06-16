@@ -3,7 +3,7 @@
     <h3>VOTING</h3>
   </div>
   <div class="card-body">
-    <div class="voting-custom">
+    <div *ngIf="currentUser" class="voting-custom">
       <div *ngIf="!listAwards" class="row">
         <div class="col-12 pl-5 pr-5">
           <ngb-alert [dismissible]="false" type="danger">
@@ -24,6 +24,7 @@
                     <div class="form-group">
                       <label class="col-form-label">Choose an award:</label>
                       <select formControlName="id" (change)="loadNomineesCorresponding(voting.controls['id'].value)" class="form-control">
+                        <option hidden>Choose award here</option>
                         <optgroup *ngFor="let element of listAwards | groupBy: 'year'" [label]="element?.key">
                           <option *ngFor="let award of element?.value" [ngValue]="award?.id">
                             {{award?.awardType?.name}}
@@ -60,7 +61,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div *ngIf="listNominees" class="row">
           <div *ngIf="voting.controls['id'].value" class="col-md-4 d-flex">
             <div class="card shadow">
               <div class="card-header">
@@ -77,6 +78,7 @@
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
                       <select formControlName="first_vote" class="form-control">
+                        <option hidden></option>
                         <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
@@ -94,6 +96,9 @@
                   <div class="col-12 d-flex justify-content-center mt-1">
                     <small class="text-danger" *ngIf="formControls['first_vote'].errors?.duplicated">
                       {{formControls['first_vote'].errors?.message}}  Choose another one!
+                    </small>
+                    <small class="text-danger" *ngIf="formControls['first_vote'].errors?.selfVote">
+                      {{formControls['first_vote'].errors?.message}}
                     </small>
                   </div>
                 </div>
@@ -134,6 +139,9 @@
                     <small class="text-danger" *ngIf="formControls['second_vote'].errors?.duplicated">
                       {{formControls['second_vote'].errors?.message}}  Choose another one!
                     </small>
+                    <small class="text-danger" *ngIf="formControls['second_vote'].errors?.selfVote">
+                      {{formControls['second_vote'].errors?.message}}
+                    </small>
                   </div>
                 </div>
               </div>
@@ -173,6 +181,9 @@
                     <small class="text-danger" *ngIf="formControls['third_vote'].errors?.duplicated">
                       {{formControls['third_vote'].errors?.message}}  Choose another one!
                     </small>
+                    <small class="text-danger" *ngIf="formControls['third_vote'].errors?.selfVote">
+                      {{formControls['third_vote'].errors?.message}}
+                    </small>
                   </div>
                 </div>
               </div>
@@ -186,7 +197,7 @@
             </ngb-alert>
           </div>
         </div>
-        <div class="mt-4 d-flex justify-content-center flex-wrap">
+        <div *ngIf="listNominees" class="mt-4 d-flex justify-content-center flex-wrap">
           <!--[disabled]="voting.invalid"-->
           <button [disabled]="voting.invalid" type="submit" class="btn btn-success btn-rounded m-2">Vote</button>
           <button (click)="resetAllSelections()" type="button" class="btn btn-outline-success btn-rounded m-2">Reset</button>

@@ -195,9 +195,9 @@
   }
   .dropdown {
     font-size: 0.875rem;
-    @media (max-width: 991px) {
+    /*@media (max-width: 991px) {
       position: static;
-    }
+    }*/
     .dropdown-menu {
       .dropdown-item {
         padding: 11px 13px!important;
@@ -217,9 +217,8 @@
   .dropdown-toggle {
     cursor: pointer;
     &:hover {
-      >p {
-        color: aliceblue;
-      }
+      opacity: 0.6;
+      transition: opacity 0.5s;
     }
     &:after {
       font-size: 1em; // or inherit from .nav-link (parent)
@@ -235,12 +234,12 @@
         left: auto !important;
         padding: 0 !important;
         top: $navbar-height !important;
-        @media (max-width: 991px) {
+       /* @media (max-width: 991px) {
           left: 20px;
           right: 20px;
           top: $navbar-height !important;
           width: calc(100% - 40px);
-        }
+        }*/
       }
     }
     //

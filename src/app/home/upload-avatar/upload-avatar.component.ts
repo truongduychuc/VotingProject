@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {ImageService} from '../../_services/image.service';
+import {DataSharingService} from '../../_shared/data-sharing.service';
 
 @Component({
   selector: 'app-upload-avatar',
@@ -14,7 +15,7 @@ export class UploadAvatarComponent implements OnInit {
   uploadAvatar: FormGroup;
   tempDisplaying: any;
   constructor(private formBuilder: FormBuilder, public activeModal: NgbActiveModal, private changeDetector: ChangeDetectorRef,
-              private imageService: ImageService) { }
+              private imageService: ImageService, private shareData: DataSharingService) { }
 
   ngOnInit() {
     this.displayAvatarInitially();
@@ -55,6 +56,7 @@ export class UploadAvatarComponent implements OnInit {
     }
     this.imageService.uploadAvatar(this.uploadAvatar.controls['file'].value)
       .subscribe( () => {
+        this.shareData.changeMessage('Avatar uploaded successfully!');
         this.activeModal.close('Avatar uploaded successfully!');
       }, errUploading => {
         console.log(errUploading);

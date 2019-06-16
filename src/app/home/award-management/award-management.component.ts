@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AddAwardModalComponent} from './add-award-modal/add-award-modal.component';
 import {AwardService} from '../../_services/award.service';
@@ -10,13 +10,17 @@ import {AwardType} from '../../_models/award-type';
 import {Router} from '@angular/router';
 import {Award} from '../../_models/award';
 import {tap} from 'rxjs/operators';
-
+import {TimerObservable} from 'rxjs/observable/TimerObservable';
+import 'rxjs/add/operator/takeWhile';
 @Component({
   selector: 'app-award-list',
   templateUrl: './award-management.component.html',
   styleUrls: ['./award-management.component.scss']
 })
-export class AwardManagementComponent implements OnInit {
+export class AwardManagementComponent implements OnInit, OnDestroy {
+  error;
+  isAlive: boolean;
+  interval: number;
   awardList: any[];
   awardTypesList: AwardType[];
   currentUser: User;
@@ -25,20 +29,28 @@ export class AwardManagementComponent implements OnInit {
   constructor(private modalService: NgbModal, private awardService: AwardService, private groupByPipe: GroupByPipe,
               private  sharedData: DataSharingService, private notifier: NotifierService, private router: Router) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    this.isAlive = true;
+    this.interval = 5000; // use to automatically get the award list after a while
   }
   ngOnInit() {
     this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
       this.getAwardList();
     });
     this.getAwardTypesList();
+    TimerObservable.create(0, this.interval)
+      .takeWhile(() => this.isAlive)
+      .subscribe(() => {
+        this.getAwardList();
+      });
   }
   // get awardList at beginning
   getAwardList() {
     // reverse to display award list with descending time. The newer the award is, the higher its position is.
     this.awardService.getAwardList().subscribe( list => {
       this.awardList = this.groupByPipe.transform(list, 'year').reverse();
+      console.log('Just got data successfully!');
     }, errGetting => {
-      console.log(errGetting);
+      this.error = errGetting;
     });
   }
   // direct to the award detail page includes information of the newest award
@@ -48,7 +60,9 @@ export class AwardManagementComponent implements OnInit {
     } else {
       this.awardService.findAnAwardByType(this.typeForSearching).pipe(tap((award: Award) => {
         this.router.navigate([`home/award-detail/${award.id}`]);
-      })).subscribe();
+      })).subscribe(() => {}, error => {
+        this.notifier.notify('error', 'This award is never happened!');
+      });
     }
   }
   getAwardTypesList() {
@@ -67,7 +81,7 @@ export class AwardManagementComponent implements OnInit {
     return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
   }
   openAddingAward() {
-    const modalRef =  this.modalService.open(AddAwardModalComponent, {windowClass: 'myCustomModalClass', backdrop: 'static'});
+    const modalRef =  this.modalService.open(AddAwardModalComponent, {backdrop: 'static'});
     modalRef.result.then((successMes: string) => {
       this.getAwardList();
       this.notifier.notify('info', successMes);
@@ -75,6 +89,7 @@ export class AwardManagementComponent implements OnInit {
       // console.log(dismiss);
     });
   }
-
-
+  ngOnDestroy(): void {
+    this.isAlive = false;
+  }
 }
