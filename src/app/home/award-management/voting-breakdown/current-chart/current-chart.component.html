@@ -9,7 +9,7 @@
             <!--        <button class="btn btn-outline-danger btn-rounded ml-2" routerLink="/home/awards" >BACK TO LIST</button>-->
         </div>
     </div>
-    <div class="row">
+    <div *ngIf="percentList" class="row">
         <div class="col-12 mt-3 align-items-center">
             <canvas *ngIf="percentList && nomineeNameList" baseChart
                     [data]="percentList"

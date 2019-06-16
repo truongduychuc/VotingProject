@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {AwardService} from '../../../../_services/award.service';
 import {
@@ -10,19 +10,21 @@ import {
 } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import {Award} from '../../../../_models/award';
-import {DateFormatPipe} from '../../../../_pipes/date-format.pipe';
 import {Label} from 'ng2-charts';
-
+import {TimerObservable} from 'rxjs/observable/TimerObservable';
+import 'rxjs/add/operator/takeWhile';
 @Component({
   selector: 'app-current-chart',
   templateUrl: './current-chart.component.html',
   styleUrls: ['./current-chart.component.scss']
 })
-export class CurrentChartComponent implements OnInit {
+export class CurrentChartComponent implements OnInit, OnDestroy {
   id: number;
   awardInfo: Award;
   percentList: number[];
   nomineeNameList: Label[];
+  isAlive: boolean;
+  interval: number;
   public pieChartOptions: ChartOptions = {
     responsive: true,
     legend: {
@@ -88,12 +90,19 @@ export class CurrentChartComponent implements OnInit {
   public pieChartPlugins = [pluginDataLabels];
   public pieChartType: ChartType = 'pie';
   constructor(private route: ActivatedRoute, private awardService: AwardService) {
+    this.isAlive = true;
+    this.interval = 5000;
   }
 
   ngOnInit() {
     this.id = parseInt(this.route.parent.snapshot.paramMap.get('id'));
     this.getAwardInfo();
     this.getData();
+    TimerObservable.create(0, this.interval)
+      .takeWhile(() => this.isAlive)
+      .subscribe(() => {
+        this.getData();
+      });
   }
   getAwardInfo() {
     this.awardService.getAwardDetail(this.id).subscribe(award => {
@@ -124,8 +133,9 @@ export class CurrentChartComponent implements OnInit {
       this.nomineeNameList.push('Others');
       // work out the amount of points the rest nominees have
       this.percentList = tempPercentList;
-      console.log(this.nomineeNameList);
-      console.log(this.percentList);
+      // console.log(this.nomineeNameList);
+      // console.log(this.percentList);
+      console.log('Just got data successfully!');
     }, err => {
       console.log(err);
     });
@@ -152,5 +162,7 @@ export class CurrentChartComponent implements OnInit {
       return 'Voting';
     }
   }
-
+  ngOnDestroy(): void {
+    this.isAlive = false;
+  }
 }

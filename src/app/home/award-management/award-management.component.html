@@ -20,13 +20,20 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div *ngIf="awardList" class="row">
               <div class="col-12">
                 <app-award-as-year *ngFor="let awardsAsYear of awardList; let i = index"
                                    [year]="awardsAsYear.key"
                                    [awardListOfYear]="awardsAsYear.value"
                                    [isCollapsed]="i !== 0">  <!--collapse from second year from top, only expand awards in first year-->
                 </app-award-as-year>
+              </div>
+            </div>
+            <div class="row" *ngIf="error">
+              <div class="col-12">
+                <ngb-alert type="danger" (close)="error = null">
+                  {{error}}
+                </ngb-alert>
               </div>
             </div>
           </div>
