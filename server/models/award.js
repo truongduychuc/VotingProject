@@ -27,7 +27,7 @@ const Award = db.sequelize.define(
             type: Sequelize.DATE
         },
         prize: {
-            type: Sequelize.INTEGER
+            type: Sequelize.STRING
         },
         item: {
             type: Sequelize.STRING
