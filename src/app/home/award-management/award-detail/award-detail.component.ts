@@ -76,7 +76,6 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.getDetail();
     this.getNomineeList();
-    this.getWinner();
     this.reloadPreviousStatus();
     this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
       this.getNomineeList();
@@ -111,6 +110,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   getDetail() {
     this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
       this.awardDetail = detail;
+      if (this.awardDetail.status === 0) {
+        this.getWinner();
+      }
       this.updateBreakdown();
     }, error1 => {
       console.log(error1);
@@ -239,8 +241,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   // update voting breakdown
   updateBreakdown() {
     if (this.awardDetail.status === 2) {
-      this.awardService.updateVotingResult(this.id).subscribe( success => {
-        console.log(success);
+      this.awardService.updateVotingResult(this.id).subscribe( () => {
       }, error => {
         console.log(error);
       });
