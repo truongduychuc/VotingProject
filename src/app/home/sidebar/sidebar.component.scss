@@ -31,7 +31,7 @@
         white-space: nowrap;
         height: $nav-link-height;
         color: $sidebar-light-menu-color;
-        i {
+        /*i {
           &.menu-arrow {
             margin-left: auto;
             margin-right: 0;
@@ -48,7 +48,7 @@
               color: rgba($sidebar-light-menu-color, 0.5);
             }
           }
-        }
+        }*/
         &[aria-expanded="true"] {
           background: $sidebar-light-menu-active-bg;
           i {
@@ -59,9 +59,10 @@
         }
         .menu-icon {
           margin-right: 1.25rem;
+          // margin-left: auto;
           width: $sidebar-icon-size;
           line-height: 1;
-          font-size: 18px;
+          font-size: $sidebar-icon-size; //18px;
           color: lighten($sidebar-light-menu-icon-color, 30%);
           .rtl & {
             margin-right: 0;
@@ -69,9 +70,10 @@
           }
         }
         .menu-title {
+          font-weight: 500; //
           color: inherit;
           display: inline-block;
-          font-size: $sidebar-menu-font-size;
+          font-size: 1em; //$sidebar-menu-font-size;
           line-height: 1;
           vertical-align: middle;
         }
@@ -125,15 +127,16 @@
     }
     &:not(.sub-menu) {
       >.nav-item {
+        // padding: 0 2.25rem;
         &:hover {
-          &:not(.nav-profile) {
-            >.nav-link {
-              background: #0fdfd3; // for menu on sidebar
-              color: white;
-              >i {
-                color: white;
-              }
-            }
+          &:not(.nav-profile) {  // change nav item color & background when hovering on it
+             background: #efe9e9; //#0fdfd3; // for menu on sidebar
+            //>.nav-link {
+            //  color: white;
+            //  >i {
+            //    color: white;
+            //  }
+            //}
           }
         }
       }
@@ -181,10 +184,11 @@
     overflow: auto;
     left: -$sidebar-width-lg;
     -webkit-transition: all 0.25s ease-out;
-    -o-transition: all 0.25s ease-out;
+    -o-transition:  all 0.25s ease-out;
     transition: all 0.25s ease-out;
     &.active {
       left: 0;
+      box-shadow: 3px 1px 8px -2px #777;
     }
   }
 }

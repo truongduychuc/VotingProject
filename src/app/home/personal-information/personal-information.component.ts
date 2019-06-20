@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {User} from "../../_models/user";
-import {HttpErrorResponse} from "@angular/common/http";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {AccountService} from "../../_services/account.service";
-import {Router} from "@angular/router";
+import {User} from '../../_models/user';
+import {HttpErrorResponse} from '@angular/common/http';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {AccountService} from '../../_services/account.service';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-personal-information',
@@ -16,33 +16,42 @@ export class PersonalInformationComponent implements OnInit {
   currentUserProfile: User;
   directManager: any;
   message;
-  constructor(private accountService: AccountService, private formBuilder: FormBuilder, private router: Router) { }
+  constructor(private accountService: AccountService, private formBuilder: FormBuilder, private notifier: NotifierService) { }
 
   ngOnInit() {
     this.getUserInfo();
-    this.generateForm();
   }
   generateForm(): void {
     this.personalUpdating = this.formBuilder.group({
-      phone: '',
-      address: '',
-      other: ''
-    })
+      phone: this.currentUserProfile.phone,
+      address: this.currentUserProfile.address,
+      achievement: this.currentUserProfile.achievement
+    });
+  }
+  get isDisabledButton() {
+    if ('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.achievement.value) {
+      return true;
+    } else {
+      return false;
+    }
   }
   updateInfo() {
-    if('' == this.formControl.phone.value &&'' == this.formControl.address.value &&'' == this.formControl.other.value) {
-      console.log(this.personalUpdating.value);
+    if ('' == this.formControl.phone.value && '' == this.formControl.address.value && '' == this.formControl.achievement.value) {
       return;
-    } else {
+    }
+    if (this.personalUpdating.invalid || !this.checkIfHasAnyChanges()) {
+      return;
+    }
       this.accountService.updatePersonalProfile(this.personalUpdating.value).subscribe(
         res => {
-          console.log(res);
+          // console.log(res);
           this.getUserInfo();
+          this.notifier.notify('info', 'Updated information successfully!');
+          this.editable = false;
         }, error1 => {
           console.log(error1);
         }
-      )
-    }
+      );
   }
   get formControl() {
     return this.personalUpdating.controls;
@@ -50,20 +59,31 @@ export class PersonalInformationComponent implements OnInit {
   changeEditable() {
     this.editable = !this.editable;
   }
+  checkIfHasAnyChanges(): boolean {
+    if (this.formControl['phone'].value !== this.currentUserProfile.phone
+      || this.formControl['address'].value !== this.currentUserProfile.address
+    || this.formControl['achievement'].value !== this.currentUserProfile.achievement) {
+      return true;
+    }
+    return false;
+  }
+  listenForChanges() {
+    this.personalUpdating.valueChanges.subscribe(changed => {
+      this.checkIfHasAnyChanges();
+    });
+  }
   getUserInfo() {
-    this.accountService.getPersonalProfile().subscribe((userProfileRes:any) => {
+    this.accountService.getPersonalProfile().subscribe((userProfileRes: any) => {
       this.currentUserProfile = userProfileRes.user;
-      if(!userProfileRes.hasOwnProperty('directManager')) {
+      if (!userProfileRes.hasOwnProperty('directManager')) {
         this.message = userProfileRes.message;
-        console.log(userProfileRes.message);
-      }
-      else {
-        console.log('Has direct manager!');
+      } else {
         this.directManager = userProfileRes.directManager;
-        console.log(this.currentUserProfile);
       }
+      this.generateForm();
+      this.listenForChanges();
     }, (err: HttpErrorResponse) => {
       console.log(err);
-    })
+    });
   }
 }

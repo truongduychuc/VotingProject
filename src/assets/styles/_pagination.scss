@@ -1,11 +1,12 @@
 /* Pagination */
 
 .pagination{
+  font-family: $type-2;
   .page-item {
     .page-link {
       border-color: $border-color;
       color: color(black);
-      font-size: .875rem;
+      font-size: .75rem;
       @include transition-duration(0.3s);
       &:focus{
         background: inherit;

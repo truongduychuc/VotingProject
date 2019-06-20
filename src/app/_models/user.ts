@@ -1,5 +1,5 @@
-import {Team} from "./team";
-import {Role} from "./role";
+import {Team} from './team';
+import {Role} from './role';
 
 export interface User {
   id?: number;
@@ -8,6 +8,7 @@ export interface User {
   is_active?: number;
   role?: Role;
   team?: Team;
+  position?: string;
   username: string;
   password?: string;
   first_name: string;
@@ -16,7 +17,7 @@ export interface User {
   email: string;
   phone?: string;
   address?: string;
-  other?: string;
+  achievement?: string;
   ava_url?: string;
   created_at?: Date;
   updated_at?: Date;

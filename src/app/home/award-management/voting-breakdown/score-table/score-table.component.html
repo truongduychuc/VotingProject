@@ -1,0 +1,116 @@
+<ng-container *ngIf="awardInfo">
+  <div class="row">
+    <div class="col-md-6 d-flex justify-content-md-start justify-content-center align-items-center pt-2 pb-2">
+      <h4 class="mb-0">{{awardInfo?.year}}</h4>
+      <h4 class="mb-0 ml-2">{{awardInfo?.awardType.name | uppercase}}</h4>
+      <span class="text-small badge-pill ml-2" [ngClass]="cssBadgeClass">{{statusName}}</span>
+    </div>
+    <div class="col-md-6 d-none d-md-flex justify-content-center justify-content-md-end align-items-center pt-2 pb-2">
+      <!--        <button class="btn btn-outline-danger btn-rounded ml-2" routerLink="/home/awards" >BACK TO LIST</button>-->
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 justify-content-md-start justify-content-center">
+      <p class="card-description text-center text-md-left">VOTING BREAKDOWN</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 align-items-center d-flex justify-content-center justify-content-sm-start mb-2 mb-sm-0">
+      <div class="form-group">
+        <label class="col-form-label">
+          Show
+          <select class="form-control rounded-pill form-control-sm" (change)="onChangeItemsPerPage()" [(ngModel)]="currentPageSize">
+            <option *ngFor="let itemsPerPage of itemsPerPageArr" [ngValue]="itemsPerPage">{{itemsPerPage}}</option>
+          </select>
+          entries
+        </label>
+      </div>
+    </div>
+    <div class="col-sm-6 align-items-center d-flex justify-content-center justify-content-sm-end mt-2 mt-sm-0">
+      <div class="form-group search-container">
+        <input (keyup)="searchOnText()" [(ngModel)]="currentSearchText" type="text" class="form-control rounded-pill search-bar" placeholder="Search...">
+        <i class="fas fa-search"></i>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!error" class="row">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th (click)="sortOnColumn('rank','votingBreakdown')" title="Click to sort" class="hand-cursor">Rank
+            <!--Change icon by sort direction-->
+            <i class="sort-icon" [hidden]="!(currentSortedColumn == 'rank')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+          </th>
+          <th (click)="sortOnColumn('first_name','nominee_name')" title="Click to sort" class="hand-cursor">Nominee
+            <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_name')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+          </th>
+          <th (click)="sortOnColumn('first_votes','votingBreakdown')" title="Click to sort" class="hand-cursor">1st votes <small>(5 points)</small>
+            <i class="sort-icon" [hidden]="!(currentSortedColumn == 'first_vote')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+          </th>
+          <th (click)="sortOnColumn('second_votes','votingBreakdown')"  title="Click to sort" class="hand-cursor">2nd votes <small>(3 points)</small>
+            <i class="sort-icon" [hidden]="!(currentSortedColumn == 'second_vote')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+          </th>
+          <th (click)="sortOnColumn('third_votes','votingBreakdown')" title="Click to sort" class="hand-cursor">3rd votes <small>(1 point)</small>
+            <i class="sort-icon" [hidden]="!(currentSortedColumn == 'third_vote')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+          </th>
+          <th (click)="sortOnColumn('total_points','votingBreakdown')" title="Click to sort">Total points
+            <i class="sort-icon" [hidden]="!(currentSortedColumn == 'total_points')" [ngClass]="currentSortedType == 'ASC'?'fas fa-sort-up':'fas fa-sort-down'"></i>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let breakdown of breakdownList">
+          <td>{{breakdown?.rank}}</td>
+          <td>{{breakdown?.nominee_name ? breakdown?.nominee_name?.first_name + ' (' + breakdown?.nominee_name?.english_name + ') ' + breakdown?.nominee_name?.last_name : ''}}</td>
+          <td>{{breakdown?.first_votes}}</td>
+          <td>{{breakdown?.second_votes}}</td>
+          <td>{{breakdown?.third_votes}}</td>
+          <td>{{breakdown?.total_points}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!--Display error when found no matched record-->
+  <div class="row" *ngIf="error">
+    <div class="col-12">
+      <!--If search result is empty-->
+      <ngb-alert (close)="error = null; currentSearchText = ''" type="danger">
+        No record matched!
+      </ngb-alert>
+    </div>
+  </div>
+
+  <!--    Pagination-->
+  <div *ngIf="!error" class="row mt-3">
+    <div class="col-sm-6 d-flex justify-content-sm-start p-0">
+      <p class="text-small" *ngIf="currentRecords > currentPageSize">Showing 1 to {{currentPageSize}} of {{currentRecords}}
+        <span *ngIf="totalRecords == currentRecords"> total entries</span>
+        <span *ngIf="totalRecords>currentRecords"> entries (filtered from {{totalRecords}} total entries)</span>
+      </p>
+      <p class="text-small" *ngIf="currentRecords <= currentPageSize">Showing {{currentRecords}} of {{currentRecords}}
+        <span *ngIf="totalRecords == currentRecords"> total entries</span>
+        <span *ngIf="totalRecords>currentRecords"> (filtered from {{totalRecords}} total entries)</span>
+      </p>
+    </div>
+    <div *ngIf="currentRecords > currentPageSize" class="col-sm-6 d-flex justify-content-sm-end p-0">
+      <ngb-pagination class="pagination" size="sm"
+                      (pageChange)="pageChange($event)"
+                      [collectionSize]="currentRecords"
+                      [pageSize]="currentPageSize"
+                      [(page)]="currentPage"
+                      maxSize="5"
+                      [rotate]="true"
+                      [ellipses]="false"
+                      class="pagination-rounded"
+                      [boundaryLinks]="true">
+        <ng-template ngbPaginationPrevious>Prev</ng-template>
+        <ng-template ngbPaginationNext>Next</ng-template>
+        <ng-template ngbPaginationFirst>First</ng-template>
+        <ng-template ngbPaginationLast>Last</ng-template>
+      </ngb-pagination>
+    </div>
+  </div>
+</ng-container>

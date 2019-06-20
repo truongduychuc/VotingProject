@@ -1,0 +1,110 @@
+.card-body {
+  .row {
+    .col-12 {
+      .award-description {
+        padding: 1rem;
+        border: 1px inset gray;
+        border-radius: 6px;
+      }
+    }
+  }
+}
+.table-responsive {
+  overflow-y: auto;
+  table {
+    table-layout: auto;
+    thead {
+      th {
+        //border-bottom: 1px solid lightgray !important;
+        //border-bottom-width: 2px !important;
+        position: relative;
+        word-wrap: break-word;
+        .sort-icon {
+          position: absolute;
+          right: 0;
+        }
+      }
+    }
+  }
+}
+// for the slide
+:host ::ng-deep .owl-carousel {
+  .owl-item {
+    .avatar {
+      position: relative;
+      @media (max-width: 767px) {
+        height: 160px;
+      }
+      @media (min-width: 768px) and (max-width: 1365px){
+        height: 200px;
+      }
+      @media (min-width: 1366px) {
+        height: 300px;
+      }
+      img {
+        height: 100%;
+        object-fit: cover;
+      }
+      .winner-info {
+        position: absolute;
+        width: 100%;
+        height: 40px;
+        bottom: 0;
+        background: rgb(0,100,30);
+        background: linear-gradient(50deg, rgba(0,100,30,1) 0%, rgba(0,100,0,1) 16%, rgba(44,122,58,1) 42%, rgba(255,255,255,0.37298669467787116) 100%);
+        opacity: 0.9;
+        padding: 0.3rem 0.5rem;
+      }
+    }
+  }
+}
+.timer-container {
+  position: fixed;
+  width: 200px;
+  height: 76px;
+  right: -200px;
+  top: 153px;
+  background-color: #e8e8e8;
+  padding: 10px;
+  transition: right 0.2s linear;
+  z-index: 1;
+  border: 1px solid #e8d8d8;
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
+  color: #064482;
+  .counter {
+    position: relative;
+    .collapse-icon {
+      color: white;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: -42px;
+      padding: 10px;
+      border-bottom-left-radius: 4px;
+      border-top-left-radius: 4px;
+      background-color: #9893a5;
+      border: 1px solid #e8d8d8;
+      cursor: pointer;
+    }
+    .text-small {
+      text-align: center;
+      font-size: 14px;
+    }
+    .content {
+      font-size: 18px;
+      margin-bottom: 0;
+      text-align: center;
+    }
+  }
+  &.opened {
+    right: 0;
+    transition: right 0.2s linear;
+    >.counter {
+      .collapse-icon {
+      opacity: 0.6;
+    }
+  }
+  }
+}
+

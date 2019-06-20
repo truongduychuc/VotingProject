@@ -1,7 +1,7 @@
 /* Modals */
 
 .modal{
-  font-family: Poppins;
+  font-family: $type-2;
   .modal-dialog{
     margin-top: calc(#{$navbar-height} + 30px);
     .modal-content{

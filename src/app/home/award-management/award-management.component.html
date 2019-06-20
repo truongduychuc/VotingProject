@@ -1,0 +1,44 @@
+<div class="card shadow">
+  <div class="card-header">
+    <h3>AWARDS</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body overflow-auto award-list-container">
+            <div class="row">
+              <div class="col-12 d-flex justify-content-center justify-content-md-end">
+                <div class="form-group d-inline-block">
+                  <button *ngIf="isAdmin" (click)="openAddingAward()" class="btn btn-primary btn-rounded"><i class="fas fa-plus"></i>New</button>
+                </div>
+                <div class="form-group d-inline-block ml-2">
+                  <select (change)="findAnAwardByType()" [(ngModel)]="typeForSearching" class="form-control rounded-pill">
+                    <option hidden [ngValue]="null">Find an award</option>
+                    <option *ngFor="let type of awardTypesList" [ngValue]="type.id">{{type.name}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="awardList" class="row">
+              <div class="col-12">
+                <app-award-as-year *ngFor="let awardsAsYear of awardList; let i = index"
+                                   [year]="awardsAsYear.key"
+                                   [awardListOfYear]="awardsAsYear.value"
+                                   [isCollapsed]="i !== 0">  <!--collapse from second year from top, only expand awards in first year-->
+                </app-award-as-year>
+              </div>
+            </div>
+            <div class="row" *ngIf="error">
+              <div class="col-12">
+                <ngb-alert type="danger" (close)="error = null">
+                  {{error}}
+                </ngb-alert>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

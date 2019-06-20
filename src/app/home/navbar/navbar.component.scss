@@ -31,19 +31,28 @@
         color: lighten(color(gray-dark), 10%);
       }
       img {
-        width: calc(#{$sidebar-width-lg} - 130px);
-        max-width: 100%;
-        height: 28px;
+        //width: calc(#{$sidebar-width-lg} - 130px);
+        width: 100%;
+        // max-width: 100%;
+        height: 100%;
+        //height: 28px;
         margin: auto;
         vertical-align: middle;
       }
     }
+      @media (max-width: 991px) {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+      }
     .brand-logo-mini {
+      @media (max-width: 991px) {
+        display: inline-block;
+      }
       display: none;
       img {
-        width: calc(#{$sidebar-width-icon} - 50px);
+        width: 69px;
+        //width: calc(#{$sidebar-width-icon} - 50px);
         max-width: 100%;
-        height: 28px;
+        height: 58px; // 28px;
         margin: auto;
       }
     }
@@ -61,9 +70,14 @@
     @media (max-width: 991px) {
       width: auto;
     }
+    //
+    @media (min-width: 992px) {
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
     .navbar-toggler {
       border: 0;
       color: inherit;
+      font-size: 1.05rem; //
       &:not(.navbar-toggler-right) {
         @media (max-width: 991px) {
           display: none;
@@ -77,11 +91,12 @@
       flex-direction: row;
       align-items: center;
       .nav-item {
-        margin-left: 1rem;
-        margin-right: 1rem;
         .nav-link {
+          height: $navbar-height;   //
+          align-items: center;
+          display: flex !important; //
           color: inherit;
-          font-size: $navbar-font-size;
+          font-size: 0.875rem;  // $navbar-font-size -> source: variable.css -> $sidebar-font-size
           vertical-align: middle;
           @media (max-width: 767px) {
             margin-left: 0.5rem;
@@ -91,8 +106,36 @@
             font-size: $navbar-icon-font-size;
             vertical-align: middle;
           }
-          .profile-text {
-            margin-right: 15px;
+          .menu-title {
+            font-size: 0.875rem;
+          }
+          //
+          .nav-profile-img {
+            height: 37px;
+            width: 37px;
+            position: relative;
+            .availability-status {
+              position: absolute;
+              width: 10px;
+              height: 10px;
+              border-radius: 100%;
+              border: 2px solid #ffffff;
+              bottom: 5px;
+              right: -5px;
+               &.online { //
+              background: #1bcfb4;
+              }
+            }
+          }
+          //
+          .nav-profile-text {
+            // min-width: 7rem;
+            // display: inline-block;
+            font-size: 1rem;
+            margin-left: 1.25rem;
+            @media (max-width: 767px) {
+              display: none;
+            }
             .rtl & {
               margin-right: 0;
               margin-left: 15px;
@@ -114,12 +157,12 @@
         @media (min-width: 992px) {
           margin-left: auto;
           .dropdown-menu-left {
-            right: 0;
-            left: auto;
-          }
-          .dropdown-menu-right {
             right: auto;
             left: 0;
+          }
+          .dropdown-menu-right {
+            right: 0;
+            left: auto;
           }
         }
       }
@@ -150,6 +193,57 @@
       }
     }
   }
+  .dropdown {
+    font-size: 0.875rem;
+    /*@media (max-width: 991px) {
+      position: static;
+    }*/
+    .dropdown-menu {
+      .dropdown-item {
+        padding: 11px 13px!important;
+        align-items: center !important;
+        cursor: pointer;
+        font-size: 1em;
+        i {
+          font-size: 14px!important;
+        }
+        &:hover {
+          background-color: #efe9e9;
+        }
+      }
+    }
+  }
+  //
+  .dropdown-toggle {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.6;
+      transition: opacity 0.5s;
+    }
+    &:after {
+      font-size: 1em; // or inherit from .nav-link (parent)
+    }
+  }
+  .navbar-nav {
+    .nav-item {
+      .navbar-dropdown {
+        position: absolute;
+        font-size: 0.9rem !important;
+        margin-top: 0 !important;
+        right: 0 !important;
+        left: auto !important;
+        padding: 0 !important;
+        top: $navbar-height !important;
+       /* @media (max-width: 991px) {
+          left: 20px;
+          right: 20px;
+          top: $navbar-height !important;
+          width: calc(100% - 40px);
+        }*/
+      }
+    }
+    //
+  }
 }
 
 @media (max-width:991px) {
@@ -161,9 +255,9 @@
         .brand-logo {
           display: none;
         }
-        .brand-logo-mini {
-          display: inline-block;
-        }
+        // .brand-logo-mini {
+        //  display: inline-block;
+        // }
       }
     }
   }
@@ -171,4 +265,9 @@
     display: flex;
     margin-top: 0.5rem;
   }
+}
+//
+.img-thumbnail {
+  cursor: pointer;
+  border: none;
 }

@@ -1,0 +1,39 @@
+<div class="modal-header justify-content-center">
+  <h4 class="display-4">Edit award</h4>
+</div>
+<div class="modal-body">
+  <form (ngSubmit)="updateAward()" *ngIf="editAward" [formGroup]="editAward">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="awardName" class="col-form-label">Name</label>
+          <input id="awardName" [value]="awardDetail?.awardType?.name" type="text" readonly class="form-control">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="year" class="col-form-label">Year</label>
+          <input readonly type="text" id="year" class="form-control" [value]="awardDetail?.year">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="prize" class="col-form-label">Total prize (in cash)</label>
+          <input id="prize" type="text" formControlName="prize" class="form-control">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="item" class="col-form-label">Item</label>
+          <input id="item" formControlName="item" type="text" class="form-control">
+        </div>
+      </div>
+    </div>
+  <div class="d-flex justify-content-center flex-wrap">
+    <button type="submit" [disabled]="editAward.invalid || !checkChanges()" class="btn btn-primary btn-rounded m-sm-3 m-1">EDIT</button>
+    <button class="btn btn-outline-primary btn-rounded m-sm-3 m-1" (click)="activeModal.dismiss('Called off creating award!')">CANCEL</button>
+  </div>
+  </form>
+</div>

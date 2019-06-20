@@ -1,0 +1,22 @@
+.card {
+  .card-body {
+    .row {
+      .col-12 {
+        .card {
+          .card-body{
+            .row {
+              .col-12 {
+                .form-group {
+                  .form-control {
+                    height: 100%; // equal to form-group height
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

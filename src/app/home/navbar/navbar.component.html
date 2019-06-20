@@ -1,84 +1,47 @@
-<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top flex-row">
-  <div class="col-6 justify-content-start d-flex">
-    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleOffcanvas()">
-      <span class="mdi mdi-menu"></span>
-    </button>
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+  <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
+    <a class="navbar-brand brand-logo" href="index.html">
+      <img alt="Full logo" src="assets/images/logo/voting-logo.png">
+    </a>
+    <a class="navbar-brand brand-logo-mini" href="index.html">
+      <img alt="Mini logo" src="assets/images/logo/voting-mini.png">
+    </a>
   </div>
-  <div class="col-6 justify-content-end d-flex">
-    <div class="navbar-menu-wrapper d-none d-sm-flex align-items-center">
-      <ul class="navbar-nav navbar-nav-right">
-        <li *ngIf="currentUserProfile" class="nav-item dropdown d-inline-block" ngbDropdown>
-          <a class="nav-link" id="UserDropdown">
-            <span class="profile-text">{{currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name}}</span>
-            <img class="img-xs rounded-circle" [src]="currentUserProfile.ava_url?'http://localhost:4000/' + currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
-            <span class="dropdown-toggle" ngbDropdownToggle></span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdown">
-            <!--<a class="dropdown-item p-0">
-              <div class="d-flex border-bottom">
-                <div class="py-3 px-4 d-flex align-items-center justify-content-center">
-                  <i class="mdi mdi-bookmark-plus-outline mr-0 text-gray"></i>
-                </div>
-                <div class="py-3 px-4 d-flex align-items-center justify-content-center border-left border-right">
-                  <i class="mdi mdi-account-outline mr-0 text-gray"></i>
-                </div>
-                <div class="py-3 px-4 d-flex align-items-center justify-content-center">
-                  <i class="mdi mdi-alarm-check mr-0 text-gray"></i>
-                </div>
-              </div>
-            </a>-->
-            <a class="dropdown-item mt-2">
-              Manage Accounts
+  <div class="navbar-menu-wrapper d-flex align-items-stretch">
+    <ul class="navbar-nav navbar-nav-right">
+      <!--Display with small screen and bigger-->
+      <li *ngIf="currentUserProfile" class="nav-item nav-profile dropdown" ngbDropdown>
+        <a id="userDropdown" title="Click to show menu" class="nav-link dropdown-toggle" ngbDropdownToggle>
+          <div class="nav-profile-img">
+              <img class="img-xs rounded-circle" [src]="'http://localhost:4000/' + currentUserProfile.ava_url">
+              <span class="availability-status online"></span>
+          </div>
+          <div class="nav-profile-text">
+            <p class="mb-1 text-white">
+                {{
+                  currentUserProfile.first_name.toUpperCase() == 'ADMIN' || currentUserProfile.last_name.toUpperCase() == 'ADMIN' || currentUserProfile.english_name.toUpperCase() == 'ADMIN'? 'Admin':
+                    currentUserProfile.first_name + ' (' + currentUserProfile.english_name + ') ' + currentUserProfile.last_name
+                 }}
+            </p>
+          </div>
+          <div ngbDropdownMenu placement="bottom-right" class="dropdown-menu navbar-dropdown" aria-labelledby="userDropdown">
+            <a class="dropdown-item" (click)="openUploadingAvatarModal()">
+             <i class="fas fa-camera mr-2 text-primary"></i>Upload avatar
             </a>
-            <a routerLink="change-password" class="dropdown-item">
-              Change Password
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="openChangingPasswordModal()">
+              <i class="fas fa-key mr-2 text-primary"></i>Change password
             </a>
-            <a class="dropdown-item">
-              Check Inbox
-            </a>
-            <a (click)="logout()" class="dropdown-item">
-              Sign Out
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="logout()">
+              <i class="fas fa-sign-out-alt mr-2 text-primary"></i>Log out
             </a>
           </div>
-        </li>
-      </ul>
-    </div>
-    <div class="navbar-menu-wrapper d-flex d-sm-none align-items-center">
-      <ul class="navbar-nav navbar-nav-right">
-        <li *ngIf="currentUserProfile" class="nav-item dropdown d-inline-block" ngbDropdown>
-          <a class="nav-link row" id="UserDropdownMini">
-            <img class="border-strong img-xs rounded-circle" [src]="currentUserProfile.ava_url?currentUserProfile.ava_url:'src/imgs/default-avatar.png'" alt="Profile image">
-            <span class="dropdown-toggle" ngbDropdownToggle></span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-left navbar-dropdown" ngbDropdownMenu aria-labelledby="UserDropdownMini">
-            <!--<a class="dropdown-item p-0">
-              <div class="d-flex border-bottom">
-                <div class="py-3 px-4 d-flex align-items-center justify-content-center">
-                  <i class="mdi mdi-bookmark-plus-outline mr-0 text-gray"></i>
-                </div>
-                <div class="py-3 px-4 d-flex align-items-center justify-content-center border-left border-right">
-                  <i class="mdi mdi-account-outline mr-0 text-gray"></i>
-                </div>
-                <div class="py-3 px-4 d-flex align-items-center justify-content-center">
-                  <i class="mdi mdi-alarm-check mr-0 text-gray"></i>
-                </div>
-              </div>
-            </a>-->
-            <a class="dropdown-item mt-2">
-              Manage Accounts
-            </a>
-            <a routerLink="change-password" class="dropdown-item">
-              Change Password
-            </a>
-            <a class="dropdown-item">
-              Check Inbox
-            </a>
-            <a (click)="logout()" class="dropdown-item">
-              Sign Out
-            </a>
-          </div>
-        </li>
-      </ul>
-    </div>
+        </a>
+      </li>
+    </ul>
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleOffcanvas()">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 </nav>

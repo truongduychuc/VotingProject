@@ -1,0 +1,23 @@
+<ng-container *ngIf="awardInfo">
+    <div class="row">
+        <div class="col-md-6 d-flex justify-content-md-start justify-content-center align-items-center pt-2 pb-2">
+            <h4 class="mb-0">{{awardInfo?.year}}</h4>
+            <h4 class="mb-0 ml-2">{{awardInfo?.awardType.name | uppercase}}</h4>
+            <span class="text-small badge-pill ml-2" [ngClass]="cssBadgeClass">{{statusName}}</span>
+        </div>
+        <div class="col-md-6 d-none d-md-flex justify-content-center justify-content-md-end align-items-center pt-2 pb-2">
+            <!--        <button class="btn btn-outline-danger btn-rounded ml-2" routerLink="/home/awards" >BACK TO LIST</button>-->
+        </div>
+    </div>
+    <div *ngIf="percentList" class="row">
+        <div class="col-12 mt-3 align-items-center">
+            <canvas *ngIf="percentList && nomineeNameList" baseChart
+                    [data]="percentList"
+                    [labels]="nomineeNameList"
+                    [chartType]="pieChartType"
+                    [options]="pieChartOptions"
+                    [plugins]="pieChartPlugins">
+            </canvas>
+        </div>
+    </div>
+</ng-container>
