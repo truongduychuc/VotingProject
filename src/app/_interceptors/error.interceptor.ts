@@ -11,11 +11,12 @@ import {Observable, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AuthenticationService} from '../_services/authentication.service';
+import {NotifierService} from 'angular-notifier';
 
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor{
-  constructor(private router: Router, private authService: AuthenticationService) {
+  constructor(private router: Router, private authService: AuthenticationService, private notifier: NotifierService) {
   }
  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(tap(evt => {
@@ -25,15 +26,11 @@ export class ErrorInterceptor implements HttpInterceptor{
       }
     }), catchError((err: HttpErrorResponse) => {
       if (err.status === 401) {
+        this.notifier.notify('error', 'Unauthorized, please log in again.');
         this.authService.logout();
-        // this.notifier.notify('error', err.error.message);
-        this.router.navigate(['start-page']);
-      }
-      if (err.status === 400) {
-      }
-      if (err.status === 404) {
-      }
-      if (err.status === 403) {
+        this.router.navigateByUrl('/start-page').then(() => {
+          console.log('Success falling back to login page');
+        });
       }
       const error = err.error.message || err.statusText;
       return throwError(error);

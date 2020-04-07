@@ -1,18 +1,18 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-// A lightweight JavaScript date library for parsing, validating, manipulating, and formatting dates.
-import * as moment from 'moment';
-import * as jwt_decode from 'jwt-decode';
 import {map, tap} from 'rxjs/operators';
 import {User} from '../_models/user';
 import {AccountService} from './account.service';
 import {Router} from '@angular/router';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
   serverURL = 'http://localhost:4000/';
+  loggedInState: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  loggedIn: Observable<boolean> = this.loggedInState.asObservable();
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService,
               private accountService: AccountService, private router: Router) {
@@ -24,6 +24,7 @@ export class AuthenticationService {
       password: password
     };
     return this.httpClient.post<any>(this.serverURL + 'auth/authenticate', userTryingToLogin).pipe(tap((res) => {
+      this.loggedInState.next(true);
       this.setSession(res);
       this.getProfile();
     }));
@@ -42,16 +43,14 @@ export class AuthenticationService {
     });
   }
 
-  private setToken(token: string, expiresTime?: number) {
+  private setToken(token: string) {
     localStorage.setItem('token', token);
   }
 
   logout() {
-    localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
-    localStorage.removeItem('expires_at');
-    this.router.navigate(['start-page']);
-    // console.log('Logged out!');
+    this.router.navigateByUrl('/start-page');
+    this.loggedInState.next(false);
     this.accountService.currentUserSubject.next({
       last_name: '',
       english_name: '',
@@ -67,22 +66,5 @@ export class AuthenticationService {
 
   isLoggedOut() {
     return !this.isLoggedIn();
-  }
-
-  // get the time token will be expired
-  private getExpiration() {
-    const expiration = localStorage.getItem('expires_at');
-    const expiresAt = JSON.parse(expiration);
-    return moment(expiresAt);
-  }
-
-  // for jwt decoding, this is optional
-  private getDecodedAccessToken(token: string): any {
-    try {
-      return jwt_decode(token);
-    } catch (Error) {
-      console.log(Error);
-      return null;
-    }
   }
 }
