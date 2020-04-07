@@ -12,6 +12,8 @@ import {Award} from '../../_models/award';
 import {tap} from 'rxjs/operators';
 import {TimerObservable} from 'rxjs/observable/TimerObservable';
 import 'rxjs/add/operator/takeWhile';
+import {AccountService} from '../../_services/account.service';
+import {Subscription} from 'rxjs';
 @Component({
   selector: 'app-award-list',
   templateUrl: './award-management.component.html',
@@ -24,11 +26,13 @@ export class AwardManagementComponent implements OnInit, OnDestroy {
   awardList: any[];
   awardTypesList: AwardType[];
   currentUser: User;
+  currentUserSubscription: Subscription;
+  currentUserLoaded = false;
   typeForSearching: number = null;
   // sharedData: for transferring successfully uploading logo message from upload-logo.component
   constructor(private modalService: NgbModal, private awardService: AwardService, private groupByPipe: GroupByPipe,
-              private  sharedData: DataSharingService, private notifier: NotifierService, private router: Router) {
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+              private  sharedData: DataSharingService, private notifier: NotifierService, private router: Router,
+              private accountService: AccountService) {
     this.isAlive = true;
     this.interval = 5000; // use to automatically get the award list after a while
   }
@@ -42,6 +46,12 @@ export class AwardManagementComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getAwardList();
       });
+    this.currentUserSubscription = this.accountService.currentUser.subscribe(user => {
+      this.currentUser = user;
+      if (this.currentUser.role) {
+        this.currentUserLoaded = true;
+      }
+    });
   }
   // get awardList at beginning
   getAwardList() {
@@ -78,7 +88,7 @@ export class AwardManagementComponent implements OnInit, OnDestroy {
   }
   // to show the button only can be used by admin
   get isAdmin() {
-    return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
+    return this.currentUserLoaded && this.currentUser.role.name.toLowerCase() === 'admin';
   }
   openAddingAward() {
     const modalRef =  this.modalService.open(AddAwardModalComponent, {backdrop: 'static'});
@@ -91,5 +101,6 @@ export class AwardManagementComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.isAlive = false;
+    this.currentUserSubscription.unsubscribe();
   }
 }
