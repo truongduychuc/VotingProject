@@ -84,5 +84,6 @@ typings/
 .dynamodb/
 
 package-lock.json
-
+.idea/
+.vscode/
 

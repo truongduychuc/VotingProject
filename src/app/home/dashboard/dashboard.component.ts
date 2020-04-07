@@ -122,7 +122,9 @@ export class DashboardComponent implements OnInit {
       const tempPercentList = slicedBreakdowns.map(breakdown => breakdown.percent);
       this.nomineeNameList = slicedBreakdowns.map(breakdown => breakdown.nominee_name.english_name);
       this.nomineeNameList.push('Others');
-      const othersPercents = parseFloat((Math.round ((100   - tempPercentList.reduce((preVal, currentVal) => preVal + currentVal, 0)) * 100) / 100).toFixed(2));
+      const othersPercents = parseFloat((Math.round ((100   - tempPercentList.reduce((preVal, currentVal) => preVal + currentVal, 0))
+        * 100) / 100)
+        .toFixed(2));
       tempPercentList.push(othersPercents);
       this.percentList = tempPercentList;
       this.chartTitle = award.awardType.name;

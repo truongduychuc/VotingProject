@@ -77,8 +77,8 @@
           <label class="col-form-label">Position</label>
           <select formControlName="id_role" class="form-control">
             <option [ngValue]="1">Admin</option>
-            <option [ngValue]="2">Manager</option>
-            <option [ngValue]="3">Developer</option>
+            <option [ngValue]="3">Manager</option>
+            <option [ngValue]="2">Developer</option>
           </select>
           <p class="text-small text-danger text-left"
              *ngIf="createUser.controls['id_role'].touched &&  createUser.controls['id_role'].errors?.required">

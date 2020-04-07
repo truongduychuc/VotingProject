@@ -1,26 +1,38 @@
-const Sequelize = require('sequelize');
-const db = require('../database/db');
-
-const Nominee = db.sequelize.define(
-    'nominee', {
-        id_award: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-        },
-        id_team: {
-            type: Sequelize.INTEGER,
-
-        },
-        id_nominee: {
-            type: Sequelize.INTEGER,
-            primaryKey: true
-        },
-        updated_at: {
-            type: Sequelize.DATE
-        }
-    }, {
-        timestamps: false
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const nominee = sequelize.define('nominee', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    id_award: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'awardDetail',
+        key: 'id'
+      }
+    },
+    id_team: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'team',
+        key: 'id'
+      }
+    },
+    id_nominee: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'user',
+        key: 'id'
+      }
     }
-);
-
-module.exports = Nominee;
+  }, {});
+  nominee.associate = function(models) {
+    // associations can be defined here
+  };
+  return nominee;
+};

@@ -1,22 +1,36 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {User} from '../_models/user';
+import {AccountService} from '../_services/account.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './home.component.html',
   styleUrls: ['../app.component.scss', './home.component.scss'],
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   currentUser: User;
-  constructor(private notifier: NotifierService) {
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  currentUserSubscription: Subscription;
+
+  constructor(private notifier: NotifierService, private accountService: AccountService) {
   }
 
   ngOnInit() {
-  }
-  ngAfterViewInit(): void {
-    this.notifier.notify('info', 'Welcome ' + this.currentUser.english_name + '!');
+    this.currentUserSubscription = this.accountService.currentUser.subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
+  ngAfterViewInit(): void {
+    this.accountService.currentUser.subscribe(user => {
+      if (user.english_name) {
+        this.notifier.notify('info', 'Welcome ' + this.currentUser.english_name + '!');
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.currentUserSubscription.unsubscribe();
+  }
 }

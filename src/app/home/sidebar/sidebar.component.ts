@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {User} from '../../_models/user';
-import {AuthenticationService} from '../../_services/authentication.service';
+import {AccountService} from '../../_services/account.service';
+import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -8,18 +9,24 @@ import {AuthenticationService} from '../../_services/authentication.service';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
 
   currentUser: User;
-  constructor() {
-   this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-   // console.log(this.currentUser);
+  userLoaded: boolean;
+  currentUserSubscription: Subscription;
+
+  constructor(private accountService: AccountService) {
+    this.currentUserSubscription = this.accountService.currentUser.subscribe((user: User) => {
+      this.currentUser = user;
+      this.userLoaded = true;
+    });
   }
+
   get isEmployeeOrManager() {
     if (!this.currentUser) {
       return false;
     } else {
-      if (!(this.currentUser.position.toUpperCase() === 'ADMIN')) {
+      if (this.currentUser.role && !(this.currentUser.role.name.toUpperCase() === 'ADMIN')) {
         return true;
       } else {
         return false;
@@ -27,8 +34,15 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
+  get showEmployeeOptions() {
+    return this.isEmployeeOrManager && this.userLoaded;
+  }
 
+  ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.currentUserSubscription.unsubscribe();
   }
 
 }

@@ -1,25 +1,34 @@
-const Sequelize = require('sequelize');
-const db = require('../database/db');
-
-const Voter = db.sequelize.define(
-    'voter', {
-        id_award: {
-            type: Sequelize.INTEGER,
-            primaryKey: true
-        },
-        id_user: {
-            type: Sequelize.INTEGER,
-            primaryKey: true
-        },
-        vote_status: {
-            type: Sequelize.TINYINT
-        },
-        updated_at: {
-            type: Sequelize.DATE
-        }
-    }, {
-        timestamps: false
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const voter = sequelize.define('voter', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    id_award: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'awardDetail',
+        key: 'id'
+      }
+    },
+    id_user: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'user',
+        key: 'id'
+      }
+    },
+    vote_status: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
     }
-)
-
-module.exports = Voter;
+  }, {});
+  voter.associate = function(models) {
+    // associations can be defined here
+  };
+  return voter;
+};

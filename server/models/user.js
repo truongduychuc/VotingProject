@@ -1,95 +1,68 @@
-const Sequelize = require('sequelize')
-const db = require('../database/db')
-//const crypto = require('crypto')
+'use strict';
 
-const User = db.sequelize.define(
-    'users', {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        id_role: {
-            type: Sequelize.INTEGER
-        },
-        id_team: {
-            type: Sequelize.INTEGER
-        },
-        is_active: {
-            type: Sequelize.TINYINT
-        },
-        username: {
-            type: Sequelize.STRING
-        },
-        password: {
-            type: Sequelize.STRING,
-            get() {
-                return () => this.getDataValue('password')
-            }
-        },
-        first_name: {
-            type: Sequelize.STRING
-        },
-        last_name: {
-            type: Sequelize.STRING
-        },
-        english_name: {
-            type: Sequelize.STRING
-        },
-        email: {
-            type: Sequelize.STRING
-        },
-        phone: {
-            type: Sequelize.STRING
-        },
-        address: {
-            type: Sequelize.STRING
-        },
-        achievement: {
-            type: Sequelize.STRING
-        },
-        ava_url: {
-            type: Sequelize.STRING
-        },
-        created_at: {
-            type: Sequelize.DATE,
-            defaultValue: Sequelize.NOW
-        },
-        updated_at: {
-            type: Sequelize.DATE,
-            defaultValue: Sequelize.NOW
-        },
-    }, {
-        timestamps: false,
-    }
-);
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define('user', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    id_role: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'role',
+        key: 'id'
+      }
+    },
+    id_team: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'team',
+        key: 'id'
+      }
+    },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      get() {
+        return () => this.getDataValue('password');
+      }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    first_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    last_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    english_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    phone: DataTypes.STRING,
+    address: DataTypes.STRING,
+    achievement: DataTypes.STRING,
+    ava_url: DataTypes.STRING
+  }, {});
+  User.associate = function (models) {
 
-
-module.exports = User;
-
-
-
-// User.prototype.correctPassword = function(candidatePwd) {
-//     return User.encryptPassword(candidatePwd, this.salt()) === this.password()
-// }
-// User.encryptPassword = function(plainText) {
-//     return crypto
-//         .createHash('RSA-SHA256')
-//         .update(plainText)
-//         .update(salt)
-//         .digest('hex')
-// }
-
-// const setSaltAndPassword = user => {
-//     if (user.changed('password')) {
-//         user.salt = User.generateSalt()
-//         user.password = User.encryptPassword(user.password(), user.salt())
-
-//     }
-// }
-
-// User.beforeCreate(setSaltAndPassword)
-// User.beforeUpdate(setSaltAndPassword)
-// User.beforeBulkCreate(users => {
-//     users.forEach(setSaltAndPassword)
-// })
+  };
+  return User;
+};

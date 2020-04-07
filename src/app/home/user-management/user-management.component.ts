@@ -8,6 +8,7 @@ import {CreatingUserModalComponent} from './creating-user-modal/creating-user-mo
 import {AuthenticationService} from '../../_services/authentication.service';
 import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.component';
 import {NotifierService} from 'angular-notifier';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-employee-list',
@@ -19,9 +20,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   currentPage = 1;
   currentPageSize = 10;
   currentSearchText: string;
-  currentSortedColumn: string = 'first_name';
+  currentSortedColumn = 'first_name';
   currentSortedType = 'ASC';
-  currentSortedTable: string = 'user';
+  currentSortedTable = 'user';
   totalRecords: number;   // total number of Users
   currentRecords: number; // amount of records filtered
   itemsPerPageArr = [2, 5, 10, 15, 20, 25];
@@ -31,20 +32,35 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   // for determining whether the current user is admin
   currentUser: User;
   previousSearchText: string;
-  constructor(private accountService: AccountService, private authService: AuthenticationService, private modalService: NgbModal, private notifier: NotifierService) {
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  currentUserSubscription: Subscription;
+  currentUserLoaded = false;
+
+  constructor(private accountService: AccountService,
+              private authService: AuthenticationService,
+              private modalService: NgbModal,
+              private notifier: NotifierService
+  ) {
+    this.currentUserSubscription = this.accountService.currentUser.subscribe((user: User) => {
+      this.currentUser = user;
+      if (this.currentUser.role) {
+        this.currentUserLoaded = true;
+      }
+    });
   }
+
   get isAdmin() {
-    return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
+    return this.currentUserLoaded && this.currentUser.role.name.toLowerCase() === 'admin';
   }
+
   ngOnInit() {
     this.reloadPreviousStatus();
   }
+
   deleteUser(id: number) {
     const modalRef = this.modalService.open(ConfirmModalComponent, {size: 'sm'});
     modalRef.componentInstance.title = 'Confirmation';
     modalRef.componentInstance.content = 'Are you sure to delete this user?';
-    modalRef.result.then( () => {
+    modalRef.result.then(() => {
       this.accountService.deleteUser(id).subscribe(
         (res: any) => {
           this.getUserListPerPage(); // reload table
@@ -73,43 +89,44 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       }
     );
   }
+
   // after pressing F5 or click reloading page button, user is still in the last page's status
   reloadPreviousStatus() {
     // get params at the last times getting user list
-    let lastEmployeeParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
+    const lastEmployeeParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
     if (null == lastEmployeeParams) {   // when you open browser initially
       // load default list
-     this.getUserListPerPage();
+      this.getUserListPerPage();
     } else {
       let reloadedParams = new HttpParams();
       // get last query params and append to reloadedParams
 
-      let lastCol = lastEmployeeParams.col;
+      const lastCol = lastEmployeeParams.col;
       if (lastCol) {  // if lastCol is undefined, if(lastCol) will return false
         reloadedParams = reloadedParams.append('col', lastCol);  // it will be undefined if lastEmployeeParams is {}
         this.currentSortedColumn = lastCol; // recover component to last status, such as previous select box's value
       }
-      let lastType = lastEmployeeParams.type;
+      const lastType = lastEmployeeParams.type;
       if (lastType) {
         reloadedParams = reloadedParams.append('type', lastEmployeeParams.type);
         this.currentSortedType = lastType;
       }
-      let lastTable = lastEmployeeParams.table;
+      const lastTable = lastEmployeeParams.table;
       if (lastTable) {
         reloadedParams = reloadedParams.append('table', lastEmployeeParams.table);
         this.currentSortedTable = lastTable;
       }
-      let lastSearch = lastEmployeeParams.search;
+      const lastSearch = lastEmployeeParams.search;
       if (lastSearch) {
         reloadedParams = reloadedParams.append('search', lastEmployeeParams.search);
         this.currentSearchText = lastSearch;
       }
-      let lastCount = lastEmployeeParams.count;
+      const lastCount = lastEmployeeParams.count;
       if (lastCount) {
         reloadedParams = reloadedParams.append('count', lastEmployeeParams.count);
         this.currentPageSize = lastCount;
       }
-      let lastPage = lastEmployeeParams.page;
+      const lastPage = lastEmployeeParams.page;
       if (lastPage) {
         reloadedParams = reloadedParams.append('page', lastEmployeeParams.page);
         this.currentPage = lastPage;
@@ -132,7 +149,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     }
 
   }
-  getUserListPerPage(sortColumn?: string, sortType?: string, sortTable?: string, searchText?: string, itemsPerPage?: number, currentPage?: number) {
+
+  getUserListPerPage(sortColumn?: string, sortType?: string, sortTable?: string,
+                     searchText?: string, itemsPerPage?: number, currentPage?: number) {
     let params = new HttpParams();
     if (null == sortColumn && this.currentSortedColumn) {
       // if sortColumn param wasn't passed, the function will call current status of page
@@ -199,7 +218,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           this.currentRecords = res.filtered_counts;
         }
         // console.log(this.totalRecords);
-        let lastEmployeeParams = {
+        const lastEmployeeParams = {
           col: sortColumn,
           type: sortType,
           table: sortTable,
@@ -214,6 +233,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       }
     );
   }
+
   // for search input
   searchOnText() {
     if (this.currentSearchText === this.previousSearchText) {
@@ -245,6 +265,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     }
     this.getUserListPerPage();
   }
+
   // called when changing to new page number in pagination
   pageChange(newPage: number) {
     // this function is called before the current page is changed to new page, so here need to take user list of newPage
@@ -263,20 +284,19 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   // stay on current status after reloading page
   saveCurrentStatus(lastEmployeeParams: Object) {
     // session Storage actually get cleared as the browser is closed.
-  sessionStorage.setItem('lastEmployeeParams', JSON.stringify(lastEmployeeParams));
+    sessionStorage.setItem('lastEmployeeParams', JSON.stringify(lastEmployeeParams));
   }
 
   // try to get previous page status
   getPreviousStatus() {
-   let lastEmployeeParams = JSON.parse(sessionStorage.getItem('lastEmployeeParams'));
-   // console.log(lastEmployeeParams);
-   return lastEmployeeParams;
+    return JSON.parse(sessionStorage.getItem('lastEmployeeParams'));
   }
 
   // remove status as route to other component in routeLinks set
-   removeStatus() {
-   sessionStorage.removeItem('lastEmployeeParams');
+  removeStatus() {
+    sessionStorage.removeItem('lastEmployeeParams');
   }
+
   // edit a specific user
   openEditingModal(id: number) {
     const modalRef = this.modalService.open(EditingModalComponent, {centered: true});
@@ -286,6 +306,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       this.notifier.notify('info', successMessage);
     });
   }
+
   // create new user
   openCreatingModal() {
     const modalRef = this.modalService.open(CreatingUserModalComponent, {centered: true, backdrop: 'static'});
@@ -296,8 +317,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     });
   }
 
- ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.removeStatus();
-    // console.log('Destroyed!');
- }
+    this.currentUserSubscription.unsubscribe();
+    this.currentUserLoaded = false;
+  }
 }

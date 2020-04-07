@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-process.env.SECRET_KEY = 'secret';
-
-authenticate = (req, res, next) => {
+const authenticate = (req, res, next) => {
         // it go here
         var token = req.headers['authorization'];
         if (token) {
@@ -19,7 +17,7 @@ authenticate = (req, res, next) => {
         } else {
             res.status(401).send({ auth: false, message: 'No token provided.' });
         }
-    };    
+    };
 
 
 module.exports = authenticate;

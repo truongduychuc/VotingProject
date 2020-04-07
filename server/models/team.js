@@ -1,18 +1,18 @@
-const Sequelize = require('sequelize');
-const db = require('../database/db');
-
-const Team = db.sequelize.define(
-    'team', {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-        },
-        name: {
-            type: Sequelize.STRING
-        },
-    }, {
-        timestamps: false,
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const team = sequelize.define('team', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
     }
-);
-
-module.exports = Team;
+  }, {});
+  team.associate = function(models) {
+    // associations can be defined here
+  };
+  return team;
+};
