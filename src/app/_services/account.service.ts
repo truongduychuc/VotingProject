@@ -57,8 +57,6 @@ export class AccountService {
   }
 
   getUsersList(params?: HttpParams): Observable<any> {
-    // passed
-    // const apiURL = this.currentUserSubject.getValue().role.name.toUpperCase() === 'ADMIN' ? 'users/list/admin' : 'users/list';
     return this.httpClient.get(this.serverURL + 'users/list', {params});
   }
 

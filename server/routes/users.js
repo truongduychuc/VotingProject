@@ -40,8 +40,6 @@ router.get('/profile', UserController.getProfile);
 router.get('/profile/:id', UserController.getProfileById);
 //LIST
 router.get('/list', UserController.listUser);
-//LIST (admin role)
-router.get('/list/admin', authorize('admin'), UserController.listUserForAdmin);
 //CHANGE_PASSWORD
 router.put('/change_password', UserController.changePassword);
 //RESET PASSWORD
