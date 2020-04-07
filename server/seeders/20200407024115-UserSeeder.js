@@ -1,9 +1,10 @@
 'use strict';
+const bcrypt = require('bcrypt');
 const {teams: teamConstants, user: userConstants} = require('../helpers/constants');
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-   queryInterface.bulkInsert('users', [
+   return queryInterface.bulkInsert('users', [
      {
        email: 'gray@example.org',
        username: 'gray',
@@ -22,6 +23,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-
+    return queryInterface.bulkDelete('users', null, {});
   }
 };
