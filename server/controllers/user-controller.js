@@ -564,7 +564,7 @@ function listUser(req, res) {
     })
 }
 
-function listUserForAdmin(req, res) {
+/*function listUserForAdmin(req, res) {
   let limit = 10; //number of records per page
   let page = 1;
   let col = 'first_name';
@@ -947,7 +947,7 @@ function listUserForAdmin(req, res) {
     .catch(err => {
       res.status(400).send({message: err});
     })
-}
+}*/
 
 function changePassword(req, res) {
   // const today = new Date();
@@ -1233,7 +1233,6 @@ module.exports = {
   getProfile,
   getProfileById,
   listUser,
-  listUserForAdmin,
   changePassword,
   resetPassword,
   updateUserInfo,
