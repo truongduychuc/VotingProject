@@ -24,8 +24,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     percent: DataTypes.FLOAT
   }, {});
-  finalResult.associate = function(models) {
-    // associations can be defined here
+  finalResult.associate = function(db) {
+    finalResult.belongsTo(db.awardDetail, {foreignKey: 'id_award', as: 'winner', constraints: false});
+    finalResult.belongsTo(db.user, {foreignKey: 'id_winner', as: 'winner_name', constraints: false});
   };
   return finalResult;
 };

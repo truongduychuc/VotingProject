@@ -28,8 +28,11 @@ export class RoleGuard implements CanActivate {
     if (!this.currentUser) {
       this.router.navigate(['start-page']);
       return false;
+    } else if (!this.currentUser.role) {
+      this.router.navigateByUrl('/home/dashboard');
+      return false;
     } else {
-      if (route.data.roles && route.data.roles.indexOf(this.currentUser.role.name) === -1) {
+      if (route.data.roles && route.data.roles.indexOf(this.currentUser.role.id) === -1) {
         alert('Unauthorized to access this link!');
         this.router.navigate(['page-not-found']);
         return false;

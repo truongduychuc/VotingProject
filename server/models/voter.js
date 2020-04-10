@@ -27,8 +27,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {});
-  voter.associate = function(models) {
-    // associations can be defined here
+  voter.associate = function(db) {
+    voter.belongsTo(db.awardDetail, {foreignKey: 'id_award', constraints: false});
   };
   return voter;
 };

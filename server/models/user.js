@@ -61,8 +61,10 @@ module.exports = (sequelize, DataTypes) => {
     achievement: DataTypes.STRING,
     ava_url: DataTypes.STRING
   }, {});
-  User.associate = function (models) {
-
+  User.associate = function (db) {
+    User.hasOne(db.finalResult, {foreignKey: 'id_winner', as: 'winner_name', constraints: false});
+    User.belongsTo(db.team, {foreignKey: 'id_team', constraints: false});
+    User.belongsTo(db.role, { foreignKey: 'id_role', constraints: false });
   };
   return User;
 };

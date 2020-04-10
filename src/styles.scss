@@ -1,12 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "../node_modules/bootstrap/scss/functions";
-@import "../node_modules/bootstrap/scss/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
 @import './assets/styles/variables';
-@import "../node_modules/compass-mixins/lib/compass";
-@import "../node_modules/compass-mixins/lib/animate";
-@import "../node_modules/bootstrap/scss/bootstrap";
-@import "../node_modules/mdi/scss/materialdesignicons";
+@import "~compass-mixins/lib/compass";
+@import "~compass-mixins/lib/animate";
+@import "~bootstrap/scss/bootstrap";
+@import "~mdi/scss/materialdesignicons";
 @import "./assets/styles/fonts";
 @import "./assets/styles/functions";
 @import "./assets/styles/mixins/background";
@@ -48,12 +48,12 @@
 @import "./assets/styles/misc";
 @import "./assets/styles/utilities";
 @import "./assets/styles/demo";
-@import "../node_modules/@ng-select/ng-select/scss/ng-select.component";
-@import "../node_modules/@ng-select/ng-select/scss/default.theme";
-@import "../node_modules/@ng-select/ng-select/scss/mixins";
-@import "../node_modules/angular-notifier/styles";
-@import "../node_modules/ngx-owl-carousel-o/lib/styles/scss/owl.theme.default";
-@import "../node_modules/ngx-owl-carousel-o/lib/styles/scss/owl.carousel";
+@import "~@ng-select/ng-select/scss/ng-select.component";
+@import "~@ng-select/ng-select/scss/default.theme";
+@import "~@ng-select/ng-select/scss/mixins";
+@import "~angular-notifier/styles";
+@import "~ngx-owl-carousel-o/lib/styles/scss/owl.theme.default";
+@import "~ngx-owl-carousel-o/lib/styles/scss/owl.carousel";
 /* You can add global styles to this file, and also import other style files */
 /*Custom css*/
 @import "./assets/styles/customGlobalCSS/myModal";

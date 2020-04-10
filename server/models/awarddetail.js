@@ -34,8 +34,10 @@ module.exports = (sequelize, DataTypes) => {
     prize: DataTypes.STRING,
     logo_url: DataTypes.STRING
   }, {});
-  awardDetail.associate = function(models) {
-    // associations can be defined here
+  awardDetail.associate = function(db) {
+    awardDetail.hasOne(db.finalResult, {foreignKey: 'id_award', as: 'winner', constraints: false});
+    awardDetail.hasOne(db.voter, {foreignKey: 'id_award', constraints: false});
+    awardDetail.belongsTo(db.awardType, {foreignKey: 'type', constraints: false});
   };
   return awardDetail;
 };

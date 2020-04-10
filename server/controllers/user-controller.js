@@ -13,9 +13,9 @@ const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const nodemailer = require('nodemailer');
-const {validationResult} = require('express-validator');
 
 const {teams: teamConstants, user: userConstants, HTTP} = require('../helpers/constants');
+const {catchErrorRequest} = require('../helpers/validate');
 const jwt = require('jsonwebtoken');
 
 const transporter = nodemailer.createTransport({
@@ -26,20 +26,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const catchErrorRequest = (req, res) => {
-  const errors = validationResult(req).formatWith(err => err.msg);
-  const firstErrorMessage = errorMsgArray => errorMsgArray[0];
-  if (!errors.isEmpty()) {
-    return firstErrorMessage(errors.array());
-  } else {
-    return false;
-  }
-};
 
 function register(req, res) {
-  if (catchErrorRequest(req, res)) {
-    return res.status(422).send({message: catchErrorRequest(req, res)})
-  }
   const emptyIdTeam = req.body.id_team === '' || req.body.id_team === undefined || req.body.id_team == null;
   if (emptyIdTeam) {
     req.body.id_team = teamConstants.NO_TEAM_ID;
@@ -120,46 +108,19 @@ function authenticate(req, res) {
 }
 
 function getProfile(req, res) {
+  const authUser = req.user;
   User.findOne({
     where: {
-      id: req.decoded.id
+      id_team: authUser.team.id,
+      id_role: 2
     },
-    attributes: ['id', 'first_name', 'last_name', 'english_name', 'email', 'phone', 'address', 'achievement',
-      'ava_url'
-    ],
-    include: [{
-      model: Role,
-      //attributes: ['name']
-    }, {
-      model: Team,
-      //attributes: ['name']
-    }]
+    attributes: ['first_name', 'last_name', 'english_name'],
   })
-    .then(user => {
-      if (!user) {
-        res.status(400).send({message: 'User does not exist'});
+    .then(directManager => {
+      if (!directManager) {
+        res.status(200).send({user: authUser, message: 'This user has no direct manager'});
       } else {
-        if (user.team == null) {
-          res.status(200).send({user, message: 'User has not had a team yet'});
-        } else {
-          User.findOne({
-            where: {
-              id_team: user.team.id,
-              id_role: 2
-            },
-            attributes: ['first_name', 'last_name', 'english_name'],
-          })
-            .then(directManager => {
-              if (!directManager) {
-                res.status(200).send({user, message: 'This user has no direct manager'});
-              } else {
-                res.status(200).send({user, directManager: directManager});
-              }
-            })
-            .catch(err => {
-              res.status(400).send({message: err});
-            });
-        }
+        res.status(200).send({user: authUser, directManager: directManager});
       }
     })
     .catch(err => {
@@ -375,7 +336,6 @@ function listUser(req, res) {
         }
         // search != '' && search != null
         else {
-          console.log(2222);
           User.findAndCountAll({
             where: {
               id_role: {

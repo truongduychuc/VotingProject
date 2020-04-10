@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map, tap} from 'rxjs/operators';
+import {map, retry, tap} from 'rxjs/operators';
 import {User} from '../_models/user';
 import {AccountService} from './account.service';
 import {Router} from '@angular/router';
@@ -14,8 +14,11 @@ export class AuthenticationService {
   loggedInState: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   loggedIn: Observable<boolean> = this.loggedInState.asObservable();
 
-  constructor(private httpClient: HttpClient, private authService: AuthenticationService,
-              private accountService: AccountService, private router: Router) {
+  constructor(private httpClient: HttpClient,
+              private authService: AuthenticationService,
+              private accountService: AccountService,
+              private router: Router
+  ) {
   }
 
   login(username: string, password: string) {
@@ -36,7 +39,7 @@ export class AuthenticationService {
   }
 
   private getProfile(): void {
-    this.accountService.getPersonalProfile().pipe(map((res: any) => res.user)).toPromise().then((user: User) => {
+    this.accountService.getPersonalProfile().pipe(map((res: any) => res.user), retry(1)).toPromise().then((user: User) => {
       this.accountService.currentUserSubject.next(user);
     }).catch(err => {
       console.log(err);

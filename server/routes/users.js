@@ -4,7 +4,7 @@ const cors = require('cors');
 
 // middleware
 const authorize = require('../helpers/authorize');
-const {upload, validations} = require('../middlewares');
+const {upload, validations, catchValidationRequest} = require('../middlewares');
 
 // controllers
 const {
@@ -18,17 +18,15 @@ const {
 router.use(cors());
 router.use(authorize());
 
-require('../database/relationship/user-relations');
-
-
 /**users/*/
 
 //REGISTER
 /**
  * @api 'users/register'
  * */
-router.post('/register', validations.registerRequest , UserController.register);
+router.post('/register', validations.registerRequest, catchValidationRequest, UserController.register);
 /** @api 'users/authenticate' */
+
 router.post('/authenticate', UserController.authenticate);
 //ROLE
 router.get('/role', RoleController.index);

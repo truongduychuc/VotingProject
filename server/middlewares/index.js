@@ -1,4 +1,5 @@
 module.exports = {
   upload: require('./upload'),
-  validations: require('./validations')
+  validations: require('./validations'),
+  catchValidationRequest: require('./catchMiddleware')
 };

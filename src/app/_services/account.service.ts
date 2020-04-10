@@ -20,11 +20,13 @@ export class AccountService {
   currentUser: Observable<User> = this.currentUserSubject.asObservable();
 
   constructor(private httpClient: HttpClient) {
-    this.getPersonalProfile().pipe(map((res: any) => res.user)).toPromise().then(user => {
-      this.currentUserSubject.next(user);
-    }).catch(error => {
-      console.log(error);
-    });
+    if (!!localStorage.getItem('token')) {
+      this.getPersonalProfile().pipe(map((res: any) => res.user)).toPromise().then(user => {
+        this.currentUserSubject.next(user);
+      }).catch(error => {
+        console.log(error);
+      });
+    }
   }
 
   registerNewUser(newUser: User): Observable<any> {

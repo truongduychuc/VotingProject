@@ -1,12 +1,12 @@
-initiateMultichain = function () {
-  let multichain = require("multichain-node")({
-    port: 6740,
-    host: '127.0.0.1',
-    user: "multichainrpc",
-    pass: "HnegVBBLV2Jt3osLHQx2vFE5KuHPsEWdUSqrUr3eXNdL"
-  });
-  return multichain;
-};
+const multiChainNode = require('../lib/multichain-node');
+
+const loadMultiChainConfig = () => ({
+  port: process.env.MULTICHAIN_PORT || 9228,
+  host: process.env.MULTICHAIN_HOST || '127.0.0.1',
+  user: process.env.MULTICHAIN_USER || 'multichainrpc',
+  pass: process.env.MULTICHAIN_PASSWORD || 'HnegVBBLV2Jt3osLHQx2vFE5KuHPsEWdUSqrUr3eXNdL'
+});
+const initiateMultichain = () => multiChainNode(loadMultiChainConfig());
 
 const multichain = initiateMultichain();
 
@@ -136,7 +136,7 @@ function setAsset(stream_name, asset_name, token_name, total_voter) {
       let asset_data = {
         id: 0,
         address: address
-      }
+      };
       publish(stream_name, asset_name, asset_data);
       //Create new asset
       issue(address, token_name, total_voter * 9);

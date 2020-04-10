@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = (sequelize, DataTypes) => {
   const nominee = sequelize.define('nominee', {
     id: {
@@ -31,8 +32,9 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   }, {});
-  nominee.associate = function(models) {
-    // associations can be defined here
+  nominee.associate = function(db) {
+    nominee.belongsTo(db.user, {foreignKey: 'id_nominee', as: 'nominee_name_1'});
+    nominee.belongsTo(db.user, {foreignKey: 'id_nominee', as: 'nominee_name', constraints: false})
   };
   return nominee;
 };

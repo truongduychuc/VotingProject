@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const {role: Role, user: User} = require('../models');
+const {role: Role, user: User, team: Team} = require('../models');
+const {HTTP} = require('../helpers/constants');
 
 function authorize(roles = []) {
   if (typeof roles === 'string') {
@@ -15,7 +16,7 @@ function authorize(roles = []) {
         const secretKey = process.env.SECRET_KEY || 'secret';
         jwt.verify(token, secretKey, (err, decoded) => {
           if (err) {
-            return res.status(401).send({
+            return res.status(HTTP.UNAUTHORIZED).send({
               auth: false,
               message: err,
               error: "UNAUTHORIZED"
@@ -34,34 +35,35 @@ function authorize(roles = []) {
                 const lowerCaseRoleArr = roles.length > 0 ? roles.map(e => e.toLowerCase()) : [];
                 if (lowerCaseRoleArr.length > 0 && !lowerCaseRoleArr.includes(lowerCaseRoleName)) {
                   // user's role is not authorized
-                  return res.status(401).json({message: 'Unauthorized'});
+                  return res.status(HTTP.FORBIDDEN).json({message: 'You don\'t have right to access this}'});
                 } else {
                   User.findOne({
                     where: {
                       id: decoded.id
                     },
                     include: [
-                      {model: Role}
+                      {model: Role},
+                      {model: Team}
                     ]
                   }).then(user => {
                     if (user) {
                       req.user = user;
                       next();
                     } else {
-                      res.status(500).send({message: 'Can not find auth user'});
+                      res.status(HTTP.SERVER_ERROR).send({message: 'Can not find auth user'});
                     }
                   }).catch(err => {
-                    res.status(500).send({message: 'Error when getting user', error: err});
+                    res.status(HTTP.SERVER_ERROR).send({message: 'Error when getting user', error: err});
                   });
                 }
               })
               .catch(err => {
-                res.status(400).send({message: err});
+                res.status(HTTP.BAD_REQUEST).send({message: err});
               })
           }
         });
       } else {
-        res.status(401).send({auth: false, message: 'No token provided.'});
+        res.status(HTTP.UNAUTHORIZED).send({auth: false, message: 'No token provided.'});
       }
     }
   ]

@@ -38,8 +38,8 @@ module.exports = (sequelize, DataTypes) => {
     percent: DataTypes.FLOAT,
     total_points: DataTypes.INTEGER
   }, {});
-  votingBreakdown.associate = function(models) {
-    // associations can be defined here
+  votingBreakdown.associate = function(db) {
+    votingBreakdown.belongsTo(db.user, {foreignKey: 'id_nominee', as: 'nominee_name', constraints: false});
   };
   return votingBreakdown;
 };

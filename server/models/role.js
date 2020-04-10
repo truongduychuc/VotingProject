@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
   }, {});
-  Role.associate = function(models) {
-    // associations can be defined here
+  Role.associate = function(db) {
+    Role.hasMany(db.user, {foreignKey: 'id_role', constraints: false});
   };
   return Role;
 };

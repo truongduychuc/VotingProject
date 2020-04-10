@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {});
-  team.associate = function(models) {
-    // associations can be defined here
+  team.associate = function(db) {
+    team.hasMany(db.user, {foreignKey: 'id_team', constraints: false});
   };
   return team;
 };

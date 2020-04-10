@@ -8,34 +8,40 @@ import {PersonalInformationComponent} from './personal-information/personal-info
 import {VotingComponent} from './voting/voting.component';
 import {AwardManagementComponent} from './award-management/award-management.component';
 import {RoleGuard} from '../_guards/role.guard';
-import {Role} from '../_enums/role';
+import {RoleID} from '../_enums/role';
 import {AwardDetailComponent} from './award-management/award-detail/award-detail.component';
 import {VotingBreakdownComponent} from './award-management/voting-breakdown/voting-breakdown.component';
-import {SurveysComponent} from './surveys/surveys.component';
-import {SurveyListComponent} from './surveys/survey-list/survey-list.component';
-import {AddingNewSurveyComponent} from './surveys/adding-new-survey/adding-new-survey.component';
-import {VotingSurveyComponent} from './surveys/voting-survey/voting-survey.component';
 import {ScoreTableComponent} from './award-management/voting-breakdown/score-table/score-table.component';
 import {CurrentChartComponent} from './award-management/voting-breakdown/current-chart/current-chart.component';
 
 
 const homeRoutes: Routes = [
-  { path: '', component: HomeComponent, children: [
+  {
+    path: '', component: HomeComponent, children: [
       {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
       {path: 'dashboard', component: DashboardComponent},
       {path: 'users', component: UserManagementComponent},
-      {path: 'vote',
+      {
+        path: 'vote',
         component: VotingComponent,
         canActivate: [RoleGuard],
         data: {
-        roles: [Role.MANAGER, Role.DEVELOPER]}
-        },
-      {path: 'personal-info',
+          roles: [
+            RoleID.ENGINEER,
+            RoleID.MANAGER
+          ]
+        }
+      },
+      {
+        path: 'personal-info',
         component: PersonalInformationComponent,
         canActivate: [RoleGuard],
         data: {
-        roles: [Role.MANAGER, Role.DEVELOPER]
-      }
+          roles: [
+            RoleID.ENGINEER,
+            RoleID.MANAGER
+          ]
+        }
       },
       {path: 'awards', component: AwardManagementComponent},
       {path: 'award-detail/:id', component: AwardDetailComponent},
@@ -47,27 +53,11 @@ const homeRoutes: Routes = [
           {path: 'score-table', component: ScoreTableComponent},
           {path: 'chart', component: CurrentChartComponent}
         ]
-      },
-      /*{
-        path: 'surveys',
-        component: SurveysComponent,
-        children: [
-          {path: '', redirectTo: 'list'},
-          {path: 'list', component: SurveyListComponent},
-          {path: 'add-new', component: AddingNewSurveyComponent, canActivateChild: [RoleGuard], data: {roles: [Role.ADMIN]}},
-          {
-            path: 'vote-for-survey',
-            component: VotingSurveyComponent,
-            canActivateChild: [RoleGuard],
-            data: {
-              roles: [
-                Role.MANAGER,
-                Role.DEVELOPER
-              ]}
-          }]
-      }*/
-    ]}
+      }
+    ]
+  }
 ];
+
 @NgModule({
   declarations: [],
   imports: [ // , if you have a residual comma here, or a double comma somewhere, you will receiver an undefined value of DashboardRouting
@@ -76,4 +66,5 @@ const homeRoutes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class HomeRoutingModule { }
+export class HomeRoutingModule {
+}

@@ -10,9 +10,9 @@ module.exports = {
     dialect: 'mysql'
   },
   test: {
-    username: 'database_test',
-    password: null,
-    database: 'database_test',
+    username: 'gray',
+    password: 'Theleo98',
+    database: 'voting_project_test',
     host: '127.0.0.1',
     dialect: 'mysql'
   },
