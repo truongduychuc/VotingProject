@@ -5,7 +5,7 @@ const cors = require('cors');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const CronJob = require('cron').CronJob;
-const nodemailer = require('nodemailer');
+const transporter = require('../helpers/transporter');
 
 
 const authorize = require('../helpers/authorize');
@@ -24,16 +24,9 @@ const {
 } = require('../models');
 
 const {AwardController} = require('../controllers');
-
 const multichain = require('../helpers/multichain');
+const {catchValidationRequest} = require('../middlewares');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: `${process.env.EMAIL_ADDRESS}`,
-    pass: `${process.env.EMAIL_PASSWORD}`
-  },
-});
 
 router.use(cors());
 router.use(authorize());
@@ -70,7 +63,7 @@ deleteAward(admin): (post) /delete/:id (not done)
 
 
 //CREATE AN AWARD
-router.post('/create',createAwardRequest, AwardController.store);
+router.post('/create', createAwardRequest, catchValidationRequest, AwardController.store);
 //LIST
 router.get('/list', (req, res) => {
   Award.findAll({
@@ -1547,8 +1540,6 @@ async function chooseWinner(id) {
       console.log('Err' + err)
     })
 }
-
-
 
 
 function finishAward(id) {

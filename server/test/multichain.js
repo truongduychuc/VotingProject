@@ -1,7 +1,9 @@
 const expect = require('chai').expect;
 const chai = require('chai');
+const assert = chai.assert;
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
+const rpcClient = require('../helpers/multichain-node');
 
 const loadMultiChainConfig = () => ({
   port: process.env.MULTICHAIN_PORT || 9228,
@@ -28,5 +30,14 @@ describe('Test connect to multichain', () => {
         done();
     })
 
+  });
+});
+
+describe('Test rpcClient class', () => {
+  it ('should return result', done => {
+    rpcClient.getInfo().then(result => {
+      assert.isNotEmpty(result);
+    });
+    done();
   });
 });

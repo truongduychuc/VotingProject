@@ -25,21 +25,31 @@ module.exports = (sequelize, DataTypes) => {
     },
     first_votes: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 0
     },
     second_vote:  {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 0
     },
     third_votes:  {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 0
     },
-    percent: DataTypes.FLOAT,
-    total_points: DataTypes.INTEGER
+    percent: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
+    total_points: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    }
   }, {});
   votingBreakdown.associate = function(db) {
     votingBreakdown.belongsTo(db.user, {foreignKey: 'id_nominee', as: 'nominee_name', constraints: false});
+    votingBreakdown.belongsTo(db.awardDetail, {as: 'award', foreignKey: 'id_award'});
   };
   return votingBreakdown;
 };

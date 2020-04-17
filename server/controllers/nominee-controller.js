@@ -1,5 +1,5 @@
-const User = require('../models/user');
-const Nominee = require('../models/nominee');
+const {user: User, nominee: Nominee }= require('../models');
+const Op = require('sequelize').Op;
 
 function listUserForNominating(req, res) {
   User.findAll({

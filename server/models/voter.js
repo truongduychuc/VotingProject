@@ -24,11 +24,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     vote_status: {
       type: DataTypes.BOOLEAN,
-      allowNull: false
+      allowNull: false,
+      defaultValue: true
     }
   }, {});
   voter.associate = function(db) {
     voter.belongsTo(db.awardDetail, {foreignKey: 'id_award', constraints: false});
+    voter.belongsTo(db.user, {foreignKey: 'id_user', constraints: false});
   };
   return voter;
 };

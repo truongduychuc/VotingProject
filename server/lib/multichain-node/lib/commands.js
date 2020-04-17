@@ -57,7 +57,7 @@ module.exports = {
     sendAssetToAddress: ["address", "asset", "qty", {"native-amount": 0}, {"comment": ""}, {"comment-to": ""}],
     sendAssetFrom: ["from", "to", "asset", "qty", {"native-amount":0}, {"comment": ""}, {"comment-to": ""}],
     sendFrom: ["from", "to", "amount", {"comment": ""}, {"comment-to": ""}],
-    sendwithData: ["address", "amount", "data"], 
+    sendwithData: ["address", "amount", "data"],
     sendWithMetadata: ["address", "amount", "data"],
     sendwithDataFrom: ["address", "amount", "data"],
     sendWithMetadataFrom: ["from", "to", "amount", "data"],
@@ -145,7 +145,7 @@ module.exports = {
     clearMempool: [],
     pause: ["tasks"],
     resume: ["tasks"],
-    setLastBlock: ["hash"],
+    setLastBlock: ["ha sh"],
     //mining
     getMiningInfo: [],
 }

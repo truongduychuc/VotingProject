@@ -162,7 +162,7 @@ function sendTokenToVoter(stream_name, asset_name, token_name, id) {
       })
         .then(result => {
           //Get address of asset
-          address1 = result.data.json.address;
+          const address1 = result.data.json.address;
           //Get new address
           multichain.getNewAddress()
             .then(address2 => {

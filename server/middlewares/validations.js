@@ -1,6 +1,17 @@
-const {user: User, award: Award, awardType: AwardType} = require('../models');
+const {user: User, awardDetail: Award, awardType: AwardType, role: Role} = require('../models');
 const {body} = require('express-validator');
 const {checkArrayNumberHasDuplicate} = require('../helpers/validate');
+const {asyncForEach} = require('../utils');
+const winston = require('../config/winston');
+const logger = require('../helpers/logging')(__filename, winston);
+const Op = require('sequelize').Op;
+
+
+const midnightDate = () => {
+  const today = new Date();
+  console.log(new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
+};
 
 const fieldExist = (key, value) => new Promise((resolve, reject) => {
   User.findOne({
@@ -49,6 +60,7 @@ const registerRequest = [
 
 // prevent initiating a same type of award happening or held in the same year
 const sameAwardTypeExistInSameYear = (value, {req}) => new Promise((resolve, reject) => {
+
   Award.findOne({
     where: {
       year: value,
@@ -74,7 +86,7 @@ const yearLessThanOneOrCurrent = value => {
   return value >= (new Date()).getFullYear() - 1 && value <= (new Date()).getFullYear();
 };
 
-const noDuplicatedNomineeSelected = value => checkArrayNumberHasDuplicate(value);
+const noDuplicatedNomineeSelected = value => !checkArrayNumberHasDuplicate(value);
 const checkAwardTypeExist = value => new Promise((resolve, reject) => {
   AwardType.findOne({
     where: {
@@ -106,32 +118,81 @@ const checkAwardNameExists = value => new Promise((resolve, reject) => {
     reject(err);
   })
 });
+// check if role in id_voter_role array
+const checkRolesExists = async value => {
+  await asyncForEach(value, async(rID) => {
+    const role = await Role.findOne({
+      where: {
+        id: rID
+      }
+    });
+    if (!role) {
+      throw 'Role does not exist'
+    }
+  });
+  return true;
+};
+const checkNomineesExist = async value => {
+  try {
+    await asyncForEach(value, async (nominee) => {
+      const user = await User.findOne({
+        where: {
+          id: nominee,
+          is_active: true
+        },
+        include: [
+          {
+            model: Role,
+            // b.c we used condition here then it only returns the matching relations
+            // there's no need to required
+            // required: true,
+            where: {
+              id: {
+                [Op.ne]: 1 // admin
+              }
+            }
+          }
+        ]
+      });
+      if (!user) {
+        throw 'Nominee does not exist';
+      }
+    });
+    return true;
+  } catch (e) {
+    throw e;
+  }
+};
 
 const createAwardRequest = [
   body('type')
+    .if(body('type').exists({checkNull: true, checkFalsy: true}))
     .toInt()
-    .isInt()
+    .isInt().withMessage('Type must be integer')
     .bail()
     .custom(checkAwardTypeExist),
   body('year')
     .exists({checkFalsy: true}).withMessage('Please select a year for holding award')
-    .toInt()
+    .toInt().withMessage('Year must be integer')
     .bail()
     .custom(yearLessThanOneOrCurrent).withMessage('Year must be the last year or current year')
     .bail()
     .if(body('type').exists())
     .custom(sameAwardTypeExistInSameYear),
   body('description')
+    .if(body('description').notEmpty())
     .isString()
     .trim()
     .isLength({max: 255}).withMessage('Description can only be long as 255 characters as maximum'),
   body('date_start')
     .exists({checkFalsy: true}).withMessage('Please choose start date for the award.')
     .bail()
-    .isBefore().withMessage('Start day must greater than today'),
+    .isAfter().withMessage('Start day must greater than today'),
   body('date_end')
     .exists({checkFalsy: true}).withMessage('Please choose end date for the award')
-    .isBefore()
+    .bail()
+    .toDate()
+    .isAfter()
     .bail()
     .custom(dayEndAfterDayStart)
     .withMessage('End date must be after start day'),
@@ -139,18 +200,31 @@ const createAwardRequest = [
   body('prize')
     .exists({checkFalsy: true}).withMessage('Please give prize')
     .matches(/^\d+$/).withMessage('Prize can only contain numeric characters'),
-  body('item').trim(),
+  body('item')
+    .if(body('item').notEmpty())
+    .isString(),
   body('id_nominee')
-    .exists().withMessage('Please include nominee list')
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    }).withMessage('Please include nominee list')
     .isArray({min: 1}).withMessage('Nominees should be an array')
     .bail()
-    .custom(noDuplicatedNomineeSelected).withMessage('There are the same nominees selected, each one can only be chosen once'),
+    .custom(noDuplicatedNomineeSelected).withMessage('There are the same nominees selected, each one can only be chosen once')
+    .bail().custom(checkNomineesExist),
   body('name')
     .customSanitizer((value, {req}) => req.body.type !== '' && req.body.type != null ? null : value)
     .if(body('type').isEmpty())
     .notEmpty().withMessage('Award type name is required when creating new award type')
     .bail()
-    .custom(checkAwardNameExists)
+    .custom(checkAwardNameExists),
+  body('id_role_voter')
+    .exists().withMessage('Voter roles are required')
+    .isArray({
+      min: 1
+    }).withMessage('Please identity whose role able to vote')
+    .bail()
+    .custom(checkRolesExists)
 ];
 
 module.exports = {

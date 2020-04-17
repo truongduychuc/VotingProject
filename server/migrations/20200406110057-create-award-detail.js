@@ -22,7 +22,8 @@ module.exports = {
       },
       status: {
         allowNull: false,
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: 1
       },
       description: {
         type: Sequelize.STRING

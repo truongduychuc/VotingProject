@@ -34,7 +34,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   nominee.associate = function(db) {
     nominee.belongsTo(db.user, {foreignKey: 'id_nominee', as: 'nominee_name_1'});
-    nominee.belongsTo(db.user, {foreignKey: 'id_nominee', as: 'nominee_name', constraints: false})
+    nominee.belongsTo(db.user, {foreignKey: 'id_nominee', as: 'nominee_name', constraints: false});
+    nominee.belongsTo(db.awardDetail, {foreignKey: 'id_award', constraints: false});
   };
   return nominee;
 };

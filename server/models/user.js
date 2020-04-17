@@ -1,4 +1,5 @@
 'use strict';
+const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('user', {
@@ -37,6 +38,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       get() {
         return () => this.getDataValue('password');
+      },
+      set() {
+        this.setDataValue('password', bcrypt.hashSync('10'));
       }
     },
     email: {
@@ -63,8 +67,10 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   User.associate = function (db) {
     User.hasOne(db.finalResult, {foreignKey: 'id_winner', as: 'winner_name', constraints: false});
+    User.belongsToMany(db.awardDetail, {as: 'nominating_awards', through: db.nominee, foreignKey: 'id_nominee'});
+    User.belongsToMany(db.awardDetail, {as: 'voting_awards', through: db.voter, foreignKey: 'id_user'});
     User.belongsTo(db.team, {foreignKey: 'id_team', constraints: false});
-    User.belongsTo(db.role, { foreignKey: 'id_role', constraints: false });
+    User.belongsTo(db.role, {foreignKey: 'id_role', constraints: false});
   };
   return User;
 };

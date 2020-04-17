@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: DataTypes.STRING
   }, {});
-  AwardType.associate = function(db) {
-    AwardType.hasMany(db.awardDetail, {foreignKey: 'id', constraints: false});
+  AwardType.associate = function (db) {
+    AwardType.hasMany(db.awardDetail, {as: 'awards', foreignKey: 'type', constraints: false});
   };
   return AwardType;
 };

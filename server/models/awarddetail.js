@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     type: {
-      type:  DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'awardType',
@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.BOOLEAN,
-      allowNull: false
+      allowNull: false,
+      defaultValue: true
     },
     description: DataTypes.STRING,
     date_start: {
@@ -31,13 +32,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false
     },
-    prize: DataTypes.STRING,
+    prize: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     logo_url: DataTypes.STRING
   }, {});
-  awardDetail.associate = function(db) {
+  awardDetail.associate = function (db) {
     awardDetail.hasOne(db.finalResult, {foreignKey: 'id_award', as: 'winner', constraints: false});
-    awardDetail.hasOne(db.voter, {foreignKey: 'id_award', constraints: false});
+    // awardDetail.hasOne(db.voter, {foreignKey: 'id_award', constraints: false});
+    awardDetail.belongsToMany(db.user, {as: {singular: 'voter', plural: 'voters'}, through: db.voter, foreignKey: 'id_award'});
     awardDetail.belongsTo(db.awardType, {foreignKey: 'type', constraints: false});
+    awardDetail.belongsToMany(db.user, {as: 'nominees', through: db.nominee, foreignKey: 'id_award'});
+    awardDetail.hasOne(db.votingBreakdown, {as: 'breakdown', foreignKey: 'id_award'});
+    // awardDetail.hasMany(db.nominee, {foreignKey: 'id_award', constraints: false});
   };
   return awardDetail;
 };

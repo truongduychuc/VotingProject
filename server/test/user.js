@@ -10,6 +10,7 @@ describe('Unauthorized test', () => {
       .get('/users/list')
       .end((err, res) => {
         res.should.have.status(401);
+        res.body.message.should.equal('No token provided.');
         done();
       })
   });

@@ -25,7 +25,8 @@ module.exports = {
         }
       },
       percent: {
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,
