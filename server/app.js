@@ -6,6 +6,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const winston = require('./config/winston');
 const {HTTP} = require('./helpers/constants');
+const queue = require('./queue');
 
 const userRoutes = require('./routes/users');
 const awardRoutes = require('./routes/awards');
@@ -28,5 +29,6 @@ app.use(
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/awards', awardRoutes);
+
 
 module.exports = app;

@@ -13,6 +13,12 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
+
+const socketIoConfig: SocketIoConfig = {
+  url: 'http://localhost:4000',
+  options: {}
+};
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -70,7 +76,8 @@ const customNotifierOptions: NotifierOptions = {
     FormsModule,
     ReactiveFormsModule,
     NgbModule,
-    NotifierModule.withConfig(customNotifierOptions)
+    NotifierModule.withConfig(customNotifierOptions),
+    SocketIoModule.forRoot(socketIoConfig)
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},

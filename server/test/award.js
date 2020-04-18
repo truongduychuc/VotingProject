@@ -70,18 +70,18 @@ describe('Create award test', () => {
           })
       })
   });
-  // after(function () {
-  //   Breakdown.destroy({where: {}}).then(() => {
-  //     Promise.all([
-  //       Nominee.destroy({where: {}}),
-  //       Voter.destroy({where: {}}),
-  //       Winner.destroy({where: {}}),
-  //       Breakdown.destroy({where: {}}),
-  //     ]).then(r => {
-  //       Award.destroy({where: {}}).then(ss => {
-  //         console.log('Cleared db')
-  //       });
-  //     })
-  //   })
-  // })
+  after(function () {
+    return Breakdown.destroy({where: {}}).then(() => {
+      return Promise.all([
+        Nominee.destroy({where: {}}),
+        Voter.destroy({where: {}}),
+        Winner.destroy({where: {}}),
+        Breakdown.destroy({where: {}}),
+      ]).then(r => {
+        return Award.destroy({where: {}}).then(ss => {
+          console.log('Cleared db')
+        });
+      })
+    })
+  })
 });

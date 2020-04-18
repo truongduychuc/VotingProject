@@ -41,10 +41,17 @@ module.exports = (sequelize, DataTypes) => {
   awardDetail.associate = function (db) {
     awardDetail.hasOne(db.finalResult, {foreignKey: 'id_award', as: 'winner', constraints: false});
     // awardDetail.hasOne(db.voter, {foreignKey: 'id_award', constraints: false});
-    awardDetail.belongsToMany(db.user, {as: {singular: 'voter', plural: 'voters'}, through: db.voter, foreignKey: 'id_award'});
+    awardDetail.belongsToMany(db.user, {
+      as: {singular: 'voter', plural: 'voters'},
+      through: db.voter,
+      foreignKey: 'id_award'
+    });
     awardDetail.belongsTo(db.awardType, {foreignKey: 'type', constraints: false});
     awardDetail.belongsToMany(db.user, {as: 'nominees', through: db.nominee, foreignKey: 'id_award'});
-    awardDetail.hasOne(db.votingBreakdown, {as: 'breakdown', foreignKey: 'id_award'});
+    awardDetail.hasMany(db.votingBreakdown, {
+      as: {singular: 'breakdown', plural: 'breakdowns'},
+      foreignKey: 'id_award'
+    });
     // awardDetail.hasMany(db.nominee, {foreignKey: 'id_award', constraints: false});
   };
   return awardDetail;

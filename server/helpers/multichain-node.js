@@ -2,9 +2,8 @@ const multichainNode = require('../lib/multichain-node');
 const winston = require('../config/winston');
 const logger = require('../helpers/logging')(__filename, winston);
 
-
 const loadMultiChainConfig = () => ({
-  port: process.env.MULTICHAIN_PORT || 9228,
+  port: process.env.MULTICHAIN_PORT || 9242,
   host: process.env.MULTICHAIN_HOST || '127.0.0.1',
   user: process.env.MULTICHAIN_USER || 'multichainrpc',
   pass: process.env.MULTICHAIN_PASSWORD || '9sfodHXB9RJ41uSxhNGa1CXnHu7GF399PsuxWx5Zhnfo'

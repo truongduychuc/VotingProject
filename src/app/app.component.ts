@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {Socket} from 'ngx-socket-io';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Voting Project';
+
+  constructor(private socket: Socket) {
+    this.socket.on('news', data => {
+      console.log(data);
+    });
+  }
+
 }

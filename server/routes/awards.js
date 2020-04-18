@@ -1905,7 +1905,7 @@ const informAward = new CronJob('0 0 0 * * *', function () {
 });
 
 console.log('After job instantiation');
-checkAward.start();
+// checkAward.start();
 // checkAward.stop();
 // updateAward.start();
 // informAward.start();
