@@ -26,6 +26,7 @@ const {
 const {AwardController} = require('../controllers');
 const multichain = require('../helpers/multichain');
 const {catchValidationRequest} = require('../middlewares');
+const {HTTP} = require('../helpers/constants');
 
 
 router.use(cors());
@@ -65,36 +66,11 @@ deleteAward(admin): (post) /delete/:id (not done)
 //CREATE AN AWARD
 router.post('/create', createAwardRequest, catchValidationRequest, AwardController.store);
 //LIST
-router.get('/list', (req, res) => {
-  Award.findAll({
-    where: {
-      //status: 0,
-      // id: 1,
-    },
-    include: [{
-      model: Award_type,
-      required: true,
-      attributes: ['name'],
-    }],
-    order: [
-      ['date_start', 'DESC']
-    ],
-  })
-    .then(awards => {
-      if (awards.length === 0) {
-        res.status(400).send({message: 'There is no award'})
-      } else {
-        res.status(200).json(awards);
-      }
-    })
-    .catch(err => {
-      res.status(400).send({message: err});
-    });
-});
+router.get('/list', AwardController.list)
 
 
 //UPDATE AWARD INFORMATION
-router.put('update/:id', (req, res) => {
+router.put('/update/:id', (req, res) => {
   const today = new Date();
 
   function checkDateInput() {
@@ -116,13 +92,9 @@ router.put('update/:id', (req, res) => {
     console.log('Date input wrong');
   } else {
     Award.update({
-      status: req.body.status,
       description: req.body.description,
-      date_start: req.body.date_start,
-      date_end: req.body.date_end,
       prize: req.body.prize,
       item: req.body.item,
-      // update_at: today
     }, {
       where: {
         id: req.params.id
@@ -183,28 +155,7 @@ router.post('/upload_logo/:id', upload.single('logo'), (req, res, next) => {
 });
 
 //DISPLAY AWARD
-router.get('/info/:id', (req, res) => {
-  Award.findOne({
-    where: {
-      id: req.params.id
-    },
-    include: [{
-      model: Award_type,
-      required: true,
-      attributes: ['name'],
-    }],
-  })
-    .then(award => {
-      if (!award) {
-        res.status(400).send({message: 'Award does not exist'});
-      } else {
-        res.status(200).send(award);
-      }
-    })
-    .catch(err => {
-      res.status(400).send({message: err});
-    })
-})
+router.get('/info/:id', AwardController.showAwardInfo);
 
 //WINNER
 router.post('/winner', (req, res) => {
@@ -220,15 +171,15 @@ router.post('/winner', (req, res) => {
   })
     .then(winner => {
       if (!winner) {
-        res.status(400).send({message: 'This award has not had winner yet!'});
+        res.status(400).json({message: 'This award has not had winner yet!'});
       } else {
-        res.status(200).send(winner);
+        res.status(200).json({data: winner});
       }
     })
     .catch(err => {
-      res.status(400).send({message: err});
+      res.status(400).json({message: err});
     })
-})
+});
 
 
 //PAST WINNER
@@ -243,21 +194,15 @@ router.get('/past_winner/:id', (req, res) => {
   if (req.query.table != null && req.query.table != '') {
     table = req.query.table;
   }
-  console.log(table);
   Award.findOne({
     where: {
       id: req.params.id,
-
     }
   })
     .then(award => {
       if (!award) {
-        res.status(400).send({message: 'Award does not exist'});
+        res.status(HTTP.NOT_FOUND).json({message: 'Award does not exist'});
       } else {
-        // if (award.status == 2) {
-        //     res.status(400).send({ message: 'This award is taking place' });
-        // } else {
-        // console.log(1111111, award.name, award.year)
         if (table == 'awardDetail') {
           Award.findAll({
             where: {
@@ -283,14 +228,10 @@ router.get('/past_winner/:id', (req, res) => {
             ]
           })
             .then(awards => {
-              if (awards.length == 0) {
-                res.status(400).send({message: 'There is no winner'});
-              } else {
-                res.status(200).json(awards);
-              }
+              res.status(HTTP.OK).json({data: awards});
             })
             .catch(err => {
-              res.status(400).send({message1: err});
+              res.status(HTTP.SERVER_ERROR).json({message: err});
             })
         } else {
           //table: finalResult -> winner, user -> winner_name
@@ -320,13 +261,13 @@ router.get('/past_winner/:id', (req, res) => {
             })
               .then(awards => {
                 if (awards.length == 0) {
-                  res.status(400).send({message: 'There is no winner'});
+                  res.status(400).json({message: 'There is no winner'});
                 } else {
-                  res.status(200).json(awards);
+                  res.status(200).json({data: awards});
                 }
               })
               .catch(err => {
-                res.status(400).send({message1: err});
+                res.status(400).json({message: err});
               })
           } else {
             if (table == 'winner_name') {
@@ -355,16 +296,16 @@ router.get('/past_winner/:id', (req, res) => {
               })
                 .then(awards => {
                   if (awards.length == 0) {
-                    res.status(400).send({message: 'There is no winner'});
+                    res.status(400).json({message: 'There is no winner'});
                   } else {
-                    res.status(200).json(awards);
+                    res.status(200).json({data: awards});
                   }
                 })
                 .catch(err => {
-                  res.status(400).send({message1: err});
+                  res.status(400).json({message: err});
                 })
             } else {
-              res.status(400).send({message: 'Wrong table'});
+              res.status(400).json({message: 'Wrong table'});
             }
           }
         }
@@ -372,12 +313,12 @@ router.get('/past_winner/:id', (req, res) => {
       }
     })
     .catch(err => {
-      res.status(400).send({message: err});
+      res.status(400).json({message: err});
     })
 })
 
 //RANKING BREAKDOWN
-router.get('/breakdown/:id', authorize(), (req, res) => {
+router.get('/breakdown/:id', (req, res) => {
   let limit = 10; //number of records per page
   let page = 1;
   let col = 'rank';
@@ -414,7 +355,7 @@ router.get('/breakdown/:id', authorize(), (req, res) => {
         }
       })
         .then(role => {
-          if (status === 2 && role.name !== 'admin') {
+          if (status === 2 && role.id !== 1) {
             return res.status(401).json({message: 'Unauthorized'});
           } else {
             Breakdown.findAndCountAll({
@@ -1039,127 +980,16 @@ router.post('/voting_award', authorize(), (req, res) => {
 })
 
 //Get type of award
-router.get('/award_type', (req, res) => {
-  Award_type.findAll()
-    .then(types => {
-      res.status(200).send({types: types});
-    })
-    .catch(err => {
-      res.status(400).send({message: 'Error when get type of award', err});
-    })
-})
+router.get('/award_type', AwardController.getAwardTypes);
 
 //Find an award
-router.post('/find_an_award', (req, res) => {
-  Award.findAll({
-    where: {
-      type: req.body.type
-    },
-    order: [
-      ['year', 'DESC']
-    ]
-  })
-    .then(awards => {
-      const data = awards[0];
-      res.status(200).json(data);
-    })
-    .catch(err => {
-      res.status(400).send({message: err});
-    })
-})
+router.post('/find_an_award', AwardController.findAnAward);
 
 //Get award for vote
-router.get('/get_award', authorize(), (req, res) => {
-  const today = new Date();
-  Award.findAll({
-    where: {
-      status: {
-        [Op.gte]: 1,
-      }
-    }
-  })
-    .then(awards => {
-      if (awards.length == 0) {
-        res.status(200).send('There is no award for voting');
-      } else {
-        //Check date
-        for (var i = 0; i < awards.length; i++) {
-          //Start award
-          if (awards[i].status == 1) {
-            if (awards[i].date_start <= today) {
-              //Change status award
-              Award.update({
-                status: 2,
-                // updated_at: today
-              }, {
-                where: {
-                  id: awards[i].id
-                }
-              })
-            }
-          }
-
-          //End award
-          if (awards[i].status == 2) {
-            if (awards[i].date_end <= today) {
-              // /Change status award
-              Award.update({
-                status: 0,
-                // updated_at: today
-              }, {
-                where: {
-                  id: awards[i].id
-                }
-              })
-            }
-          }
-        }
-
-        Award.findAll({
-          where: {
-            status: 2
-          },
-          attributes: ['id', 'year', 'logo_url'],
-          include: [{
-            model: Award_type,
-            attributes: ['name'],
-          }]
-        })
-          .then(results => {
-            if (results.length == 0) {
-              res.status(200).send('There is no award for voting');
-            } else {
-              res.status(200).send({data: results});
-            }
-          })
-      }
-    })
-    .catch(err => {
-      res.status(400).send('Error when get award for vote', err);
-    })
-})
-
+router.get('/get_award', AwardController.getAwardForVoting);
 
 //Update result
-router.post('/update_result', (req, res) => {
-  const id_award = req.body.id;
-
-  async function waitForUpdate() {
-    await updateResult(id_award);
-    await updatePercent(id_award);
-    // await chooseWinner(id_award);
-  }
-
-  waitForUpdate()
-    .then(() => {
-      res.status(200).send({message: 'Update successfully'});
-    })
-    .catch(err => {
-      res.status(400).send({message: 'Error when update ' + err});
-    })
-
-
-})
+router.post('/update_result', AwardController.updateResult);
 
 
 //Check status vote of voter
@@ -1313,62 +1143,19 @@ async function updateResult(id) {
 }
 
 function updateCurrentResult() {
-  const today = new Date();
   Award.findAll({
     where: {
       status: 2
     }
   })
     .then(awards => {
-      if (awards.length == 0) {
+      if (awards.length === 0) {
         console.log('There is no award for updating right now');
       } else {
-        for (var j = 0; j < awards.length; j++) {
-          let id_award = awards[j].id;
-          let stream_name = 'award_' + id_award;
-          Breakdown.findAll({
-            where: {
-              id_award: id_award
-            }
+        for (let award of awards) {
+          AwardController.updateAwardResult(award.id).then(breakdown => {
+            console.log('Update successfully award' + award.id);
           })
-            .then(nominees => {
-              for (var i = 0; i < nominees.length; i++) {
-                let id_nominee = nominees[i].id_nominee;
-                let key_name = 'nominee_' + id_nominee;
-                multichain.initiateMultichain().getStreamKeySummary({
-                  stream: stream_name,
-                  key: key_name,
-                  mode: 'jsonobjectmerge'
-                })
-                  .then(result => {
-                    let total_points = result.json.first_votes * 5 + result.json.second_votes * 3 + result.json.third_votes * 1;
-                    Breakdown.update({
-                      first_votes: result.json.first_votes,
-                      second_votes: result.json.second_votes,
-                      third_votes: result.json.third_votes,
-                      total_points: total_points,
-                      // updated_at: today
-                    }, {
-                      where: {
-                        id_award: id_award,
-                        id_nominee: id_nominee
-                      }
-                    })
-                      .then(() => {
-                        calculate(id_award);
-                      })
-                      .catch(err => {
-                        console.log('Error when update result ', err);
-                      })
-                  })
-                  .catch(err => {
-                    console.log('Error when result from blockchain ', err);
-                  })
-              }
-            })
-            .catch(err => {
-              console.log('Error when get result ', err);
-            })
         }
       }
     })
@@ -1881,7 +1668,7 @@ function sendEmailWhenEnd(id) {
 console.log('Before job instantiation');
 const checkAward = new CronJob('0,30 * * * * *', function () {
   const d = new Date();
-  var a = moment.tz(d, "Asia/Ho_Chi_Minh");
+  const a = moment.tz(d, "Asia/Ho_Chi_Minh");
   checkDateAward();
   console.log('--------------');
   console.log('Midnight:', d);
@@ -1905,9 +1692,9 @@ const informAward = new CronJob('0 0 0 * * *', function () {
 });
 
 console.log('After job instantiation');
-// checkAward.start();
+checkAward.start();
 // checkAward.stop();
-// updateAward.start();
+updateAward.start();
 // informAward.start();
 // informAward.stop();
 module.exports = router;

@@ -47,6 +47,18 @@ class ClientCaller {
   }
 
   /**
+   * */
+  getNomineeVotingScores(awardId, nomineeId) {
+    return this.multichain.getStreamKeySummary({
+      stream: 'award_' + awardId,
+      key: 'nominee_' + nomineeId,
+      mode: 'jsonobjectmerge'
+    }).then(res => {
+      return res.json;
+    });
+  }
+
+  /**
    * @param streamName
    * @param keyName
    * @param data
@@ -55,7 +67,10 @@ class ClientCaller {
   publish(streamName, keyName, data) {
     const {id, address} = data;
     const chainData = {
-      "json": JSON.stringify({id, address})
+      "json": {
+        "id": id,
+        "address": address
+      }
     };
     return this.multichain.publish({
       stream: streamName,
@@ -67,13 +82,13 @@ class ClientCaller {
   publishEmployee(streamName, keyName, data) {
     const {id, first_name, last_name, english_name, address} = data;
     const chainData = {
-      "json": JSON.stringify({
-        id,
-        first_name,
-        last_name,
-        english_name,
-        address
-      })
+      "json": {
+        "id": id,
+        "first_name": first_name,
+        "last_name": last_name,
+        "english_name": english_name,
+        "address": address
+      }
     };
     return this.multichain.publish({
       stream: streamName,
@@ -82,12 +97,21 @@ class ClientCaller {
     })
   }
 
+  /**
+   * used to publish award
+   * */
   publishInformation(streamName, data) {
     return this.multichain.publish({
       stream: streamName,
       key: 'information',
       data: {
-        "json": JSON.stringify(data)
+        "json": {
+          "id": data.id,
+          "first_name": data.first_name,
+          "last_name": data.last_name,
+          "english_name": data.english_name,
+          "address": data.address
+        }
       }
     })
   }
@@ -180,11 +204,11 @@ class ClientCaller {
         stream: streamName,
         key: `nominee_${id}`,
         data: {
-          "json": JSON.stringify({
-            first_votes: 0,
-            second_votes: 0,
-            third_votes: 0
-          })
+          "json": {
+            "first_votes": 0,
+            "second_votes": 0,
+            "third_votes": 0
+          }
         }
       });
     } catch (e) {
@@ -316,9 +340,9 @@ class ClientCaller {
                 stream: streamName,
                 key: voteKeyName,
                 data: {
-                  "json": JSON.stringify({
+                  "json": {
                     [voteMappingData.prefix + '_votes']: voteChange
-                  })
+                  }
                 }
               });
               count++;

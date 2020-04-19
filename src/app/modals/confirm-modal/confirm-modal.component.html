@@ -5,6 +5,7 @@
   <small>{{content}}</small>
 </div>
 <div class="modal-footer justify-content-center">
-  <button [ngClass]="'btn-outline-' + buttonColor" class="btn btn-rounded m-sm-3 m-1" (click)="activeModal.close('Yes!')">YES</button>
-  <button [ngClass]="'btn-' + buttonColor" class="btn btn-rounded m-sm-3 m-1" (click)="activeModal.dismiss('Cancel!')">NO</button>
+  <button [ngClass]="'btn-outline-' + buttonColor" class="btn btn-rounded m-sm-3 m-1" (click)="closeModal()">YES
+  </button>
+  <button [ngClass]="'btn-' + buttonColor" class="btn btn-rounded m-sm-3 m-1" (click)="dismissModal()">NO</button>
 </div>

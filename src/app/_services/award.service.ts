@@ -1,63 +1,107 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Award} from '../_models/award';
+import {ApiService, IAPIResponse} from './api.service';
 import {PastWinner} from '../_models/past-winner';
+import {map} from 'rxjs/operators';
+import {Award} from '../_models/award';
 import {Winner} from '../_models/winner';
-import {catchError, tap} from 'rxjs/operators';
-import {NotifierService} from 'angular-notifier';
+import {AwardType} from '../_models/award-type';
 
+interface IAwardsWithTypesResponse extends IAPIResponse {
+  awards?: Award[];
+  types?: AwardType[];
+}
+
+interface IAwardResponse extends IAPIResponse {
+  award: Award;
+}
+
+interface IAwardTypesResponse extends IAPIResponse {
+  types?: AwardType[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AwardService {
-  serverURL = 'http://localhost:4000/awards/';
-  constructor(private httpClient: HttpClient, private notifier: NotifierService) {
 
+  private parentUrl = '/awards';
+  private apis = {
+    LIST: this.parentUrl + '/list',
+    CREATE: this.parentUrl + '/create',
+    UPDATE: this.parentUrl + '/update/',
+    FIND_AWARD: this.parentUrl + '/find_an_award',
+    CHECK_STATUS: this.parentUrl + '/check_status_voter',
+    AWARD_TYPE: this.parentUrl + '/award_type',
+    INFO: this.parentUrl + '/info/',
+    PAST_WINNER: this.parentUrl + '/past_winner/',
+    BREAKDOWN: this.parentUrl + '/breakdown/',
+    GET_AWARD: this.parentUrl + '/get_award',
+    VOTING: this.parentUrl + '/voting_award',
+    UPDATE_RESULT: this.parentUrl + '/update_result',
+    FINISH_AWARD: this.parentUrl + '/finish_award',
+    WINNER: this.parentUrl + '/winner'
+  };
+
+  constructor(private apiService: ApiService) {
   }
-  createNewAward(newAward: Object) {
-    return this.httpClient.post(this.serverURL + 'create', newAward);
+
+  createNewAward(newAward: Object): Observable<IAPIResponse> {
+    return this.apiService.post(this.apis.CREATE, newAward);
   }
+
   // finish award earlier end date
-  finishAward(awardId: number): Observable<any> {
-    return this.httpClient.post(this.serverURL + 'finish_award', {id: awardId});
+  finishAward(awardId: number): Observable<IAPIResponse> {
+    return this.apiService.post(this.apis.FINISH_AWARD, {id: awardId});
   }
-  getAwardList(): Observable<Award[]> {
-    return this.httpClient.get<Award[]>(this.serverURL + 'list');
+
+  getAwardList(): Observable<IAwardsWithTypesResponse> {
+    return this.apiService.get(this.apis.LIST);
   }
-  updateAward(id: number, newInfo: Object): Observable<any> {
-    return this.httpClient.put(this.serverURL + `update/${id}`, newInfo);
+
+  updateAward(id: number, newInfo: Object): Observable<IAPIResponse> {
+    return this.apiService.put(this.apis.UPDATE + id, newInfo);
   }
-  findAnAwardByType(id: number): Observable<any> {
-    return this.httpClient.post(this.serverURL + 'find_an_award', {type: id});
+
+  findAnAwardByType(id: number): Observable<Award> {
+    return this.apiService.post(this.apis.FIND_AWARD, {type: id}).pipe(map(res => res.data));
   }
-  checkVoterStatus(id_award: number) {
-    return this.httpClient.post(this.serverURL + 'check_status_voter', {id_award: id_award});
+
+  checkVoterStatus(id_award: number): Observable<IAPIResponse> {
+    return this.apiService.post(this.apis.CHECK_STATUS, {id_award: id_award});
   }
-  getAwardTypes(): Observable<any> {
-    return this.httpClient.get(this.serverURL + 'award_type');
+
+  getAwardTypes(): Observable<IAwardTypesResponse> {
+    return this.apiService.get(this.apis.AWARD_TYPE);
   }
+
   getAwardDetail(id_award: number): Observable<Award> {
-    return this.httpClient.get<Award>(this.serverURL + `info/${id_award}`);
+    return this.apiService.get(this.apis.INFO + id_award).pipe(map(res => res.data));
   }
+
   getPastWinner(id: number, params?: HttpParams): Observable<PastWinner> {
-    return this.httpClient.get<PastWinner>(this.serverURL + `past_winner/${id}`, {params: params});
+    return this.apiService.get(this.apis.PAST_WINNER + id, params).pipe(map((res: IAPIResponse) => res.data));
   }
-  getRankingBreakDown(id: number, params?: HttpParams): Observable<any> {
-    return this.httpClient.get(this.serverURL + `breakdown/${id}`, {params: params});
+
+  getRankingBreakDown(id: number, params?: HttpParams): Observable<IAPIResponse> {
+    return this.apiService.get(this.apis.BREAKDOWN + id, params);
   }
+
   getWinner(id_award: number): Observable<Winner> {
-    return this.httpClient.post<Winner>(this.serverURL + 'winner', {id_award: id_award});
+    return this.apiService.post(this.apis.WINNER, {id_award: id_award}).pipe(map(res => res.data));
   }
+
   // awards are taking place
-  getAwardComingAbout() {
-    return this.httpClient.get(this.serverURL + 'get_award');
+  getAwardComingAbout(): Observable<Award[]> {
+    return this.apiService.get(this.apis.GET_AWARD).pipe(map(res => res.data));
   }
-  vote(votingResult: Object): Observable<any> {
-    return this.httpClient.post(this.serverURL + 'voting_award', votingResult);
+
+  vote(votingResult: Object): Observable<IAPIResponse> {
+    return this.apiService.post(this.apis.VOTING, votingResult);
   }
-  updateVotingResult(id_award: number): Observable<any> {
-    return  this.httpClient.post(this.serverURL + 'update_result', {id: id_award});
+
+  updateVotingResult(id_award: number): Observable<IAPIResponse> {
+    return this.apiService.post(this.apis.UPDATE_RESULT, {id: id_award});
   }
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AwardService} from '../../_services/award.service';
 import {AccountService} from '../../_services/account.service';
@@ -7,21 +7,25 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.component';
 import {NotifierService} from 'angular-notifier';
 import {User} from '../../_models/user';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-voting',
   templateUrl: './voting.component.html',
   styleUrls: ['./voting.component.scss']
 })
-export class VotingComponent implements OnInit {
-  serverURL = 'http://localhost:4000/';
+export class VotingComponent implements OnInit, OnDestroy {
+
   voting: FormGroup;
-  listAwards: any[];
+  listAwards: Award[];
   listNominees: any[];
   errorMessage: string;
   currentUser: User;
+  subscriptions: Subscription;
+
   constructor(private formBuilder: FormBuilder, private awardService: AwardService,
-              private userService: AccountService, private modalService: NgbModal, private notifier: NotifierService) {
+              private userService: AccountService, private modalService: NgbModal,
+              private notifier: NotifierService) {
   }
 
   ngOnInit() {
@@ -29,6 +33,7 @@ export class VotingComponent implements OnInit {
     this.getListAwardForVoting();
     this.getCurrentUser();
   }
+
   generateForm() {
     this.voting = this.formBuilder.group({
       id: [null, Validators.required],
@@ -42,48 +47,43 @@ export class VotingComponent implements OnInit {
       ]
     });
   }
+
   getCurrentUser() {
-    this.userService.getPersonalProfile().subscribe(profile => {
-      if (!profile.hasOwnProperty('user')) {
-        console.log('No user property inside profile response!');
-      } else {
-        this.currentUser = profile.user;
+    this.subscriptions.add(
+      this.userService.currentUser.subscribe(user => {
+        this.currentUser = user;
         this.generateForm();
-      }
-    });
+      })
+    );
   }
+
   get formControls() {
     return this.voting.controls;
   }
+
   // get list of award is going on
   getListAwardForVoting() {
-    this.awardService.getAwardComingAbout().subscribe( (success: any) => {
-      if (!success.hasOwnProperty('data')) {
-        console.log('The response has no property named \'data!\'');
-      } else {
-        this.listAwards = success.data;
-      }
+    this.awardService.getAwardComingAbout().subscribe(awards => {
+      this.listAwards = awards;
     }, err => {
       console.log(err);
     });
   }
+
   // load list of nominees for award has id === id
-  loadNomineesCorresponding(id: number) {
+  loadNomineesCorresponding(id: number): void {
     this.resetNomineeSelections();
-    this.awardService.checkVoterStatus(id).subscribe( canVote => {
-      this.userService.getListNomineesForVoting(id).subscribe( (success: any) => {
-        if (!success.hasOwnProperty('data')) {  // check response if it get back the true data
-          console.log('The response has no property named \'data!\'');
-        } else {
-          this.listNominees = success.data;
-        }
-      } , err => {
+    this.awardService.checkVoterStatus(id).subscribe(canVote => {
+      this.userService.getListNomineesForVoting(id).subscribe(nominees => {
+        this.listNominees = nominees;
+      }, err => {
         console.log(err);
       });
     }, alreadyVoted => {
       this.errorMessage = alreadyVoted;
     });
   }
+
   // onSubmit
   // send the result after finishing up choosing nominee for all places
   sendVotingElection() {
@@ -92,11 +92,11 @@ export class VotingComponent implements OnInit {
     }
     const modalRef = this.modalService.open(ConfirmModalComponent, {size: 'sm'});
     modalRef.componentInstance.title = 'Confirmation';
-    modalRef.componentInstance.content = 'Are you sure with your voting selections?'
+    modalRef.componentInstance.content = 'Are you sure with your voting selections?';
     modalRef.componentInstance.type = 'primary';
-    modalRef.result.then( accept => {
-      this.awardService.vote(this.voting.value).subscribe( (successMes: string) => {
-        this.notifier.notify('info', 'Voted successfully!');
+    modalRef.result.then(accept => {
+      this.awardService.vote(this.voting.value).subscribe(res => {
+        this.notifier.notify('info', res.message);
         this.resetAllSelections();
       }, err => {
         // display error message to alert, the message is returned from error interceptor
@@ -110,6 +110,7 @@ export class VotingComponent implements OnInit {
       return;
     });
   }
+
   // validation for duplicated selection
   duplicatedSelect(firstControl: string, secondControl: string, third_control: string) {
     return (formGroup: FormGroup) => {
@@ -170,6 +171,7 @@ export class VotingComponent implements OnInit {
       }
     };
   }
+
   // validation help us to prevent current user from voting for themselves
   selfVoteValidation(formControlName: string) {
     return (formGroup: FormGroup) => {
@@ -184,6 +186,7 @@ export class VotingComponent implements OnInit {
       }
     };
   }
+
   getAward(id: number): Award {
     const selectedAward = this.listAwards.find(award => award.id === id);
     if (!selectedAward) {
@@ -192,9 +195,10 @@ export class VotingComponent implements OnInit {
     }
     return selectedAward;
   }
+
   // get avatar url
   getNomineeAvaUrl(id: number): string {
-    const selectedNominee = this.listNominees.find( nominee => nominee.id_nominee === id);
+    const selectedNominee = this.listNominees.find(nominee => nominee.id_nominee === id);
     if (!selectedNominee) {
       console.log('Error when finding nominee!');
       return null;
@@ -206,8 +210,9 @@ export class VotingComponent implements OnInit {
       return selectedNominee.nominee_name_1.ava_url;
     }
   }
+
   getNomineeFullName(id: number): string {
-    const selectedNominee = this.listNominees.find( nominee => nominee.id_nominee === id);
+    const selectedNominee = this.listNominees.find(nominee => nominee.id_nominee === id);
     if (!selectedNominee) {
       console.log('Error when finding nominee!');
       return null;
@@ -222,6 +227,7 @@ export class VotingComponent implements OnInit {
         + selectedNominee.nominee_name_1.last_name;
     }
   }
+
   resetAllSelections() {
     // reset all
     this.voting.controls['id'].setValue(null);
@@ -231,6 +237,7 @@ export class VotingComponent implements OnInit {
     this.getListAwardForVoting();
     this.resetNomineeSelections();
   }
+
   resetNomineeSelections() {
     // refresh selections without refreshing awards
     this.errorMessage = null;
@@ -239,7 +246,8 @@ export class VotingComponent implements OnInit {
     this.voting.controls['second_vote'].setValue(null);
     this.voting.controls['third_vote'].setValue(null);
   }
-  test() {
-    console.log(this.voting.controls);
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

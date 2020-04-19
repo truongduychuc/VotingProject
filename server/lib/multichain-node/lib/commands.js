@@ -85,6 +85,7 @@ module.exports = {
     listAssetTransactions: ["asset", {"verbose": false}, {"count": 10}, {"start": startDefault}, {"local-ordering": false}],
     //querying stream items
     getStreamItem: ["stream", "txid", {verbose: false}],
+    getStreamKeySummary: ["stream", "key", "mode"],
     getTxOutData: ["txid", "vout"],
     listStreamBlockItems: ["stream", "txid", {"count": "MAX"}, {"start": null}],
     listStreamKeyItems: ["stream", "key", {"verbose": false}, {"count": 10}, {"start": startDefault}, {"local-ordering": false}],

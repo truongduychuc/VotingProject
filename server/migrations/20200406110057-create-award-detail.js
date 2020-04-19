@@ -22,7 +22,7 @@ module.exports = {
       },
       status: {
         allowNull: false,
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.TINYINT,
         defaultValue: 1
       },
       description: {

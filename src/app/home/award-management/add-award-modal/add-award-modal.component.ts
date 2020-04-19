@@ -88,13 +88,8 @@ export class AddAwardModalComponent implements OnInit {
   }
 
   getAwardTypes() {
-    this.awardService.getAwardTypes().subscribe(successRes => {
-      if (!successRes.hasOwnProperty('types')) {
-        console.log('The response didn\'t include \'type\' property!');
-      } else {
-        this.types = successRes.types;
-        // console.log(this.types);
-      }
+    this.awardService.getAwardTypes().subscribe((res) => {
+      this.types = res.types;
     }, error => {
       console.log(error);
     });
@@ -119,7 +114,8 @@ export class AddAwardModalComponent implements OnInit {
 
   setDateInitially() {
     const today = new Date();
-    this.minStartDate = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours(), today.getMinutes() + 1, 0));
+    this.minStartDate = new Date(
+      Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours(), today.getMinutes() + 1, 0));
     this.maxStartDate = new Date(Date.UTC(today.getFullYear() + 1, 11, 31, 23, 0, 0));
     this.minEndDate = this.minStartDate;
     this.maxEndDate = new Date(Date.UTC(this.minStartDate.getFullYear() + 1, this.minStartDate.getMonth(), this.minStartDate.getDate()));

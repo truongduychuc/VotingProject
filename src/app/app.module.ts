@@ -1,6 +1,6 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
@@ -9,14 +9,15 @@ import {ErrorInterceptor} from './_interceptors/error.interceptor';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DefaultComponent} from './default/default.component';
 import {LoginModalComponent} from './default/login-modal/login-modal.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
+import {environment} from '../environments/environment';
 
 const socketIoConfig: SocketIoConfig = {
-  url: 'http://localhost:4000',
+  url: environment.serverUrl,
   options: {}
 };
 
@@ -60,6 +61,7 @@ const customNotifierOptions: NotifierOptions = {
     overlap: 150
   }
 };
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -88,4 +90,5 @@ const customNotifierOptions: NotifierOptions = {
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

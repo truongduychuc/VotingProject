@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AwardService} from '../../_services/award.service';
 import {
   ChartColor,
-  ChartData,
+  ChartData, ChartLegendLabelItem,
   ChartOptions,
   ChartTooltipItem,
   ChartType
@@ -12,15 +12,18 @@ import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import {Award} from '../../_models/award';
 import {DateFormatPipe} from '../../_pipes/date-format.pipe';
 import {Router} from '@angular/router';
+import {map, takeWhile} from 'rxjs/operators';
+
 @Component({
   selector: 'app-data-tracking',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
-  limitOfFinishes: number = 3;
-  limitOfUpcoming: number = 3;
-  limitOfTakingPlace: number = 3;
+export class DashboardComponent implements OnInit, OnDestroy {
+  private _isAlive: boolean;
+  limitOfFinishes = 3;
+  limitOfUpcoming = 3;
+  limitOfTakingPlace = 3;
   totalFinishes: number;
   totalUpcoming: number;
   finishedAwardList: Award[];
@@ -39,10 +42,10 @@ export class DashboardComponent implements OnInit {
       labels: {
         fontSize: 13,
         fontFamily: 'Poppins',
-        generateLabels(chart: any): any {
+        generateLabels(chart: Chart): ChartLegendLabelItem[] {
           const data = chart.data;
           if (data.labels.length && data.datasets.length) {
-            return data.labels.map( (label, i) => {
+            return data.labels.map((label, i) => {
               let labelForPlace, color: ChartColor;
               if (i === 0) {
                 labelForPlace = 'First place';
@@ -95,14 +98,22 @@ export class DashboardComponent implements OnInit {
   };
   public pieChartPlugins = [pluginDataLabels];
   public pieChartType: ChartType = 'pie';
-  constructor(private awardService: AwardService, private dateFormat: DateFormatPipe, private router: Router) { }
+
+  constructor(private awardService: AwardService, private dateFormat: DateFormatPipe, private router: Router) {
+    this._isAlive = true;
+  }
 
   ngOnInit() {
     this.getAwardList();
   }
+
   // get awardList at beginning
-  getAwardList() {
-    this.awardService.getAwardList().pipe().subscribe( list => {
+  getAwardList(): void {
+    this.awardService.getAwardList()
+      .pipe(
+        map(res => res.awards),
+        takeWhile(() => this._isAlive)
+      ).subscribe(list => {
       const finishedAwards = list.filter(award => award.status === 0);
       this.totalFinishes = finishedAwards.length;
       const pendingAwards = list.filter(award => award.status === 1);
@@ -111,18 +122,21 @@ export class DashboardComponent implements OnInit {
       this.finishedAwardList = finishedAwards.slice(0, this.limitOfFinishes);
       this.upcomingAwardList = pendingAwards.slice(0, this.limitOfUpcoming);
       this.takingPlaceAwardList = takingPlaceAward.slice(0, this.limitOfTakingPlace);
-      this.getData(this.finishedAwardList[0]);
+      if (this.finishedAwardList.length > 0) {
+        this.getData(this.finishedAwardList[0]);
+      }
     }, errGetting => {
       console.log(errGetting);
     });
   }
-  getData(award: Award) {
+
+  getData(award: Award): void {
     this.awardService.getRankingBreakDown(award.id).subscribe(res => {
       const slicedBreakdowns = res.data.slice(0, 3);
       const tempPercentList = slicedBreakdowns.map(breakdown => breakdown.percent);
       this.nomineeNameList = slicedBreakdowns.map(breakdown => breakdown.nominee_name.english_name);
       this.nomineeNameList.push('Others');
-      const othersPercents = parseFloat((Math.round ((100   - tempPercentList.reduce((preVal, currentVal) => preVal + currentVal, 0))
+      const othersPercents = parseFloat((Math.round((100 - tempPercentList.reduce((preVal, currentVal) => preVal + currentVal, 0))
         * 100) / 100)
         .toFixed(2));
       tempPercentList.push(othersPercents);
@@ -136,6 +150,7 @@ export class DashboardComponent implements OnInit {
       console.log(err);
     });
   }
+
   openNestedMenu(id: number) {
     if (!id) {
       return;
@@ -152,20 +167,28 @@ export class DashboardComponent implements OnInit {
       dropIcon.classList.add('fa-chevron-down');
     }
   }
+
   navigateToDetailPage(id: number) {
     this.router.navigate(['/home/award-detail', id]);
   }
+
   loadMoreFinishes(): void {
     this.limitOfFinishes += 3;
     this.getAwardList();
   }
+
   loadMoreUpcoming(): void {
     this.limitOfUpcoming += 3;
     this.getAwardList();
   }
+
   loadMoreTakingPlace(): void {
     this.limitOfTakingPlace += 3;
     this.getAwardList();
+  }
+
+  ngOnDestroy(): void {
+    this._isAlive = false;
   }
 }
 

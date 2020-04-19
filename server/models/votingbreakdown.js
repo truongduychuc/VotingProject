@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
-    second_vote:  {
+    second_votes:  {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0

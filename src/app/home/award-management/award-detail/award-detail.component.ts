@@ -11,6 +11,16 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditingAwardModalComponent} from '../editing-award-modal/editing-award-modal.component';
 import {NotifierService} from 'angular-notifier';
 import {DataSharingService} from '../../../_shared/data-sharing.service';
+import {map, switchMap} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+import {environment} from '../../../../environments/environment';
+
+
+type PreviousParams = {
+  col: string,
+  type: string,
+  table: string
+};
 
 @Component({
   selector: 'app-award-detail',
@@ -18,14 +28,17 @@ import {DataSharingService} from '../../../_shared/data-sharing.service';
   styleUrls: ['./award-detail.component.scss']
 })
 export class AwardDetailComponent implements OnInit, OnDestroy {
-  serverURL = 'http://localhost:4000/';
+  serverURL = environment.serverUrl;
   id: number;
   awardDetail: Award;
   pastWinnerList: PastWinner;
   currentUser: User;
+  currentUserLoaded = false;
   nomineeList: any[];
   winner: Winner;
   countDown: number;
+  loadedDetail = false;
+  subscription: Subscription = new Subscription();
 
   isTimerCountDownOpened = true;
   /*for sorting
@@ -34,9 +47,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
   winner_name---------|------ first_name or last_name or english_name---------| user
   awardDetail---------|------ year--------------------------------------------| awardDetails
   */
-  currentSortedColumn: string = 'year';
+  currentSortedColumn = 'year';
   currentSortedType = 'DESC';
-  currentSortedTable: string = 'awardDetail';
+  currentSortedTable = 'awardDetail';
 
   // for the slide
   customOptions: any = {
@@ -63,29 +76,41 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       }
     },
     nav: false,
-  /*  autoplay: true,
-    autoplayTimeout: 4000,
-    autoplayHoverPause: true*/
+    /*  autoplay: true,
+      autoplayTimeout: 4000,
+      autoplayHoverPause: true*/
   };
+
   constructor(private route: ActivatedRoute, private awardService: AwardService, private accountService: AccountService,
               private modalService: NgbModal, private notifier: NotifierService, private sharedData: DataSharingService) {
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
   }
+
   ngOnInit() {
-    // get id from routeLink params
-    this.id = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.getCurrentUser();
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
     this.getDetail();
     this.getNomineeList();
     this.reloadPreviousStatus();
-    this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
+    this.sharedData.currentMessage.subscribe(() => {
       this.getNomineeList();
     });
   }
-  // to show the button only can be used by admin
-  get isAdmin() {
-    return this.currentUser && this.currentUser.position.toUpperCase() === 'ADMIN';
+
+  getCurrentUser(): void {
+    this.subscription.add(
+      this.accountService.currentUser.subscribe(user => {
+        this.currentUser = user;
+        this.currentUserLoaded = true;
+      }));
   }
-  getCssBadgeClass(status: number) {
+
+  // to show the button only can be used by admin
+  get isAdmin(): boolean {
+    return this.currentUserLoaded && this.currentUser.role.name.toLowerCase() === 'admin';
+  }
+
+  getCssBadgeClass(status: number): string {
     if (status === 0) {
       return 'badge-info';
     }
@@ -96,7 +121,8 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       return 'badge-success';
     }
   }
-  getStatusName(status: number) {
+
+  getStatusName(status: number): string {
     if (status === 0) {
       return 'Finished';
     }
@@ -107,20 +133,27 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       return 'Voting';
     }
   }
-  getDetail() {
-    this.awardService.getAwardDetail(this.id).subscribe((detail: Award) => {
+
+  getDetail(): void {
+    this.route.params
+      .pipe(
+        map(v => v.id),
+        switchMap(id => this.awardService.getAwardDetail(id))
+      ).subscribe(detail => {
       this.awardDetail = detail;
-      if (this.awardDetail.status === 0) {
+      this.loadedDetail = true;
+      if (this.loadedDetail && this.awardDetail.status === 0) {
         this.getWinner();
       }
       this.updateBreakdown();
-    }, error1 => {
-      console.log(error1);
+    }, error => {
+      console.log(error);
     });
   }
-  reloadPreviousStatus() {
+
+  reloadPreviousStatus(): void {
     // get params at the last times getting user list
-    let lastPastWinnerParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
+    const lastPastWinnerParams = this.getPreviousStatus();  // if your last res is 'there is no result', it will be {}
     if (null == lastPastWinnerParams) {
       // when you open browser initially
       // load default list
@@ -129,17 +162,17 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       let reloadedParams = new HttpParams();
       // get last query params and append to reloadedParams
 
-      let lastCol = lastPastWinnerParams.col;
+      const lastCol = lastPastWinnerParams.col;
       if (lastCol) {  // if lastCol is undefined, if(lastCol) will return false
         reloadedParams = reloadedParams.append('col', lastCol);  // it will be undefined if lastPastWinnerParams is {}
         this.currentSortedColumn = lastCol; // recover component to last status, such as previous select box's value
       }
-      let lastType = lastPastWinnerParams.type;
+      const lastType = lastPastWinnerParams.type;
       if (lastType) {
         reloadedParams = reloadedParams.append('type', lastPastWinnerParams.type);
         this.currentSortedType = lastType;
       }
-      let lastTable = lastPastWinnerParams.table;
+      const lastTable = lastPastWinnerParams.table;
       if (lastTable) {
         reloadedParams = reloadedParams.append('table', lastPastWinnerParams.table);
         this.currentSortedTable = lastTable;
@@ -156,8 +189,9 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     }
 
   }
+
   // get past winner list
-  getPastWinners(sortColumn?: string, sortType?: string, sortTable?: string) {
+  getPastWinners(sortColumn?: string, sortType?: string, sortTable?: string): void {
     let params = new HttpParams();
     if (null == sortColumn && this.currentSortedColumn) {
       // if sortColumn param wasn't passed, the function will call current status of page
@@ -189,7 +223,7 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     }
     this.awardService.getPastWinner(this.id, params).subscribe((pastWinner: PastWinner) => {
       this.pastWinnerList = pastWinner;
-      let lastPastWinnerParams = {
+      const lastPastWinnerParams = {
         col: sortColumn,
         type: sortType,
         table: sortTable,
@@ -200,22 +234,25 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       // console.log(err);
     });
   }
-  changeSortType() {
+
+  changeSortType(): void {
     if (this.currentSortedType === 'ASC') {
       this.currentSortedType = 'DESC';
     } else {
       this.currentSortedType = 'ASC';
     }
   }
+
   // get winner if the award is finished
-  getWinner() {
+  getWinner(): void {
     // check if the award have not finished yet
-    this.awardService.getWinner(this.id).subscribe( winner => {
+    this.awardService.getWinner(this.id).subscribe(winner => {
       this.winner = winner;
       console.log(winner);
     });
   }
-  sortOnColumn(columnName: string, tableName: string) {
+
+  sortOnColumn(columnName: string, tableName: string): void {
     if (this.currentSortedColumn === columnName && this.currentSortedTable === tableName) {
       // check if you sort at same column => change sort direction
       this.changeSortType();
@@ -226,37 +263,37 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
     }
     this.getPastWinners();
   }
-  getNomineeList() {
-    this.accountService.getListNomineesForVoting(this.id).subscribe(successRes => {
-      if (!successRes.hasOwnProperty('data')) {
-        console.log('There\'s no list of nominees in the response!');
+
+  getNomineeList(): void {
+    this.accountService.getListNomineesForVoting(this.id).subscribe(nominees => {
+      if (!nominees[0].hasOwnProperty('nominee_name_1')) {
+        console.log('Error in nominee_name_1');
       } else {
-        if (!(successRes.data[0]).hasOwnProperty('nominee_name_1')) {
-          console.log('Error in nominee_name_1');
-        }
-        this.nomineeList = successRes.data;
+        this.nomineeList = nominees;
       }
     });
   }
+
   // update voting breakdown
-  updateBreakdown() {
+  updateBreakdown(): void {
     if (this.awardDetail.status === 2) {
-      this.awardService.updateVotingResult(this.id).subscribe( () => {
+      this.awardService.updateVotingResult(this.id).subscribe(() => {
       }, error => {
         console.log(error);
       });
     }
   }
-  openEditingAwardModal(awardId: number) {
+
+  openEditingAwardModal(awardId: number): void {
     const modalRef = this.modalService.open(EditingAwardModalComponent);
     modalRef.componentInstance.awardId = awardId;
-    modalRef.result.then( successMes => {
-      this.getDetail();
+    modalRef.result.then(successMes => {
       this.notifier.notify('info', successMes);
     }, dismiss => {
       // console.log(dismiss);
     });
   }
+
   // finish award before the end date
   finishAward() {
     this.awardService.finishAward(this.awardDetail.id).subscribe(() => {
@@ -270,9 +307,11 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       console.log(error);
     });
   }
+
   zeroTimerTrigger() {
     this.getDetail();
   }
+
   openTimer() {
     const timerContainer = document.getElementsByClassName('timer-container')[0];
     if (timerContainer.classList.contains('opened')) {
@@ -283,26 +322,25 @@ export class AwardDetailComponent implements OnInit, OnDestroy {
       this.isTimerCountDownOpened = true;
     }
   }
+
   // stay on current status after reloading page
-  saveCurrentStatus(lastPastWinnerParams: Object) {
+  saveCurrentStatus(lastPastWinnerParams: Object): void {
     // session Storage actually get cleared as the browser is closed.
     sessionStorage.setItem('lastPastWinnerParams', JSON.stringify(lastPastWinnerParams));
   }
 
   // try to get previous page status
-  getPreviousStatus() {
-    let lastPastWinnerParams = JSON.parse(sessionStorage.getItem('lastPastWinnerParams'));
-    // console.log(lastPastWinnerParams);
-    return lastPastWinnerParams;
+  getPreviousStatus(): PreviousParams {
+    return JSON.parse(sessionStorage.getItem('lastPastWinnerParams'));
   }
 
   // remove status as route to other component in routeLinks set
-  removeStatus() {
+  removeStatus(): void {
     sessionStorage.removeItem('lastPastWinnerParams');
   }
+
   ngOnDestroy(): void {
     this.removeStatus();
-    // console.log('Destroyed!');
-    // console.log(sessionStorage.getItem('lastPastWinnerParams'));
+
   }
 }

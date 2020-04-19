@@ -9,6 +9,7 @@ import {AuthenticationService} from '../../_services/authentication.service';
 import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.component';
 import {NotifierService} from 'angular-notifier';
 import {Subscription} from 'rxjs';
+import {IAPIResponse} from '../../_services/api.service';
 
 @Component({
   selector: 'app-employee-list',
@@ -134,11 +135,12 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       this.accountService.getUsersList(reloadedParams).subscribe(
         (res) => {
           this.usersList = res.data;
-          this.totalRecords = res.total_counts;
-          if (!res.filtered_counts) {
+          const {total_counts, filtered_counts} = res.meta;
+          this.totalRecords = Number(total_counts);
+          if (!filtered_counts) {
             this.currentRecords = this.totalRecords;
           } else {
-            this.currentRecords = res.filtered_counts;
+            this.currentRecords = Number(filtered_counts);
           }
           this.saveCurrentStatus(lastEmployeeParams);
         }, (err: HttpErrorResponse) => {
@@ -209,13 +211,14 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       }
     }
     this.accountService.getUsersList(params).subscribe(
-      (res) => {
+      (res: IAPIResponse) => {
         this.usersList = res.data;
-        this.totalRecords = res.total_counts;
-        if (!res.filtered_counts) {
+        const {total_counts, filtered_counts} = res.meta;
+        this.totalRecords = Number(total_counts);
+        if (!filtered_counts) {
           this.currentRecords = this.totalRecords;
         } else {
-          this.currentRecords = res.filtered_counts;
+          this.currentRecords = Number(filtered_counts);
         }
         // console.log(this.totalRecords);
         const lastEmployeeParams = {

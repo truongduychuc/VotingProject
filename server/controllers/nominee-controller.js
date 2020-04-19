@@ -1,5 +1,6 @@
-const {user: User, nominee: Nominee }= require('../models');
+const {user: User, nominee: Nominee} = require('../models');
 const Op = require('sequelize').Op;
+const {HTTP} = require('../helpers/constants');
 
 function listUserForNominating(req, res) {
   User.findAll({
@@ -39,13 +40,13 @@ function listNomineesForVoting(req, res) {
   })
     .then(data => {
       if (data.length === 0) {
-        res.status(200).send({message: 'There is no nominee for this award'});
+        res.status(HTTP.BAD_REQUEST).json({message: 'There is no nominee for this award'});
       } else {
-        res.status(200).send({data: data});
+        res.status(HTTP.OK).json({data: data});
       }
     })
     .catch(err => {
-      res.status(400).send({message: 'Error when get list', err});
+      res.status(HTTP.BAD_REQUEST).send({message: 'Error when get list', err});
     })
 }
 

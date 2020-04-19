@@ -8,12 +8,11 @@ import {DataSharingService} from '../../_shared/data-sharing.service';
 import {NotifierService} from 'angular-notifier';
 import {AwardType} from '../../_models/award-type';
 import {Router} from '@angular/router';
-import {Award} from '../../_models/award';
-import {tap} from 'rxjs/operators';
 import {TimerObservable} from 'rxjs/observable/TimerObservable';
 import 'rxjs/add/operator/takeWhile';
 import {AccountService} from '../../_services/account.service';
 import {Subscription} from 'rxjs';
+
 @Component({
   selector: 'app-award-list',
   templateUrl: './award-management.component.html',
@@ -24,11 +23,14 @@ export class AwardManagementComponent implements OnInit, OnDestroy {
   isAlive: boolean;
   interval: number;
   awardList: any[];
+  awardListSubscription: Subscription;
+
   awardTypesList: AwardType[];
   currentUser: User;
   currentUserSubscription: Subscription;
   currentUserLoaded = false;
   typeForSearching: number = null;
+
   // sharedData: for transferring successfully uploading logo message from upload-logo.component
   constructor(private modalService: NgbModal, private awardService: AwardService, private groupByPipe: GroupByPipe,
               private  sharedData: DataSharingService, private notifier: NotifierService, private router: Router,
@@ -36,11 +38,11 @@ export class AwardManagementComponent implements OnInit, OnDestroy {
     this.isAlive = true;
     this.interval = 5000; // use to automatically get the award list after a while
   }
+
   ngOnInit() {
-    this.sharedData.currentMessage.subscribe( messOfChangingLogo => {
+    this.sharedData.currentMessage.subscribe(messOfChangingLogo => {
       this.getAwardList();
     });
-    this.getAwardTypesList();
     TimerObservable.create(0, this.interval)
       .takeWhile(() => this.isAlive)
       .subscribe(() => {
@@ -53,54 +55,50 @@ export class AwardManagementComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   // get awardList at beginning
   getAwardList() {
     // reverse to display award list with descending time. The newer the award is, the higher its position is.
-    this.awardService.getAwardList().subscribe( list => {
-      this.awardList = this.groupByPipe.transform(list, 'year').reverse();
-      console.log('Just got data successfully!');
+    this.awardListSubscription = this.awardService.getAwardList().subscribe((res) => {
+      this.awardList = this.groupByPipe.transform(res.awards, 'year').reverse();
+      this.awardTypesList = res.types;
     }, errGetting => {
       this.error = errGetting;
     });
   }
+
   // direct to the award detail page includes information of the newest award
-  findAnAwardByType() {
+  findAnAwardByType(): void {
     if (this.typeForSearching === null || !this.typeForSearching) {
       this.getAwardList();
     } else {
-      this.awardService.findAnAwardByType(this.typeForSearching).pipe(tap((award: Award) => {
-        this.router.navigate([`home/award-detail/${award.id}`]);
-      })).subscribe(() => {}, error => {
-        this.notifier.notify('error', 'This award is never happened!');
+      this.awardService.findAnAwardByType(this.typeForSearching).subscribe((award) => {
+        this.router.navigate([`home/award-detail/${award.id}`]).then().catch(err => {
+          console.log(err);
+        });
+      }, error => {
+        console.log(error);
+        this.notifier.notify('error', error);
       });
     }
   }
-  getAwardTypesList() {
-    this.awardService.getAwardTypes().subscribe(successRes => {
-      if (!successRes.hasOwnProperty('types')) {
-        console.log('There is no types property in the response!');
-      } else {
-        this.awardTypesList = successRes.types;
-      }
-    }, err => {
-      console.log(err);
-    });
-  }
+
   // to show the button only can be used by admin
   get isAdmin() {
     return this.currentUserLoaded && this.currentUser.role.name.toLowerCase() === 'admin';
   }
+
   openAddingAward() {
-    const modalRef =  this.modalService.open(AddAwardModalComponent, {backdrop: 'static'});
+    const modalRef = this.modalService.open(AddAwardModalComponent, {backdrop: 'static'});
     modalRef.result.then((successMes: string) => {
       this.getAwardList();
       this.notifier.notify('info', successMes);
-    }, dismissReason => {
-      // console.log(dismiss);
     });
   }
+
   ngOnDestroy(): void {
     this.isAlive = false;
     this.currentUserSubscription.unsubscribe();
+    this.awardListSubscription.unsubscribe();
   }
 }

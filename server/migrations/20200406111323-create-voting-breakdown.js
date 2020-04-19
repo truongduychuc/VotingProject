@@ -32,7 +32,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
-      second_vote: {
+      second_votes: {
         allowNull: false,
         type: Sequelize.INTEGER,
         defaultValue: 0

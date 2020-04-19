@@ -1,20 +1,22 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {map, retry, tap} from 'rxjs/operators';
 import {User} from '../_models/user';
 import {AccountService} from './account.service';
 import {Router} from '@angular/router';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {environment} from '../../environments/environment';
+import {ApiService} from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  serverURL = 'http://localhost:4000/';
+  serverURL = environment.serverUrl;
+
   loggedInState: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   loggedIn: Observable<boolean> = this.loggedInState.asObservable();
 
-  constructor(private httpClient: HttpClient,
+  constructor(private apiService: ApiService,
               private authService: AuthenticationService,
               private accountService: AccountService,
               private router: Router
@@ -26,7 +28,7 @@ export class AuthenticationService {
       username: username,
       password: password
     };
-    return this.httpClient.post<any>(this.serverURL + 'auth/authenticate', userTryingToLogin).pipe(tap((res) => {
+    return this.apiService.post('auth/authenticate', userTryingToLogin).pipe(tap((res) => {
       this.loggedInState.next(true);
       this.setSession(res);
       this.getProfile();

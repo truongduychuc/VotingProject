@@ -16,6 +16,12 @@ const {asyncForEach} = require('../utils');
 const winston = require('../config/winston');
 const logger = require('../helpers/logging')(__filename, winston);
 const awardCreatingQueue = require('../queue').awardCreatingQueue;
+const {
+  getPercent,
+  shouldSwap,
+  getTotalPoints,
+  nomineeComparator
+} = require('../helpers/voting');
 
 awardCreatingQueue.on('completed', function () {
   logger.info('Finished handling creating award');
@@ -31,7 +37,7 @@ awardCreatingQueue.process(async function (job, done) {
   const t = await sequelize.transaction();
   try {
     const {awardId, voterRoles, nomineeIds} = job.data;
-    const newAward = await Award.findByPk(awardId);
+    const newAward = await Award.findById(awardId);
 
     const voters = await User.findAll({
       where: {
@@ -131,7 +137,7 @@ async function store(req, res) {
     if (!check()) {
       awardType = await AwardType.create({name: req.body.name}, {transaction});
     } else {
-      awardType = await AwardType.findByPk(req.body.type);
+      awardType = await AwardType.findById(req.body.type);
     }
 
     const newAward = await awardType.createAward(awardData, {transaction});
@@ -154,13 +160,252 @@ async function store(req, res) {
         instanceOf: Object.getPrototypeOf(e).toString()
       }
     }
-   res.status(HTTP.SERVER_ERROR).json({
+    res.status(HTTP.SERVER_ERROR).json({
       error: e,
       ...debug
     });
   }
 }
 
+function list(req, res) {
+  const includingType = req.query.hasOwnProperty('includingType') ? getBooleanParams(req.query.includingType) : true;
+  const responseStreams = [
+    Award.findAll({
+      include: [{
+        model: AwardType,
+        required: true,
+        attributes: ['name'],
+      }],
+      order: [
+        ['date_start', 'DESC']
+      ],
+    })
+  ];
+  if (includingType) {
+    responseStreams.push(AwardType.findAll())
+  }
+
+  return Promise.all(responseStreams).then(values => {
+    const data = {
+      awards: values[0]
+    };
+    if (includingType) {
+      data.types = values[1];
+    }
+    res.status(HTTP.OK).json(data);
+  }).catch(error => {
+    res.status(HTTP.SERVER_ERROR).json({
+      message: error.message,
+      error
+    })
+  });
+}
+
+function findAnAward(req, res) {
+  Award.findOne({
+    where: {
+      type: req.body.type
+    },
+    order: [
+      ['year', 'DESC']
+    ]
+  })
+    .then(award => {
+      if (award) {
+        res.status(HTTP.OK).json({award});
+      } else {
+        res.status(HTTP.NOT_FOUND).json({
+          message: 'No award found'
+        });
+      }
+    })
+    .catch(err => {
+      res.status(400).send({message: err});
+    })
+}
+
+/**
+ * */
+async function getAwardForVoting(req, res) {
+  try {
+    const today = new Date();
+    const awards = await Award.findAll({
+      where: {
+        status: {
+          [Op.gte]: 1,
+        }
+      },
+      attributes: ['id', 'year', 'logo_url', 'status'],
+      include: [{
+        model: AwardType,
+        attributes: ['name'],
+      }]
+    });
+    for (let award of awards) {
+      if (award.status === 1 && award.date_start <= today) {
+        // start award
+        award.status = 2;
+        await award.save();
+      }
+
+      // end award
+      if (award.status === 2 && award.date_end <= today) {
+        award.status = 0;
+        await award.save();
+      }
+    }
+    const results = awards.filter(award => award.status === 2);
+    return res.status(HTTP.OK).json({data: results});
+  } catch (e) {
+    logger.info(e);
+    return res.status(HTTP.SERVER_ERROR).json({message: e});
+  }
+}
+
+function getBooleanParams(param) {
+  if (typeof param !== 'string') {
+    return param;
+  } else {
+    if (param == 'true') {
+      return true;
+    } else if (param == 'false') {
+      return false;
+    }
+  }
+}
+
+
+/**
+ * get scores from multichain and publish to database
+ * */
+function updateResult(req, res) {
+  return updateAwardResult(req.body.id).then(breakdowns => {
+    res.status(HTTP.OK).json({
+      message: 'Update result successfully'
+    })
+  }).catch(e => {
+    res.status(HTTP.SERVER_ERROR).json({
+      message: e
+    });
+  });
+}
+
+function showAwardInfo(req, res) {
+  Award.findOne({
+    where: {
+      id: req.params.id
+    },
+    include: [{
+      model: AwardType,
+      required: true,
+      attributes: ['name'],
+    }],
+  })
+    .then(award => {
+      if (!award) {
+        res.status(HTTP.NOT_FOUND).send({message: 'Award does not exist'});
+      } else {
+        res.status(HTTP.OK).send({
+          data: award
+        });
+      }
+    })
+    .catch(err => {
+      res.status(HTTP.SERVER_ERROR).send({message: err});
+    })
+}
+
+function getAwardTypes(req, res) {
+  AwardType.findAll()
+    .then(types => {
+      res.status(HTTP.OK).json({types});
+    })
+    .catch(err => {
+      res.status(HTTP.SERVER_ERROR).json({message: 'Error when get type of award', error: err});
+    })
+}
+
+async function updateAwardResult(awardId) {
+  const transaction = await sequelize.transaction();
+  try {
+    const breakdowns = await Breakdown.findAll({
+      where: {
+        id_award: awardId
+      }
+    });
+    // we will use a clone ranking to re arrange and avoid some people having same votes record have to suffer the lower rank
+    // this table will bring only unique records of breakdown, and the references of same having votes record
+    const rankingTable = [];
+    const addToRankingTable = (table, sample) => {
+      // check the ranking table to find out who has the same total and all rest of votes
+      const sameRankRecord = table.find(record => nomineeComparator(sample, record) === 0);
+      if (sameRankRecord) {
+        sameRankRecord.sameRankReferences.push(sample.id);
+      } else {
+        table.push(sample);
+      }
+    };
+    const putRankAndPercent = (breakdown, rank, percent) => {
+      breakdown.rank = rank;
+      breakdown.percent = percent;
+      return breakdown;
+    };
+    // taking result from multichain and sync to db
+    for (let breakdown of breakdowns) {
+      const nomineeId = breakdown.id_nominee;
+      const {first_votes, second_votes, third_votes} = await rpcClient.getNomineeVotingScores(awardId, nomineeId);
+      const totalPoints = getTotalPoints(first_votes, second_votes, third_votes);
+      breakdown.first_votes = first_votes;
+      breakdown.second_votes = second_votes;
+      breakdown.third_votes = third_votes;
+      breakdown.total_points = totalPoints;
+
+      const sample = {
+        id: breakdown.id,
+        first_votes,
+        second_votes,
+        third_votes,
+        total_points: totalPoints,
+        sameRankReferences: []
+      };
+      addToRankingTable(rankingTable, sample);
+    }
+    const awardTotalPoints = breakdowns.map(b => b.total_points).reduce((prev, cur) => prev + cur, 0);
+    rankingTable.sort(shouldSwap);
+    let rank = 1;
+    for (let ranking of rankingTable) {
+      const breakdown = breakdowns.find(b => b.id === ranking.id);
+      putRankAndPercent(breakdown, rank, getPercent(breakdown.total_points, awardTotalPoints));
+      await breakdown.save({transaction});
+      // only saved id previously
+      if (ranking.sameRankReferences.length > 0) {
+        for (let ref of ranking.sameRankReferences) {
+          const sameRankReference = breakdowns.find(b => b.id === ref);
+          if (sameRankReference) {
+            putRankAndPercent(sameRankReference, rank, getPercent(sameRankReference.total_points, awardTotalPoints));
+            await sameRankReference.save({transaction});
+          }
+        }
+      }
+      rank++;
+    }
+    await transaction.commit();
+    return breakdowns;
+  } catch (e) {
+    console.log(e);
+    await transaction.rollback();
+    throw e;
+  }
+}
+
+
 module.exports = {
-  store
+  store,
+  list,
+  findAnAward,
+  getAwardForVoting,
+  updateResult,
+  showAwardInfo,
+  getAwardTypes,
+  updateAwardResult
 };
