@@ -6,6 +6,16 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "site": "myevoting"
+    "site": "myevoting",
+    "rewrites": [
+      {
+        "source": "/public/**",
+        "destination": "/public.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

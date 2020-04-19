@@ -37,7 +37,7 @@ awardCreatingQueue.process(async function (job, done) {
   const t = await sequelize.transaction();
   try {
     const {awardId, voterRoles, nomineeIds} = job.data;
-    const newAward = await Award.findById(awardId);
+    const newAward = await Award.findByPk(awardId);
 
     const voters = await User.findAll({
       where: {
@@ -137,7 +137,7 @@ async function store(req, res) {
     if (!check()) {
       awardType = await AwardType.create({name: req.body.name}, {transaction});
     } else {
-      awardType = await AwardType.findById(req.body.type);
+      awardType = await AwardType.findByPk(req.body.type);
     }
 
     const newAward = await awardType.createAward(awardData, {transaction});
