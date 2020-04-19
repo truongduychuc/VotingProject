@@ -10,7 +10,9 @@ const readAndMapNameObjectsFromTextFile = filePath => {
   const cache = [];
   const fCache = [];
   const str = fs.readFileSync(filePath);
-  const names = str.toString().trim().split("\r\n");
+  // \r\n for CRLF
+  // \n for LF
+  const names = str.toString().trim().split("\n");
   return names.map((e, i) => {
     e = e.trim();
     const nameParts = e.split(" ");
@@ -19,7 +21,7 @@ const readAndMapNameObjectsFromTextFile = filePath => {
       return {};
     }
     fCache.push(firstName);
-    const lastName = nameParts.length > 1 ?  nameParts[nameParts.length - 1] : "";
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
     let englishName;
     if (nameParts.length > 2) {
       englishName = nameParts.slice(1, nameParts.length - 1).join(" ");
