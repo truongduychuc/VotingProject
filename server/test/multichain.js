@@ -1,3 +1,4 @@
+require('dotenv').config();
 const expect = require('chai').expect;
 const chai = require('chai');
 const assert = chai.assert;
@@ -21,20 +22,20 @@ describe('Test connect to multichain', () => {
       id: 1,
       jsonrpc: "2.0"
     };
-    chai.request("http://localhost:" + config.port)
+    chai.request(config.host + config.port)
       .post('/')
       .auth(config.user, config.pass)
       .type('json')
       .send(JSON.stringify(payload)).end((err, res) => {
-        expect(res).to.have.status(200);
-        done();
+      expect(res).to.have.status(200);
+      done();
     })
 
   });
 });
 
 describe('Test rpcClient class', () => {
-  it ('should return result', done => {
+  it('should return result', done => {
     rpcClient.getInfo().then(result => {
       assert.isNotEmpty(result);
     });

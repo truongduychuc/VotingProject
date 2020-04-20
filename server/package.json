@@ -44,7 +44,8 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "mocha": "^7.1.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "node-pre-gyp": "0.12.0"
   },
   "scripts": {
     "dev": "nodemon server.js",
