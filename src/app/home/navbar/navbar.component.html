@@ -13,7 +13,7 @@
       <li *ngIf="currentUserProfile" class="nav-item nav-profile dropdown" ngbDropdown>
         <a id="userDropdown" title="Click to show menu" class="nav-link dropdown-toggle" ngbDropdownToggle>
           <div class="nav-profile-img">
-            <img class="img-xs rounded-circle" [src]="'http://localhost:4000/' + currentUserProfile.ava_url">
+            <img class="img-xs rounded-circle" [src]="serverURL + currentUserProfile.ava_url">
             <span class="availability-status online"></span>
           </div>
           <div class="nav-profile-text">

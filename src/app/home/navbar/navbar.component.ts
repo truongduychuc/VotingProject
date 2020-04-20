@@ -8,6 +8,7 @@ import {ChangePasswordModalComponent} from '../change-password-modal/change-pass
 import {UploadAvatarComponent} from '../upload-avatar/upload-avatar.component';
 import {NotifierService} from 'angular-notifier';
 import {Subscription} from 'rxjs';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -16,6 +17,7 @@ import {Subscription} from 'rxjs';
   providers: [NgbDropdownConfig]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  serverURL = environment.serverUrl;
   currentUserProfile: User;
   currentUserSubscription: Subscription;
   public sidebarOpened = false;
@@ -54,7 +56,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
       ? 'Admin' :
       this.currentUserProfile.first_name + ' (' + this.currentUserProfile.english_name + ') ' + this.currentUserProfile.last_name;
   }
-  private  isAdminName = name => name.toUpperCase() === 'ADMIN';
+
+  private isAdminName = name => name.toUpperCase() === 'ADMIN';
+
   openChangingPasswordModal() {
     const modalRef = this.modalService.open(ChangePasswordModalComponent);
     modalRef.result.then(successMessage => {
