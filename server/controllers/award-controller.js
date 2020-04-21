@@ -33,7 +33,8 @@ awardCreatingQueue.on('failed', function (job, error) {
 awardCreatingQueue.on('progress', function () {
   logger.info('Handling creating award job');
 });
-awardCreatingQueue.process(async function (job, done) {
+
+async function setUpAwardAsset(job, done) {
   const t = await sequelize.transaction();
   try {
     const {awardId, voterRoles, nomineeIds} = job.data;
@@ -112,7 +113,9 @@ awardCreatingQueue.process(async function (job, done) {
     await t.rollback();
     done(e);
   }
-});
+}
+
+awardCreatingQueue.process(setUpAwardAsset);
 
 /**@api 'awards/create'
  * Create a new award, only used by admin account
@@ -407,5 +410,6 @@ module.exports = {
   updateResult,
   showAwardInfo,
   getAwardTypes,
-  updateAwardResult
+  updateAwardResult,
+  setUpAwardAsset
 };

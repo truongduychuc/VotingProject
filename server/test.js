@@ -1,5 +1,6 @@
 const {awardDetail: Award} = require('./models');
 const queue = require('./queue').awardCreatingQueue;
+const {setUpAwardAsset} = require('./controllers').AwardController;
 
 function debounce(func, wait, immediate) {
   var timeout;
@@ -17,7 +18,7 @@ function debounce(func, wait, immediate) {
 }
 queue.getFailed().then(jobArr => {
  jobArr.forEach(job => {
-   queue.process(job).then(() => {
+   queue.process(setUpAwardAsset).then(() => {
     console.log('Success');
    }).catch(err => {
      console.log(err);
