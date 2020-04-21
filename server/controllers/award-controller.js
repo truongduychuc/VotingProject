@@ -35,6 +35,7 @@ awardCreatingQueue.on('progress', function () {
 });
 awardCreatingQueue.process(async function (job, done) {
   const t = await sequelize.transaction();
+  logger.info('Start handling creating award with data' + JSON.stringify(job.data));
   try {
     const {awardId, voterRoles, nomineeIds} = job.data;
     const newAward = await Award.findByPk(awardId);
@@ -147,8 +148,7 @@ async function store(req, res) {
       nomineeIds: req.body.id_nominee
     };
     await awardCreatingQueue.add(jobData);
-    console.log('new award' + JSON.stringify(newAward));
-    console.log('added queue');
+    logger.info('Added an award to queue' + JSON.stringify(jobData));
     await transaction.commit();
     return res.status(HTTP.OK).json({data: newAward, message: 'Created award successfully'});
   } catch (e) {
