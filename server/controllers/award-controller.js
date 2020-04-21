@@ -34,7 +34,7 @@ awardCreatingQueue.on('progress', function () {
   logger.info('Handling creating award job');
 });
 
-async function setUpAwardAsset(job, done) {
+awardCreatingQueue.process(async function (job, done) {
   const t = await sequelize.transaction();
   try {
     const {awardId, voterRoles, nomineeIds} = job.data;
@@ -113,9 +113,7 @@ async function setUpAwardAsset(job, done) {
     await t.rollback();
     done(e);
   }
-}
-
-awardCreatingQueue.process(setUpAwardAsset);
+});
 
 /**@api 'awards/create'
  * Create a new award, only used by admin account
@@ -410,6 +408,5 @@ module.exports = {
   updateResult,
   showAwardInfo,
   getAwardTypes,
-  updateAwardResult,
-  setUpAwardAsset
+  updateAwardResult
 };
