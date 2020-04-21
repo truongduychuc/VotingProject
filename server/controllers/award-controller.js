@@ -35,10 +35,10 @@ awardCreatingQueue.on('progress', function () {
 });
 awardCreatingQueue.process(async function (job, done) {
   const t = await sequelize.transaction();
-  logger.info('Start handling creating award with data' + JSON.stringify(job.data));
   try {
     const {awardId, voterRoles, nomineeIds} = job.data;
     const newAward = await Award.findByPk(awardId);
+    logger.info(JSON.stringify(newAward));
 
     const voters = await User.findAll({
       where: {

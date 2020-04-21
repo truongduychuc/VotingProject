@@ -22,7 +22,7 @@ describe('Test connect to multichain', () => {
       id: 1,
       jsonrpc: "2.0"
     };
-    chai.request(config.host + config.port)
+    chai.request(config.host + ':' + config.port)
       .post('/')
       .auth(config.user, config.pass)
       .type('json')
@@ -35,7 +35,7 @@ describe('Test connect to multichain', () => {
 });
 
 describe('Test rpcClient class', () => {
-  it('should return result', done => {
+  it('should return a non-undefined result', done => {
     rpcClient.getInfo().then(result => {
       assert.isNotEmpty(result);
     });
