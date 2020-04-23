@@ -8,6 +8,7 @@ import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.co
 import {NotifierService} from 'angular-notifier';
 import {User} from '../../_models/user';
 import {Subscription} from 'rxjs';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-voting',
@@ -15,13 +16,14 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./voting.component.scss']
 })
 export class VotingComponent implements OnInit, OnDestroy {
-
+  serverURL = environment.serverUrl;
   voting: FormGroup;
   listAwards: Award[];
   listNominees: any[];
   errorMessage: string;
   currentUser: User;
-  subscriptions: Subscription;
+  votedSuccess = false;
+  subscriptions: Subscription = new Subscription();
 
   constructor(private formBuilder: FormBuilder, private awardService: AwardService,
               private userService: AccountService, private modalService: NgbModal,
@@ -36,14 +38,14 @@ export class VotingComponent implements OnInit, OnDestroy {
 
   generateForm() {
     this.voting = this.formBuilder.group({
-      id: [null, Validators.required],
-      first_vote: [null, [Validators.required]],
-      second_vote: [null, [Validators.required]],
-      third_vote: [null, [Validators.required]]
+      awardId: [null, Validators.required],
+      firstVote: [null, [Validators.required]],
+      secondVote: [null, [Validators.required]],
+      thirdVote: [null, [Validators.required]]
     }, {
       validators: [
-        this.duplicatedSelect('first_vote', 'second_vote', 'third_vote'),
-        this.selfVoteValidation('first_vote'), this.selfVoteValidation('second_vote'), this.selfVoteValidation('third_vote'),
+        this.duplicatedSelect('firstVote', 'secondVote', 'thirdVote'),
+        this.selfVoteValidation('firstVote'), this.selfVoteValidation('secondVote'), this.selfVoteValidation('thirdVote'),
       ]
     });
   }
@@ -97,7 +99,7 @@ export class VotingComponent implements OnInit, OnDestroy {
     modalRef.result.then(accept => {
       this.awardService.vote(this.voting.value).subscribe(res => {
         this.notifier.notify('info', res.message);
-        this.resetAllSelections();
+        this.votedSuccess = true;
       }, err => {
         // display error message to alert, the message is returned from error interceptor
         if (typeof err !== 'string') {
@@ -230,9 +232,10 @@ export class VotingComponent implements OnInit, OnDestroy {
 
   resetAllSelections() {
     // reset all
-    this.voting.controls['id'].setValue(null);
+    this.voting.controls['awardId'].setValue(null);
     // refresh nomineeList
     this.listNominees = null;
+    this.votedSuccess = false;
     // refresh list of awards
     this.getListAwardForVoting();
     this.resetNomineeSelections();
@@ -242,9 +245,9 @@ export class VotingComponent implements OnInit, OnDestroy {
     // refresh selections without refreshing awards
     this.errorMessage = null;
     this.listNominees = undefined;
-    this.voting.controls['first_vote'].setValue(null);
-    this.voting.controls['second_vote'].setValue(null);
-    this.voting.controls['third_vote'].setValue(null);
+    this.voting.controls['firstVote'].setValue(null);
+    this.voting.controls['secondVote'].setValue(null);
+    this.voting.controls['thirdVote'].setValue(null);
   }
 
   ngOnDestroy(): void {

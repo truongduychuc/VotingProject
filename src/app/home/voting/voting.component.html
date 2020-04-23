@@ -11,11 +11,12 @@
           </ngb-alert>
         </div>
       </div>
-      <form *ngIf="listAwards" (ngSubmit)="sendVotingElection()" [formGroup]="voting">
+      <form *ngIf="listAwards && !votedSuccess;  else successfullyVoted" (ngSubmit)="sendVotingElection()"
+            [formGroup]="voting">
         <div class="row">
           <div class="col-12">
             <div class="card shadow">
-              <div class= "card-header">
+              <div class="card-header">
                 <strong class="card-title">Award</strong>
               </div>
               <div class="card-body">
@@ -23,7 +24,9 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <label class="col-form-label">Choose an award:</label>
-                      <select formControlName="id" (change)="loadNomineesCorresponding(voting.controls['id'].value)" class="form-control">
+                      <select formControlName="awardId"
+                              (change)="loadNomineesCorresponding(voting.controls['awardId'].value)"
+                              class="form-control">
                         <option hidden>Choose award here</option>
                         <optgroup *ngFor="let element of listAwards | groupBy: 'year'" [label]="element?.key">
                           <option *ngFor="let award of element?.value" [ngValue]="award?.id">
@@ -33,24 +36,23 @@
                       </select>
                     </div>
                   </div>
-                  <div *ngIf="formControls['id'].value" class="col-md-8">
+                  <div *ngIf="formControls['awardId'].value" class="col-md-8">
                     <div class="col-12">
                       <div class="award-container d-flex flex-row">
-                        <div *ngIf="getAward(formControls['id'].value).logo_url" class="award-logo img-thumbnail">
-                          <img [src]="serverURL + getAward(formControls['id'].value).logo_url">
+                        <div *ngIf="getAward(formControls['awardId'].value).logo_url" class="award-logo img-thumbnail">
+                          <img [src]="serverURL + getAward(formControls['awardId'].value).logo_url">
                         </div>
                         <div class="award-title d-flex flex-column ml-md-4">
                           <h5 class="award-name">
-                            {{getAward(formControls['id'].value).awardType.name | uppercase}}
+                            {{getAward(formControls['awardId'].value).awardType.name | uppercase}}
                           </h5>
                           <div class="award-year d-flex justify-content-center">
                             <span class="badge-pill badge-info">
-                              {{getAward(formControls['id'].value).year}}
+                              {{getAward(formControls['awardId'].value).year}}
                             </span>
                           </div>
                         </div>
                         <div class="award-time">
-
                         </div>
                       </div>
                     </div>
@@ -62,22 +64,22 @@
         </div>
 
         <div *ngIf="listNominees" class="row">
-          <div *ngIf="voting.controls['id'].value" class="col-md-4 d-flex">
+          <div *ngIf="voting.controls['awardId'].value" class="col-md-4 d-flex">
             <div class="card shadow">
               <div class="card-header">
                 <h6 class="card-title">First place</h6>
               </div>
               <div class="card-body">
-                <div *ngIf="!voting.controls['id'].value" class="row">
+                <div *ngIf="!voting.controls['awardId'].value" class="row">
                   <div class="col-12">
                     <p class="text-danger">Please choose the nominee for first place</p>
                   </div>
                 </div>
-                <div *ngIf="voting.controls['id'].value" class="row">
+                <div *ngIf="voting.controls['awardId'].value" class="row">
                   <div class="col-12">
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
-                      <select formControlName="first_vote" class="form-control">
+                      <select formControlName="firstVote" class="form-control">
                         <option hidden></option>
                         <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
@@ -86,41 +88,42 @@
                     </div>
                   </div>
                   <div class="col-12 d-flex justify-content-center">
-                    <div *ngIf="formControls['first_vote'].value" class="rounded img-thumbnail nominee-avatar">
-                      <img class="avatar" [src]="serverURL + getNomineeAvaUrl(formControls['first_vote'].value)" alt="Avatar">
+                    <div *ngIf="formControls['firstVote'].value" class="rounded img-thumbnail nominee-avatar">
+                      <img class="avatar" [src]="serverURL + getNomineeAvaUrl(formControls['firstVote'].value)"
+                           alt="Avatar">
                     </div>
                   </div>
-                  <div *ngIf="formControls['first_vote'].value" class="col-12 d-flex justify-content-center mt-1">
-                    <p class="text-small">{{getNomineeFullName(formControls['first_vote'].value)}}</p>
+                  <div *ngIf="formControls['firstVote'].value" class="col-12 d-flex justify-content-center mt-1">
+                    <p class="text-small">{{getNomineeFullName(formControls['firstVote'].value)}}</p>
                   </div>
                   <div class="col-12 d-flex justify-content-center mt-1">
-                    <small class="text-danger" *ngIf="formControls['first_vote'].errors?.duplicated">
-                      {{formControls['first_vote'].errors?.message}}  Choose another one!
+                    <small class="text-danger" *ngIf="formControls['firstVote'].errors?.duplicated">
+                      {{formControls['firstVote'].errors?.message}}  Choose another one!
                     </small>
-                    <small class="text-danger" *ngIf="formControls['first_vote'].errors?.selfVote">
-                      {{formControls['first_vote'].errors?.message}}
+                    <small class="text-danger" *ngIf="formControls['firstVote'].errors?.selfVote">
+                      {{formControls['firstVote'].errors?.message}}
                     </small>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="voting.controls['first_vote'].value" class="col-md-4 d-flex">
+          <div *ngIf="voting.controls['firstVote'].value" class="col-md-4 d-flex">
             <div class="card shadow">
               <div class="card-header">
                 <h6 class="card-title">Second place</h6>
               </div>
               <div class="card-body">
-                <div *ngIf="!voting.controls['first_vote'].value" class="row">
+                <div *ngIf="!voting.controls['firstVote'].value" class="row">
                   <div class="col-12">
                     <p class="text-danger">Please choose the nominee for second place</p>
                   </div>
                 </div>
-                <div *ngIf="voting.controls['first_vote'].value" class="row">
+                <div *ngIf="voting.controls['firstVote'].value" class="row">
                   <div class="col-12">
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
-                      <select formControlName="second_vote" class="form-control">
+                      <select formControlName="secondVote" class="form-control">
                         <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
@@ -128,41 +131,42 @@
                     </div>
                   </div>
                   <div class="col-12 d-flex justify-content-center">
-                    <div *ngIf="formControls['second_vote'].value" class="rounded img-thumbnail nominee-avatar">
-                      <img class="avatar" [src]="serverURL + getNomineeAvaUrl(formControls['second_vote'].value)" alt="Avatar">
+                    <div *ngIf="formControls['secondVote'].value" class="rounded img-thumbnail nominee-avatar">
+                      <img class="avatar" [src]="serverURL + getNomineeAvaUrl(formControls['secondVote'].value)"
+                           alt="Avatar">
                     </div>
                   </div>
-                  <div *ngIf="formControls['second_vote'].value" class="col-12 d-flex justify-content-center mt-1">
-                    <p class="text-small">{{getNomineeFullName(formControls['second_vote'].value)}}</p>
+                  <div *ngIf="formControls['secondVote'].value" class="col-12 d-flex justify-content-center mt-1">
+                    <p class="text-small">{{getNomineeFullName(formControls['secondVote'].value)}}</p>
                   </div>
                   <div class="col-12 d-flex justify-content-center mt-1">
-                    <small class="text-danger" *ngIf="formControls['second_vote'].errors?.duplicated">
-                      {{formControls['second_vote'].errors?.message}}  Choose another one!
+                    <small class="text-danger" *ngIf="formControls['secondVote'].errors?.duplicated">
+                      {{formControls['secondVote'].errors?.message}}  Choose another one!
                     </small>
-                    <small class="text-danger" *ngIf="formControls['second_vote'].errors?.selfVote">
-                      {{formControls['second_vote'].errors?.message}}
+                    <small class="text-danger" *ngIf="formControls['secondVote'].errors?.selfVote">
+                      {{formControls['secondVote'].errors?.message}}
                     </small>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="voting.controls['second_vote'].value" class="col-md-4 d-flex">
+          <div *ngIf="voting.controls['secondVote'].value" class="col-md-4 d-flex">
             <div class="card shadow">
               <div class="card-header">
                 <h6 class="card-title">Third place</h6>
               </div>
               <div class="card-body">
-                <div *ngIf="!voting.controls['second_vote'].value" class="row">
+                <div *ngIf="!voting.controls['secondVote'].value" class="row">
                   <div class="col-12">
                     <p class="text-danger">Please choose the nominee for third place</p>
                   </div>
                 </div>
-                <div *ngIf="voting.controls['second_vote'].value" class="row">
+                <div *ngIf="voting.controls['secondVote'].value" class="row">
                   <div class="col-12">
                     <div class="form-group">
                       <label class="col-form-label">Choose a nominee:</label>
-                      <select formControlName="third_vote" class="form-control">
+                      <select formControlName="thirdVote" class="form-control">
                         <option *ngFor="let nominee of listNominees" [ngValue]="nominee?.id_nominee">
                           {{nominee?.nominee_name_1?.english_name}}
                         </option>
@@ -170,19 +174,20 @@
                     </div>
                   </div>
                   <div class="col-12 d-flex justify-content-center">
-                    <div *ngIf="formControls['third_vote'].value" class="rounded img-thumbnail nominee-avatar">
-                      <img class="avatar" [src]="serverURL + getNomineeAvaUrl(formControls['third_vote'].value)" alt="Avatar">
+                    <div *ngIf="formControls['thirdVote'].value" class="rounded img-thumbnail nominee-avatar">
+                      <img class="avatar" [src]="serverURL + getNomineeAvaUrl(formControls['thirdVote'].value)"
+                           alt="Avatar">
                     </div>
                   </div>
-                  <div *ngIf="formControls['third_vote'].value" class="col-12 d-flex justify-content-center mt-1">
-                    <p class="text-small">{{getNomineeFullName(formControls['third_vote'].value)}}</p>
+                  <div *ngIf="formControls['thirdVote'].value" class="col-12 d-flex justify-content-center mt-1">
+                    <p class="text-small">{{getNomineeFullName(formControls['thirdVote'].value)}}</p>
                   </div>
                   <div class="col-12 d-flex justify-content-center mt-1">
-                    <small class="text-danger" *ngIf="formControls['third_vote'].errors?.duplicated">
-                      {{formControls['third_vote'].errors?.message}}  Choose another one!
+                    <small class="text-danger" *ngIf="formControls['thirdVote'].errors?.duplicated">
+                      {{formControls['thirdVote'].errors?.message}}  Choose another one!
                     </small>
-                    <small class="text-danger" *ngIf="formControls['third_vote'].errors?.selfVote">
-                      {{formControls['third_vote'].errors?.message}}
+                    <small class="text-danger" *ngIf="formControls['thirdVote'].errors?.selfVote">
+                      {{formControls['thirdVote'].errors?.message}}
                     </small>
                   </div>
                 </div>
@@ -200,9 +205,21 @@
         <div *ngIf="listNominees" class="mt-4 d-flex justify-content-center flex-wrap">
           <!--[disabled]="voting.invalid"-->
           <button [disabled]="voting.invalid" type="submit" class="btn btn-success btn-rounded m-2">Vote</button>
-          <button (click)="resetAllSelections()" type="button" class="btn btn-outline-success btn-rounded m-2">Reset</button>
+          <button (click)="resetAllSelections()" type="button" class="btn btn-outline-success btn-rounded m-2">Reset
+          </button>
         </div>
       </form>
+      <ng-template #successfullyVoted>
+        <h4>Voted successfully</h4>
+        <p>
+          <button ngbButtonLabel (click)="resetAllSelections()" class="mr-2">
+            Continue to vote
+          </button>
+          <button ngbButtonLabel routerLink="../awards">
+            View list awards
+          </button>
+        </p>
+      </ng-template>
     </div>
   </div>
 </div>

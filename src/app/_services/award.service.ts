@@ -68,8 +68,8 @@ export class AwardService {
     return this.apiService.post(this.apis.FIND_AWARD, {type: id}).pipe(map(res => res.data));
   }
 
-  checkVoterStatus(id_award: number): Observable<IAPIResponse> {
-    return this.apiService.post(this.apis.CHECK_STATUS, {id_award: id_award});
+  checkVoterStatus(awardId: number): Observable<IAPIResponse> {
+    return this.apiService.post(this.apis.CHECK_STATUS, {awardId});
   }
 
   getAwardTypes(): Observable<IAwardTypesResponse> {
