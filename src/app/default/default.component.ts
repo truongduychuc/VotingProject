@@ -8,20 +8,16 @@ import {Router} from '@angular/router';
   templateUrl: './default.component.html',
   styleUrls: ['./default.component.scss']
 })
-export class DefaultComponent implements OnInit, AfterViewInit, OnDestroy {
-
+export class DefaultComponent implements AfterViewInit, OnDestroy {
+  private modalTimeout: number;
   destroyed: false;
 
   constructor(private modalService: NgbModal, private router: Router) {
   }
 
-  ngOnInit() {
-
-  }
-
   ngAfterViewInit(): void {
     if (!this.destroyed) {
-      setTimeout(() => {
+      this.modalTimeout = setTimeout(() => {
         if (!this.destroyed) {
           const modalRef = this.modalService.open(LoginModalComponent, {
             backdrop: 'static',
@@ -40,5 +36,6 @@ export class DefaultComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed = false;
+    clearTimeout(this.modalTimeout);
   }
 }

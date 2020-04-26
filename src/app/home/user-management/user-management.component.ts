@@ -10,6 +10,7 @@ import {ConfirmModalComponent} from '../../modals/confirm-modal/confirm-modal.co
 import {NotifierService} from 'angular-notifier';
 import {Subscription} from 'rxjs';
 import {IAPIResponse} from '../../_services/api.service';
+import { IMeta } from 'src/app/_models/meta';
 
 @Component({
   selector: 'app-employee-list',
@@ -29,7 +30,10 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   itemsPerPageArr = [2, 5, 10, 15, 20, 25];
   error: any;
   usersList: User[];
-
+  meta: IMeta = {
+    currentPage: 1,
+    perPage: 10
+  };
   // for determining whether the current user is admin
   currentUser: User;
   previousSearchText: string;
@@ -135,13 +139,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       this.accountService.getUsersList(reloadedParams).subscribe(
         (res) => {
           this.usersList = res.data;
-          const {total_counts, filtered_counts} = res.meta;
-          this.totalRecords = Number(total_counts);
-          if (!filtered_counts) {
-            this.currentRecords = this.totalRecords;
-          } else {
-            this.currentRecords = Number(filtered_counts);
-          }
+          const {total} = res.meta;
+          this.totalRecords = Number(total);
+          this.meta = res.meta;
           this.saveCurrentStatus(lastEmployeeParams);
         }, (err: HttpErrorResponse) => {
           console.log(err);
@@ -213,14 +213,10 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.accountService.getUsersList(params).subscribe(
       (res: IAPIResponse) => {
         this.usersList = res.data;
-        const {total_counts, filtered_counts} = res.meta;
-        this.totalRecords = Number(total_counts);
-        if (!filtered_counts) {
-          this.currentRecords = this.totalRecords;
-        } else {
-          this.currentRecords = Number(filtered_counts);
-        }
-        // console.log(this.totalRecords);
+        const {total} = res.meta;
+        this.totalRecords = Number(total);
+        this.currentRecords = this.totalRecords;
+        this.meta = res.meta;
         const lastEmployeeParams = {
           col: sortColumn,
           type: sortType,
@@ -275,7 +271,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     // console.log(newPage);
     this.getUserListPerPage(this.currentSortedColumn, this.currentSortedType, this.currentSortedTable, this.currentSearchText,
       this.currentPageSize, newPage);
-
   }
 
 

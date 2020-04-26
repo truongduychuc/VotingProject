@@ -24,8 +24,6 @@
               </div>
           </div>
         </div>
-
-
 <!--        table-->
         <div *ngIf="!error" class="row">
             <div class="table-responsive">
@@ -85,21 +83,17 @@
         <!--Pagination -->
         <div *ngIf="!error" class="row">
           <div class="col-sm-6 d-flex justify-content-sm-start p-0">
-            <p class="text-small" *ngIf="currentRecords > currentPageSize">Showing 1 to {{currentPageSize}} of {{currentRecords}}
-              <span *ngIf="totalRecords == currentRecords"> total entries</span>
-              <span *ngIf="totalRecords>currentRecords"> entries (filtered from {{totalRecords}} total entries)</span>
-          </p>
-            <p class="text-small" *ngIf="currentRecords <= currentPageSize">Showing {{currentRecords}} of {{currentRecords}}
-              <span *ngIf="totalRecords == currentRecords"> total entries</span>
-              <span *ngIf="totalRecords>currentRecords"> (filtered from {{totalRecords}} total entries)</span>
+            <p class="text-small" *ngIf="meta && meta.total">
+              Showing {{meta.from}} to {{meta.to}} of {{meta.total}} records
             </p>
           </div>
-          <div *ngIf="currentRecords > currentPageSize" class="col-sm-6 d-flex justify-content-sm-end p-0">
+          <div *ngIf="meta && meta.total > meta.perPage" class="col-sm-6 d-flex justify-content-sm-end p-0">
             <ngb-pagination class="pagination" size="sm"
                             (pageChange)="pageChange($event)"
-                            [collectionSize]="currentRecords"
-                            [pageSize]="currentPageSize"
-                            [(page)]="currentPage" maxSize="5"
+                            [collectionSize]="meta.total"
+                            [pageSize]="meta.perPage"
+                            [(page)]="meta.currentPage"
+                            maxSize="5"
                             [rotate]="true"
                             [ellipses]="false"
                             class="pagination-rounded"

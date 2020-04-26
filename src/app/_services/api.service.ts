@@ -4,6 +4,7 @@ import {environment} from '../../environments/environment';
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpParams} from '@angular/common/http/src/params';
 import {Injectable} from '@angular/core';
+import { IMeta } from '../_models/meta';
 
 type HttpOptions = {
   headers?: HttpHeaders | {
@@ -26,7 +27,7 @@ export interface IAPIResponse {
   data?: any;
   error?: string | object;
   code?: string;
-  meta?: APIMeta;
+  meta?: IMeta;
 }
 
 @Injectable({
